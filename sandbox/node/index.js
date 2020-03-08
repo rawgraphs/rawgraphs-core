@@ -1,6 +1,7 @@
 import {raw} from '../../src';
+import testChart from '../../src/testChart';
+
 import {JSDOM} from "jsdom";
-import {select} from 'd3-selection'
 
 const dom = new JSDOM(`<!DOCTYPE html><head></head><body></body>`);
 const document = dom.window.document;
@@ -25,51 +26,8 @@ const group = {
 
 
 
-const visualModel = {
 
-  getDimensions : function(){
-    return {
-
-      x : {
-        types: [Number, Date],
-        required: true,
-      },
-
-      y : {
-        types: [Number, Date],
-        required: true,
-      },
-
-      size: {
-        types: [Number],
-      },
-
-      color: {
-        types: [Number, Date, String],
-      },
-
-      label: {
-        types: [Number, Date, String],
-      }
-
-
-    }
-
-
-  },
-
-  render: function(node, data, options) {
-
-    const selection = select(node)
-    selection.append('g')
-    
-  }
-
-
-}
-
-
-const viz = raw(visualModel)
+const viz = raw(testChart)
 viz.renderToDOM(div)
 console.log(div.innerHTML)
 

@@ -1,13 +1,7 @@
 import { isBrowser, getDocument } from './utils'
+import { mapper } from './mapping'
 
 
-class RAWError extends Error {
-  constructor(message) {
-    super(message)
-    this.name = 'RAWError'
-    this.message = message
-  }
-}
 
 
 const defaultVisualOptions = {
@@ -68,6 +62,11 @@ class RAWBase {
     return new RAWDOM(node, this._visualModel, this._data, this._mapping, this._visualOptions)
     
   }
+
+
+  //mapping
+
+
 
 }
 
