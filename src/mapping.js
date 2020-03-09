@@ -168,7 +168,7 @@ function mapper(dimensions, mapping, types) {
         getDimensions.forEach(id => {
           item[id] = get(row, mappingValues[id])
         })
-        if(groupDimension){
+        if(groupDimension && mappingValues[groupDimension]){
           item[groupDimension] = get(row, mappingValues[groupDimension])
         }
         return item
@@ -181,8 +181,6 @@ function mapper(dimensions, mapping, types) {
     if (hierarchyDimension) {
       // ...
     }
-
-    return tabularData;
 
     if (groupDimension) {
       return groupBy(tabularData, groupDimension);

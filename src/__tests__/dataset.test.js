@@ -33,15 +33,6 @@ describe('dataset', () => {
 
 
 
-
-
-
-
-
-
-
-
-  
   it('should infer correct types', () => {
 
     const types = inferTypes(exampleData)    
@@ -73,12 +64,12 @@ describe('dataset', () => {
     expect(dataset).toEqual(exampleData)
 
 
-    types.d = {
-      type: Date,
-      dateFormat: 'YYYY-MM-DD HH:mm'
-    }
+    // types.d = {
+    //   type: Date,
+    //   dateFormat: 'YYYY-MM-DD HH:mm'
+    // }
 
-    const [dataset, dataTypes, errors] = parseDataset(exampleDataFormatted, types)
+    // const [dataset, dataTypes, errors] = parseDataset(exampleDataFormatted, types)
 
   
   })
