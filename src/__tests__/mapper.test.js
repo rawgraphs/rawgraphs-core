@@ -39,7 +39,6 @@ const group = {
   validTypes: [Number, Date],
   required: true,
   operation: 'group',
-
 }
 
 
@@ -100,28 +99,16 @@ describe('mapper', () => {
 
     console.log(mappedDataDispersion)
 
-
     const mappingFunctionGroupAggregate = mapper(groupAggregateDimensions, groupAggregateMapping )
     const mappedDataGroupAggregate = mappingFunctionGroupAggregate(testData)
 
     console.log(mappedDataGroupAggregate)
-
 
     const mappingFunctionGroup = mapper(groupDimensions, groupMapping )
     const mappedDataGroup = mappingFunctionGroup(testData)
 
     console.log(mappedDataGroup)
 
-
-
-
-
-
-
-
-
-
-    
     expect(1)
       .toBe(1)
 

@@ -56,6 +56,19 @@ function validateMapping(dimensions, mapping) {
 }
 
 /**
+ * validateTypes validator
+ *
+ * @param {array} dimensions
+ * @param {array} types
+ * 
+ */
+
+function validateTypes(dimensions, mapping, types) {
+  // #TODO validate that all dimesions are mapped to correct types
+}
+
+
+/**
  * mapper generator
  *
  * @param {array} dimensions
@@ -63,31 +76,38 @@ function validateMapping(dimensions, mapping) {
  * @return {function} the mapper function
  */
 
-function mapper(dimensions, mapping) {
+function mapper(dimensions, mapping, types) {
   validateDimensions(dimensions);
   validateMapping(dimensions, mapping);
 
+  if(types){
+    validateTypes(dimensions, mapping, types);
+  }
+
   const dimensionsById = keyBy(dimensions, "id");
-
-  const getDimensions = dimensions
-    .filter(d => d.operation === "get")
-    .map(g => g.id);
-  const groupAggregateDimension = get(
-    find(dimensions, d => d.operation === "groupAggregate"),
-    "id"
-  );
-  const groupDimension = get(
-    find(dimensions, d => d.operation === "group"),
-    "id"
-  );
-  const hierarchyDimension = get(
-    find(dimensions, d => d.operation === "hierarchy"),
-    "id"
-  );
-
 
   const mappingValues = mapValues(mapping, v => v.value);
   const mappingConfigs = mapValues(mapping, v => get(v, "config"));
+
+  const getDimensions = dimensions
+    .filter(d => d.operation === "get" && mappingValues[d.id] !== undefined)
+    .map(g => g.id);
+  
+    const groupAggregateDimension = get(
+    find(dimensions, d => d.operation === "groupAggregate" && mappingValues[d.id] !== undefined),
+    "id"
+  );
+  const groupDimension = get(
+    find(dimensions, d => d.operation === "group" && mappingValues[d.id] !== undefined),
+    "id"
+  );
+  const hierarchyDimension = get(
+    find(dimensions, d => d.operation === "hierarchy" && mappingValues[d.id] !== undefined),
+    "id"
+  );
+
+
+  
 
   //#TODO: TAKE IN ACCOUNT GROUP AGGREGATE DUE TO FORMATS
   const formatAggregateDimensions = getDimensions.filter(id =>
@@ -97,6 +117,7 @@ function mapper(dimensions, mapping) {
   
 
   return function(data) {
+
     let tabularData;
 
     //apply grouping operations if any
@@ -157,6 +178,11 @@ function mapper(dimensions, mapping) {
    
     //#TODO
     //apply hierarchy operation if any
+    if (hierarchyDimension) {
+      // ...
+    }
+
+    return tabularData;
 
     if (groupDimension) {
       return groupBy(tabularData, groupDimension);

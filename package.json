@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "d3-dsv": "^1.2.0",
+    "dayjs": "^1.8.22",
     "detect-browser": "^4.8.0",
     "jsdom": "^16.2.0",
     "lodash": "^4.17.15"
