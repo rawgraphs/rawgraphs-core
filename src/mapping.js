@@ -1,4 +1,5 @@
 import { RAWError } from "./utils";
+import { getAggregator } from './expressionRegister'
 import difference from "lodash/difference";
 import pick from "lodash/pick";
 import get from "lodash/get";
@@ -53,6 +54,11 @@ export function validateMapping(dimensions, mapping) {
       `Some required dimensions were not mapped: ${missing.join(", ")}`
     );
   }
+
+  // #TODO: [future] if using registered functions check for existence
+  // #TODO: [future] if using expressions check for existence
+  
+
 }
 
 /**
@@ -66,6 +72,21 @@ export function validateMapping(dimensions, mapping) {
 function validateTypes(dimensions, mapping, types) {
   // #TODO validate that all dimesions are mapped to correct types
 }
+
+
+
+//#TODO function that validates the mapper definition
+/*
+
+  - one "group" operation at maximun
+  - one "groupAggregate" operation at maximun
+  - if "groupAggregate" is present, only named columns can be used to get data
+
+*/
+function validateMapperDefinition(mapperDef){
+  //....
+}
+
 
 
 /**
@@ -106,9 +127,6 @@ function mapper(dimensions, mapping, types) {
     "id"
   );
 
-
-  
-
   //#TODO: TAKE IN ACCOUNT GROUP AGGREGATE DUE TO FORMATS
   const formatAggregateDimensions = getDimensions.filter(id =>
     get(mappingConfigs[id], "format")
@@ -122,6 +140,7 @@ function mapper(dimensions, mapping, types) {
 
     //apply grouping operations if any
     if (groupAggregateDimension) {
+      // #todo: this is complex. allow only strings in this case
       const identifiers = flatten([mappingValues[groupAggregateDimension]])
 
       const dataGroups = groupBy(data, row => {
@@ -132,11 +151,7 @@ function mapper(dimensions, mapping, types) {
       tabularData = Object.keys(dataGroups).map(label => {
         let item = {}
         const group = dataGroups[label]
-        // console.log("identifiers", identifiers)
-        // identifiers.forEach(id => {
-        //   item[id] = get(group[0], id)
-        // })
-
+        
         item[groupAggregateDimension] = JSON.parse(label)
         if(item[groupAggregateDimension].length === 1){
           item[groupAggregateDimension] = item[groupAggregateDimension][0]
@@ -144,7 +159,7 @@ function mapper(dimensions, mapping, types) {
 
         getDimensions.forEach(getter => {
           const getterColumn = mappingValues[getter]
-          
+          //#GET HERE 
           const allData = group.map(d => get(d, getterColumn));
           const getterInAggregator = identifiers.indexOf(getterColumn) !== -1
           const aggregator = get(
@@ -152,10 +167,15 @@ function mapper(dimensions, mapping, types) {
             "aggregation",
             getterInAggregator ? data => data[0] : data => data.length
           );
-          item[getter] = aggregator(allData);
+          const aggregatorFunction = getAggregator(aggregator)
+          item[getter] = aggregatorFunction(allData);
         });
         if(groupDimension){
-          item[groupDimension] = get(group[0], mappingValues[groupDimension])
+          if(Array.isArray(mappingValues[groupDimension])){
+            item[groupDimension] = mappingValues[groupDimension].map(v => get(group[0], v)).join(",")
+          } else {
+            item[groupDimension] = get(group[0], mappingValues[groupDimension])
+          }
         }
 
 
@@ -166,6 +186,7 @@ function mapper(dimensions, mapping, types) {
       tabularData = data.map(row => {
         let item = {}
         getDimensions.forEach(id => {
+          //#GET HERE
           item[id] = get(row, mappingValues[id])
         })
         if(groupDimension && mappingValues[groupDimension]){

@@ -9,7 +9,7 @@ var titanic = fs.readFileSync('data/titanic.tsv', "utf8")
 const x = {
   id: 'x',
   name: 'x',
-  validTypes: [Number, Date],
+  validTypes: ["number", "date"],
   required: true,
   operation: 'get',
 
@@ -18,7 +18,7 @@ const x = {
 const y = {
   id: 'y',
   name: 'y',
-  validTypes: [Number, Date],
+  validTypes: ["number", "date"],
   required: true,
   operation: 'get',
 
@@ -27,7 +27,7 @@ const y = {
 const groupAgg = {
   id: 'groupAgg',
   name: 'groupAgg',
-  validTypes: [Number, Date],
+  validTypes: ["number", "date"],
   required: true,
   operation: 'groupAggregate',
 
@@ -36,7 +36,7 @@ const groupAgg = {
 const group = {
   id: 'group',
   name: 'group',
-  validTypes: [Number, Date],
+  validTypes: ["number", "date"],
   required: true,
   operation: 'group',
 }
@@ -65,7 +65,8 @@ const groupAggregateMapping = {
   x: {
     value: 'Fare',
     config: {
-      aggregation: rows => mean(rows.map(x => +x))
+      // aggregation: rows => mean(rows.map(x => +x))
+      aggregation: 'mean',
     }
   },
   y: {
