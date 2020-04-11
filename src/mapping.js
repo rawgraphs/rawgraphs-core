@@ -169,7 +169,12 @@ function mapper(dimensions, mapping, types) {
           item[id] = get(row, mappingValues[id])
         })
         if(groupDimension && mappingValues[groupDimension]){
-          item[groupDimension] = get(row, mappingValues[groupDimension])
+          if(Array.isArray(mappingValues[groupDimension])){
+            item[groupDimension] = mappingValues[groupDimension].map(v => get(row, v)).join(",")
+          } else {
+            item[groupDimension] = get(row, mappingValues[groupDimension])
+          }
+          
         }
         return item
       });

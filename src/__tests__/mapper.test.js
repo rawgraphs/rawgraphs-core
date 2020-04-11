@@ -85,7 +85,7 @@ const groupMapping = {
     value: 'Fare'
   },
   group: {
-    value: 'Destination'
+    value: ['Gender', 'Destination']
   },
 
 }
