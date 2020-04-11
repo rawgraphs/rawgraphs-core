@@ -11,8 +11,14 @@ const exampleTypes = [
   Date,
   Boolean,
 
+  'string',
+  'date',
+  'number',
+  'boolean',
+
   { type: Date, dateFormat: "DD/MM/YYYY" },
-  { type: Boolean, decode: x => (x.toLowerCase === "true" ? true : false) }
+  { type: 'date', dateFormat: "DD/MM/YYYY" },
+  { type: Boolean, decode: x => (x.toLowerCase() === "true" ? true : false) }
 ];
 
 
@@ -37,7 +43,7 @@ describe('dataset', () => {
 
     const types = inferTypes(exampleData)    
     expect(types).toEqual(
-      {x: Number, y: Number, c: String, d: Date}
+      {x: "number", y: "number", c: "string", d: "date"}
     )
   
   })
@@ -47,7 +53,7 @@ describe('dataset', () => {
 
     let types = inferTypes(exampleDataFormatted)    
     expect(types).toEqual(
-      {x: Number, y: Number, c: String, d: String}
+      {x: "number", y: "number", c: "string", d: "string"}
     )
 
     types.d = {
@@ -58,19 +64,19 @@ describe('dataset', () => {
     const [dataset, dataTypes, errors] = parseDataset(exampleDataFormatted, types)
     const newTypes =  inferTypes(dataset)
     expect(newTypes).toEqual(
-      {x: Number, y: Number, c: String, d: Date}
+      {x: "number", y: "number", c: "string", d: "date"}
     )
 
     expect(dataset).toEqual(exampleData)
 
 
-    // types.d = {
-    //   type: Date,
-    //   dateFormat: 'YYYY-MM-DD HH:mm'
-    // }
+    types.d = {
+      type: Date,
+      dateFormat: 'YYYY-MM-DD HH:mm'
+    }
 
-    // const [dataset, dataTypes, errors] = parseDataset(exampleDataFormatted, types)
-
+    const [datasetWithFormat, dataTypesWithFormat, errorsWithFormat] = parseDataset(exampleDataFormatted, types)
+    expect(datasetWithFormat).toEqual(exampleData)
   
   })
 

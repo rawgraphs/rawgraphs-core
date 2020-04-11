@@ -40,7 +40,7 @@ function validateDimensions(dimensions) {
  * 
  */
 
-function validateMapping(dimensions, mapping) {
+export function validateMapping(dimensions, mapping) {
   // validating that all required dimensions are provided to mapping
   const requiredDimensions = dimensions
     .filter(d => d.required)

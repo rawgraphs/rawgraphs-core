@@ -97,20 +97,20 @@ describe('mapper', () => {
     const mappingFunctionDispersion = mapper(dispersionDimensions, dispersionMapping )
     const mappedDataDispersion = mappingFunctionDispersion(testData)
 
-    console.log(mappedDataDispersion)
+    // console.log(mappedDataDispersion)
 
     const mappingFunctionGroupAggregate = mapper(groupAggregateDimensions, groupAggregateMapping )
     const mappedDataGroupAggregate = mappingFunctionGroupAggregate(testData)
 
-    console.log(mappedDataGroupAggregate)
+    // console.log(mappedDataGroupAggregate)
 
     const mappingFunctionGroup = mapper(groupDimensions, groupMapping )
     const mappedDataGroup = mappingFunctionGroup(testData)
 
-    console.log(mappedDataGroup)
+    // console.log(mappedDataGroup)
 
-    expect(1)
-      .toBe(1)
+    // expect(1)
+    //   .toBe(1)
 
 
   })

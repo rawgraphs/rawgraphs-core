@@ -1,7 +1,5 @@
 import { isBrowser, getDocument } from './utils'
-import { mapper } from './mapping'
-
-
+import mapper from './mapping'
 
 
 const defaultVisualOptions = {
@@ -12,6 +10,7 @@ const defaultVisualOptions = {
 
 
 class RAWBase {
+
   constructor(visualModel, data, mapping, visualOptions){
     this._visualModel = visualModel
     this._data = data
@@ -25,7 +24,6 @@ class RAWBase {
     return new RAWBase(this._visualModel, _data, this._mapping, this._visualOptions)
   }
 
-
   getContainer(){
     const document = getDocument()
     const container = document.createElement('svg')
@@ -37,7 +35,6 @@ class RAWBase {
     container.setAttribute('height', options.height)
     container.style['background-color'] = options.background
     return container
-
   }
 
   mapData(){

@@ -2,23 +2,55 @@ import isNumber from "lodash/isNumber";
 import isBoolean from "lodash/isBoolean";
 import isDate from "lodash/isDate";
 import isPlainObject from "lodash/isPlainObject";
+import isString from "lodash/isString";
 import get from "lodash/get";
 import isFunction from "lodash/isFunction";
 import maxBy from "lodash/maxBy";
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 
-dayjs.extend(customParseFormat)
+dayjs.extend(customParseFormat);
+
+
+function getType(dataType) {
+  if (isPlainObject(dataType)) {
+    return getType(dataType.type)
+  }
+
+  if (isString(dataType)) {
+    switch (dataType.toLowerCase()) {
+      
+      case 'string':
+        return String
+      case 'number':
+        return Number
+      case 'boolean':
+        return Boolean
+      case 'date':
+        return Date
+      
+        default:
+        return String
+    }
+  }
+
+  return dataType
+
+}
 
 
 function getFormatter(dataType) {
+  if (!isPlainObject(dataType)) {
+    return undefined
+  }
+
   if (isFunction(dataType.decode)) {
     return dataType.decode;
   }
 
-  if (dataType.type === Date) {
-    if(dataType.dateFormat instanceof String){
-      return value => dayjs(value, dataType.dateFormat).toDate()
+  if (getType(dataType) === Date) {
+    if (isString(dataType.dateFormat)) {
+      return value => dayjs(value, dataType.dateFormat).toDate();
     }
   }
 
@@ -28,12 +60,20 @@ function getFormatter(dataType) {
   return undefined;
 }
 
-function getValueType(value) {
-  if (isNumber(value)) {
+function getValueType(value, strict) {
+
+  let jsonValue = value
+  if(!strict){
+    try {
+      jsonValue = JSON.parse(value)
+    } catch(err){} 
+  }
+
+  if (isNumber(jsonValue)) {
     return Number;
   }
 
-  if (isBoolean(value)) {
+  if (isBoolean(jsonValue)) {
     return Boolean;
   }
 
@@ -44,19 +84,37 @@ function getValueType(value) {
   return String;
 }
 
-export function inferTypes(data) {
+function castTypeToString(type){
+  return type.name ? type.name.toLowerCase() : type
+}
+
+function castTypesToString(types){
+  return Object.keys(types).reduce((acc, item) => {
+    acc[item] = castTypeToString(types[item])
+    return acc
+  }, {})
+
+}
+
+
+export function inferTypes(data, strict) {
   let candidateTypes = {};
+  if(!Array.isArray(data)){
+    return candidateTypes
+  }
+
   data.forEach(datum => {
     Object.keys(datum).forEach(key => {
       if (candidateTypes[key] === undefined) {
         candidateTypes[key] = [];
       }
-      candidateTypes[key].push(getValueType(datum[key]));
+      const inferredType = getValueType(datum[key], strict)
+      candidateTypes[key].push(castTypeToString(inferredType));
     });
   });
 
   let inferredTypes = {};
-  Object.keys(candidateTypes).forEach(k => {
+  Object.keys(candidateTypes).map(k => {
     let counts = {};
     candidateTypes[k].forEach(type => {
       if (!counts[type]) {
@@ -71,7 +129,7 @@ export function inferTypes(data) {
     );
     inferredTypes[k] = counts[mostFrequentTypeKey].value;
   });
-  return inferredTypes;
+  return inferredTypes
 }
 
 function basicGetter(rowValue, dataType) {
@@ -87,21 +145,14 @@ function rowParser(types, onError) {
 
   Object.keys(types).forEach(k => {
     let dataType = types[k];
-    if (isPlainObject(dataType)) {
-      const type = dataType.type;
-      const formatter = getFormatter(dataType);
-
-      propGetters[k] = row => {
-        const rowValue = get(row, k);
-        const formattedValue = formatter ? formatter(rowValue) : rowValue;
-        return basicGetter(formattedValue, formatter ? x => x : dataType.type);
-      };
-    } else {
-      propGetters[k] = row => {
-        const rowValue = get(row, k);
-        return basicGetter(rowValue, dataType);
-      };
-    }
+    const type = getType(dataType);
+    const formatter = getFormatter(dataType);
+    propGetters[k] = row => {
+      const rowValue = get(row, k);
+      const formattedValue = formatter ? formatter(rowValue) : rowValue;
+      return basicGetter(formattedValue, formatter ? x => x : type);
+    };
+    
   });
 
   return function(row) {
