@@ -8,8 +8,11 @@ import isFunction from "lodash/isFunction";
 import maxBy from "lodash/maxBy";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import utc from 'dayjs/plugin/utc'
 
 dayjs.extend(customParseFormat);
+
+dayjs.extend(utc)
 
 
 function getType(dataType) {
@@ -50,7 +53,7 @@ function getFormatter(dataType) {
 
   if (getType(dataType) === Date) {
     if (isString(dataType.dateFormat)) {
-      return value => dayjs(value, dataType.dateFormat).toDate();
+      return value => dayjs(value, dataType.dateFormat).utc().toDate();
     }
   }
 

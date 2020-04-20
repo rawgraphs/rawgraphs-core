@@ -172,7 +172,7 @@ function mapper(dimensions, mapping, types) {
         });
         if(groupDimension){
           if(Array.isArray(mappingValues[groupDimension])){
-            item[groupDimension] = mappingValues[groupDimension].map(v => get(group[0], v)).join(",")
+            item[groupDimension] = mappingValues[groupDimension].map(v => get(group[0], v))//.join(",")
           } else {
             item[groupDimension] = get(group[0], mappingValues[groupDimension])
           }
@@ -191,7 +191,7 @@ function mapper(dimensions, mapping, types) {
         })
         if(groupDimension && mappingValues[groupDimension]){
           if(Array.isArray(mappingValues[groupDimension])){
-            item[groupDimension] = mappingValues[groupDimension].map(v => get(row, v)).join(",")
+            item[groupDimension] = mappingValues[groupDimension].map(v => get(row, v))//.join(",")
           } else {
             item[groupDimension] = get(row, mappingValues[groupDimension])
           }
