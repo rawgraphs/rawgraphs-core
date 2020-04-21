@@ -33,6 +33,7 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "d3-array": "^2.4.0",
     "d3-dsv": "^1.2.0",
     "dayjs": "^1.8.22",
     "detect-browser": "^4.8.0",
