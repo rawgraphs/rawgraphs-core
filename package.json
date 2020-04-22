@@ -1,6 +1,6 @@
 {
   "name": "raw-lib",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",

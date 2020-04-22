@@ -4,6 +4,7 @@ import difference from "lodash/difference";
 import pick from "lodash/pick";
 import get from "lodash/get";
 import groupBy from "lodash/groupBy";
+import groupByAsMap from "./groupBy";
 import mapValues from "lodash/mapValues";
 import flatten from "lodash/flatten";
 import keyBy from "lodash/keyBy";
@@ -17,7 +18,7 @@ import { group, groups, rollup, rollups } from "d3-array";
  * @param {array} dimensions
  */
 
-function validateDimensions(dimensions) {
+export function validateMapperDefinition(dimensions) {
   if (!Array.isArray(dimensions)) {
     throw new RAWError("dimesions must be an array");
   }
@@ -27,14 +28,27 @@ function validateDimensions(dimensions) {
   }
 
   const getters = dimensions.filter((d) => d.operation === "get");
-  let rollupDimension = dimensions.filter((d) => d.operation === "rollup" || d.operation === "rollups" );
-  if (rollupDimension.length > 1) {
-    throw new RAWError("only one rollup dimension is allowed");
+  const grouperTypes = ["rollup", "rollups"];
+  let grouperDimension = dimensions.filter(
+    (d) => grouperTypes.indexOf(d.operation) !== -1
+  );
+  if (grouperDimension.length > 1) {
+    throw new RAWError(
+      `only one operation among ${grouperTypes.join(",")} is allowed`
+    );
   }
 
-  if (getters.length === 0 && !rollupDimension.length) {
+  if (getters.length === 0 && !grouperDimension.length) {
     throw new RAWError(
-      "at least one get operation must be present in a dimension set, or a rollup(s) operation must be specified"
+      `at least one get operation must be present in a dimension set, or an operation among ${grouperTypes.join(
+        ","
+      )} must be specified`
+    );
+  }
+
+  if (getters.length > 0 && grouperDimension.length) {
+    throw new RAWError(
+      `'${grouperDimension[0].operation}' operation was specified, you cannot define other get operations`
     );
   }
 }
@@ -51,7 +65,7 @@ export function validateMapping(dimensions, mapping) {
   // validating that all required dimensions are provided to mapping
   const requiredDimensions = dimensions
     .filter((d) => d.required)
-    .map((d) => d.name)
+    .map((d) => d.id)
     .sort();
   const providedDimensions = Object.keys(mapping)
     .filter((k) => get(mapping[k], "value"))
@@ -59,7 +73,9 @@ export function validateMapping(dimensions, mapping) {
   const missing = difference(requiredDimensions, providedDimensions);
   if (missing.length > 0) {
     throw new RAWError(
-      `Some required dimensions were not mapped: ${missing.join(", ")}`
+      `Some required dimensions were not mapped. Missing ids are: ${missing.join(
+        ", "
+      )}`
     );
   }
 
@@ -79,18 +95,6 @@ function validateTypes(dimensions, mapping, types) {
   // #TODO validate that all dimesions are mapped to correct types
 }
 
-//#TODO function that validates the mapper definition
-/*
-
-  - one "group" operation at maximun
-  - one "groupAggregate" operation at maximun
-  - if "groupAggregate" is present, only named columns can be used to get data
-
-*/
-function validateMapperDefinition(mapperDef) {
-  //....
-}
-
 /**
  * mapper generator
  *
@@ -100,7 +104,7 @@ function validateMapperDefinition(mapperDef) {
  */
 
 function mapper(dimensions, mapping, types) {
-  validateDimensions(dimensions);
+  validateMapperDefinition(dimensions);
   validateMapping(dimensions, mapping);
 
   if (types) {
@@ -163,7 +167,6 @@ function mapper(dimensions, mapping, types) {
     "id"
   );
 
-
   //#TODO ... is this still needed?
   const hierarchyDimension = get(
     find(
@@ -196,8 +199,7 @@ function mapper(dimensions, mapping, types) {
     grouperDimension = candidateGroupers[0];
   }
 
-  const rollupGrouperDimension = rollupDimension || rollupsDimension
-        
+  const rollupGrouperDimension = rollupDimension || rollupsDimension;
 
   return function (data) {
     let tabularData;
@@ -269,7 +271,10 @@ function mapper(dimensions, mapping, types) {
             mappingConfigs,
             `[${rollupGrouperDimension}].leafAggregation[1]`
           );
-          item[rollupConfigAggregationTarget] = get(row, rollupConfigAggregationTarget)
+          item[rollupConfigAggregationTarget] = get(
+            row,
+            rollupConfigAggregationTarget
+          );
         }
 
         return item;
@@ -284,7 +289,7 @@ function mapper(dimensions, mapping, types) {
 
     if (grouperDimension) {
       if (groupByDimension) {
-        return groupBy(tabularData, groupByDimension);
+        return groupByAsMap(tabularData, groupByDimension);
       }
 
       const grouperDims = Array.isArray(mappingValues[grouperDimension])
@@ -306,25 +311,28 @@ function mapper(dimensions, mapping, types) {
           mappingConfigs,
           `[${rollupGrouperDimension}].leafAggregation`
         );
-        
-        
-        let rollupAggregation = v => v.length
-        if(rollupConfigAggregation){
-          if(!Array.isArray(rollupConfigAggregation) || rollupConfigAggregation.length !== 2){
-            throw new RAWError("Rollup aggregation should be an array with aggregation function and target column")
+
+        let rollupAggregation = (v) => v.length;
+        if (rollupConfigAggregation) {
+          if (
+            !Array.isArray(rollupConfigAggregation) ||
+            rollupConfigAggregation.length !== 2
+          ) {
+            throw new RAWError(
+              "Rollup aggregation should be an array with aggregation function and target column"
+            );
           }
-          const [aggName, targetColumn] = rollupConfigAggregation
+          const [aggName, targetColumn] = rollupConfigAggregation;
           const aggregatorFunction = getAggregator(aggName);
-          const leafGetter = item => get(item, targetColumn)
+          const leafGetter = (item) => get(item, targetColumn);
           const wrappedAggregatorFunction = (items) => {
-            return aggregatorFunction(items.map(leafGetter));}
+            return aggregatorFunction(items.map(leafGetter));
+          };
 
-          rollupAggregation = wrappedAggregatorFunction
-
+          rollupAggregation = wrappedAggregatorFunction;
         }
-        
-        
-        const finalRollupFunction = rollupDimension ? rollup: rollups
+
+        const finalRollupFunction = rollupDimension ? rollup : rollups;
         return finalRollupFunction(
           tabularData,
           rollupAggregation,
