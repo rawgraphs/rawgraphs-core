@@ -3,6 +3,7 @@ import { getAggregator } from "./expressionRegister";
 import difference from "lodash/difference";
 import pick from "lodash/pick";
 import get from "lodash/get";
+import set from "lodash/set";
 import groupBy from "lodash/groupBy";
 import groupByAsMap from "./groupBy";
 import mapValues from "lodash/mapValues";
@@ -95,6 +96,52 @@ function validateTypes(dimensions, mapping, types) {
   // #TODO validate that all dimesions are mapped to correct types
 }
 
+function hydrateExternal(dimensions, mapping) {
+  let m = mapValues(mapping, (v) => ({
+    ...v,
+    value: Array.isArray(v.value) ? v.value : [v.value],
+  }));
+  //mapping slots
+  dimensions.forEach((dimension) => {
+    const slots = get(dimension, "external", {});
+    Object.keys(slots).map((key) => {
+      const slotConfig = slots[key];
+
+      let targets = get(slotConfig, "target");
+      let sources = get(slotConfig, "source", "value");
+
+      // #TODO: THIS SHOULD GO TO VALIDATION...
+      const isTargetArray = Array.isArray(targets);
+      const isSourceArray = Array.isArray(sources);
+      if (isTargetArray != isSourceArray) {
+        throw new RAWError(
+          "in external slots, target and source must be both arrays or both scalars"
+        );
+      }
+      if (isTargetArray && isSourceArray && targets.length !== sources.length) {
+        throw new RAWError(
+          `in external slots, target and source must have the same length (${targets.length}, ${sources.length})`
+        );
+      }
+      if (!targets) {
+        throw new RAWError("in external slots, target must be specified");
+      }
+
+      if (!isTargetArray) {
+        targets = [targets];
+        sources = [sources];
+      }
+      targets.map((target, i) => {
+        const source = sources[i];
+        const value = get(mapping, `[${key}][${source}]`);
+        set(m[dimension.id], target, value);
+      });
+    });
+  });
+
+  return m;
+}
+
 /**
  * mapper generator
  *
@@ -103,8 +150,11 @@ function validateTypes(dimensions, mapping, types) {
  * @return {function} the mapper function
  */
 
-function mapper(dimensions, mapping, types) {
+// #TODO: REFACTOR
+function mapper(dimensions, _mapping, types) {
   validateMapperDefinition(dimensions);
+
+  const mapping = hydrateExternal(dimensions, _mapping);
   validateMapping(dimensions, mapping);
 
   if (types) {

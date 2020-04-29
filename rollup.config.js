@@ -12,7 +12,7 @@ const vendors = []
     // 'rocketjump-core/utils',
   )
 
-export default ['esm', 'cjs'].map(format => ({
+export default ['esm', 'cjs', 'amd'].map(format => ({
   input: {
     'index': 'src/index.js',
     // 'logger': 'src/logger/index.js',
