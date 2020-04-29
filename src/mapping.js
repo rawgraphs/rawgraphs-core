@@ -1,5 +1,5 @@
 import { RAWError } from "./utils";
-import { getAggregator } from "./expressionRegister";
+import { getAggregator, getAggregatorArray } from "./expressionRegister";
 import difference from "lodash/difference";
 import pick from "lodash/pick";
 import get from "lodash/get";
@@ -142,6 +142,19 @@ function hydrateExternal(dimensions, mapping) {
   return m;
 }
 
+
+function arrayGetter(names){
+  if(Array.isArray(names)){
+    return names.length === 1 
+    ? item => get(item, names[0])
+    : item => names.map(name => get(item, name))
+  }
+  return item => get(item, names)
+}
+
+
+
+
 /**
  * mapper generator
  *
@@ -276,14 +289,16 @@ function mapper(dimensions, _mapping, types) {
         getDimensions.forEach((getter) => {
           const getterColumn = mappingValues[getter];
           //#GET HERE
-          const allData = group.map((d) => get(d, getterColumn));
+          const getterFunction = arrayGetter(getterColumn)
+          const allData = group.map((d) => getterFunction(d));
           const getterInAggregator = identifiers.indexOf(getterColumn) !== -1;
           const aggregator = get(
             mappingConfigs[getter],
             "aggregation",
             getterInAggregator ? (data) => data[0] : (data) => data.length
           );
-          const aggregatorFunction = getAggregator(aggregator);
+          const aggregatorFunction = Array.isArray(getterColumn) && getterColumn.length > 1  ? getAggregatorArray(aggregator, getterColumn.length) : getAggregator(aggregator);
+          console.log("mapss", getterColumn, allData)
           item[getter] = aggregatorFunction(allData);
         });
         if (groupDimension || groupsDimension) {
@@ -303,7 +318,8 @@ function mapper(dimensions, _mapping, types) {
         let item = {};
         getDimensions.forEach((id) => {
           //#GET HERE
-          item[id] = get(row, mappingValues[id]);
+          const getterFunction = arrayGetter(mappingValues[id])
+          item[id] = getterFunction(row);
         });
         if (grouperDimension && mappingValues[grouperDimension]) {
           if (Array.isArray(mappingValues[grouperDimension])) {
@@ -315,21 +331,22 @@ function mapper(dimensions, _mapping, types) {
           }
         }
 
-        //getter for rollup aggregation
+        // getter for rollup aggregation
+        // notice that the name __leaf is used only internally.
         if (rollupGrouperDimension && mappingConfigs[rollupGrouperDimension]) {
           const rollupConfigAggregationTarget = get(
             mappingConfigs,
             `[${rollupGrouperDimension}].leafAggregation[1]`
           );
-          item[rollupConfigAggregationTarget] = get(
-            row,
-            rollupConfigAggregationTarget
-          );
+          const getterFunction = arrayGetter(rollupConfigAggregationTarget)
+          item["__leaf"] = getterFunction(row);
         }
 
         return item;
       });
     }
+
+    console.log("tabdata", tabularData)
 
     //#TODO
     //apply hierarchy operation if any
@@ -345,7 +362,8 @@ function mapper(dimensions, _mapping, types) {
       const grouperDims = Array.isArray(mappingValues[grouperDimension])
         ? mappingValues[grouperDimension]
         : [mappingValues[grouperDimension]];
-      const grouperGetters = range(grouperDims.length).map((idx) => (item) =>
+      
+        const grouperGetters = range(grouperDims.length).map((idx) => (item) =>
         item[grouperDimension][idx]
       );
 
@@ -373,8 +391,8 @@ function mapper(dimensions, _mapping, types) {
             );
           }
           const [aggName, targetColumn] = rollupConfigAggregation;
-          const aggregatorFunction = getAggregator(aggName);
-          const leafGetter = (item) => get(item, targetColumn);
+          const aggregatorFunction =  Array.isArray(targetColumn) && targetColumn.length > 1  ?  getAggregatorArray(aggName, targetColumn.length) :  getAggregator(aggName);
+          const leafGetter = arrayGetter("__leaf")
           const wrappedAggregatorFunction = (items) => {
             return aggregatorFunction(items.map(leafGetter));
           };

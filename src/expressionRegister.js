@@ -8,6 +8,8 @@ import last from 'lodash/last'
 import isFunction from 'lodash/isFunction'
 import isString from 'lodash/isString'
 import uniq from 'lodash/uniq'
+import range from "lodash/range";
+import get from "lodash/get";
 
 const aggregationsRegister = {}
 
@@ -20,20 +22,38 @@ export function unregisterAggregation(name){
   
 }
 
-export function getAggregator(aggregator){
-  if(isFunction(aggregator)){
-    return aggregator
+export function getAggregator(aggregatorExpression){
+  if(isFunction(aggregatorExpression)){
+    return aggregatorExpression
   }
 
-  if(isString(aggregator)){
-    if(aggregationsRegister[aggregator]){
-      return aggregationsRegister[aggregator]
+  if(isString(aggregatorExpression)){
+    if(aggregationsRegister[aggregatorExpression]){
+      return aggregationsRegister[aggregatorExpression]
     } else {
-      throw new RAWError(`Aggregator "${aggregator}" is is not registered in RAW.`)
+      throw new RAWError(`Aggregator "${aggregatorExpression}" is is not registered in RAW.`)
     }
   }
 
 }
+
+
+export function getAggregatorArray(aggregator, length){
+  
+  return function(items){
+    return range(length).map(idx => {
+      const aggregatorExpression = Array.isArray(aggregator) ? get(aggregator, idx, aggregator[0]) : aggregator
+      const aggr = getAggregator(aggregatorExpression)
+      return aggr(items.map(i => i[idx]))
+    })
+  }
+
+}
+
+
+
+
+
 
 // Aggregators available in RAW
 // general purpose
@@ -52,6 +72,8 @@ registerAggregation("sum", sum)
 const commaSeparated = items => items.join(",")
 const tabSeparated = items => items.join("\t")
 const newLineSeparated = items => items.join("\n")
+const itemsList = items => items
+const itemsUniq = items => uniq(items)
 
 registerAggregation("csv", commaSeparated)
 registerAggregation("csvDistinct", items => commaSeparated(uniq(items)))
@@ -60,3 +82,5 @@ registerAggregation("tsv", tabSeparated)
 registerAggregation("tsvDistinct", items => tabSeparated(uniq(items)))
 registerAggregation("tabSeparated", tabSeparated)
 registerAggregation("newLineSeparated", newLineSeparated)
+registerAggregation("list", itemsList)
+registerAggregation("distinct", itemsUniq)
