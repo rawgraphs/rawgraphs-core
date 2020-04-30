@@ -4,6 +4,7 @@ import difference from "lodash/difference";
 import pick from "lodash/pick";
 import get from "lodash/get";
 import set from "lodash/set";
+import setWith from "lodash/setWith";
 import groupBy from "lodash/groupBy";
 import groupByAsMap from "./groupBy";
 import mapValues from "lodash/mapValues";
@@ -62,16 +63,24 @@ export function validateMapperDefinition(dimensions) {
  *
  */
 
-export function validateMapping(dimensions, mapping) {
+export function validateMapping(dimensions, _mapping) {
   // validating that all required dimensions are provided to mapping
+  console.log("validateMapping", mapping);
+
+  const mapping = hydrateProxies(dimensions, _mapping);
+
   const requiredDimensions = dimensions
     .filter((d) => d.required)
     .map((d) => d.id)
     .sort();
+
   const providedDimensions = Object.keys(mapping)
     .filter((k) => get(mapping[k], "value"))
     .sort();
+
+  console.log("c", requiredDimensions, providedDimensions);
   const missing = difference(requiredDimensions, providedDimensions);
+
   if (missing.length > 0) {
     throw new RAWError(
       `Some required dimensions were not mapped. Missing ids are: ${missing.join(
@@ -82,6 +91,8 @@ export function validateMapping(dimensions, mapping) {
 
   // #TODO: [future] if using registered functions check for existence
   // #TODO: [future] if using expressions check for existence
+
+  return mapping;
 }
 
 /**
@@ -101,7 +112,6 @@ function hydrateExternal(dimensions, mapping) {
     ...v,
     value: Array.isArray(v.value) ? v.value : [v.value],
   }));
-  //mapping slots
   dimensions.forEach((dimension) => {
     const slots = get(dimension, "external", {});
     Object.keys(slots).map((key) => {
@@ -142,18 +152,48 @@ function hydrateExternal(dimensions, mapping) {
   return m;
 }
 
+function hydrateProxies(dimensions, mapping) {
+  let m = mapValues(mapping, (v) => ({
+    ...v,
+    value: Array.isArray(v.value) ? v.value : [v.value],
+  }));
 
-function arrayGetter(names){
-  if(Array.isArray(names)){
-    return names.length === 1 
-    ? item => get(item, names[0])
-    : item => names.map(name => get(item, name))
-  }
-  return item => get(item, names)
+  const proxiesDimensions = dimensions.filter(
+    (dim) => dim.operation === "proxy"
+  );
+
+  proxiesDimensions.forEach((dimension) => {
+    const targets = get(dimension, "targets");
+    if (!targets) {
+      return;
+    }
+
+    const targetDimensions = Object.keys(targets);
+
+    targetDimensions.forEach((targetDimensionId) => {
+      const targetsMap = targets[targetDimensionId];
+      //should be an obj with keys as target expressions and values as source expressions
+      Object.keys(targetsMap).forEach((targetExpression) => {
+        const sourceExpression = targetsMap[targetExpression];
+        const value = get(mapping, `[${dimension.id}][${sourceExpression}]`);
+        if (!m[targetDimensionId]) {
+          m[targetDimensionId] = {};
+        }
+        set(m[targetDimensionId], targetExpression, value);
+      });
+    });
+  });
+  return m;
 }
 
-
-
+function arrayGetter(names) {
+  if (Array.isArray(names)) {
+    return names.length === 1
+      ? (item) => get(item, names[0])
+      : (item) => names.map((name) => get(item, name));
+  }
+  return (item) => get(item, names);
+}
 
 /**
  * mapper generator
@@ -167,8 +207,11 @@ function arrayGetter(names){
 function mapper(dimensions, _mapping, types) {
   validateMapperDefinition(dimensions);
 
-  const mapping = hydrateExternal(dimensions, _mapping);
-  validateMapping(dimensions, mapping);
+  // const mapping = hydrateProxies(dimensions, _mapping);
+
+  // console.log("hydrated", mapping, _mapping)
+
+  const mapping = validateMapping(dimensions, _mapping);
 
   if (types) {
     validateTypes(dimensions, mapping, types);
@@ -289,7 +332,7 @@ function mapper(dimensions, _mapping, types) {
         getDimensions.forEach((getter) => {
           const getterColumn = mappingValues[getter];
           //#GET HERE
-          const getterFunction = arrayGetter(getterColumn)
+          const getterFunction = arrayGetter(getterColumn);
           const allData = group.map((d) => getterFunction(d));
           const getterInAggregator = identifiers.indexOf(getterColumn) !== -1;
           const aggregator = get(
@@ -297,8 +340,10 @@ function mapper(dimensions, _mapping, types) {
             "aggregation",
             getterInAggregator ? (data) => data[0] : (data) => data.length
           );
-          const aggregatorFunction = Array.isArray(getterColumn) && getterColumn.length > 1  ? getAggregatorArray(aggregator, getterColumn.length) : getAggregator(aggregator);
-          console.log("mapss", getterColumn, allData)
+          const aggregatorFunction =
+            Array.isArray(getterColumn) && getterColumn.length > 1
+              ? getAggregatorArray(aggregator, getterColumn.length)
+              : getAggregator(aggregator);
           item[getter] = aggregatorFunction(allData);
         });
         if (groupDimension || groupsDimension) {
@@ -318,7 +363,7 @@ function mapper(dimensions, _mapping, types) {
         let item = {};
         getDimensions.forEach((id) => {
           //#GET HERE
-          const getterFunction = arrayGetter(mappingValues[id])
+          const getterFunction = arrayGetter(mappingValues[id]);
           item[id] = getterFunction(row);
         });
         if (grouperDimension && mappingValues[grouperDimension]) {
@@ -338,15 +383,13 @@ function mapper(dimensions, _mapping, types) {
             mappingConfigs,
             `[${rollupGrouperDimension}].leafAggregation[1]`
           );
-          const getterFunction = arrayGetter(rollupConfigAggregationTarget)
+          const getterFunction = arrayGetter(rollupConfigAggregationTarget);
           item["__leaf"] = getterFunction(row);
         }
 
         return item;
       });
     }
-
-    console.log("tabdata", tabularData)
 
     //#TODO
     //apply hierarchy operation if any
@@ -362,8 +405,8 @@ function mapper(dimensions, _mapping, types) {
       const grouperDims = Array.isArray(mappingValues[grouperDimension])
         ? mappingValues[grouperDimension]
         : [mappingValues[grouperDimension]];
-      
-        const grouperGetters = range(grouperDims.length).map((idx) => (item) =>
+
+      const grouperGetters = range(grouperDims.length).map((idx) => (item) =>
         item[grouperDimension][idx]
       );
 
@@ -391,8 +434,11 @@ function mapper(dimensions, _mapping, types) {
             );
           }
           const [aggName, targetColumn] = rollupConfigAggregation;
-          const aggregatorFunction =  Array.isArray(targetColumn) && targetColumn.length > 1  ?  getAggregatorArray(aggName, targetColumn.length) :  getAggregator(aggName);
-          const leafGetter = arrayGetter("__leaf")
+          const aggregatorFunction =
+            Array.isArray(targetColumn) && targetColumn.length > 1
+              ? getAggregatorArray(aggName, targetColumn.length)
+              : getAggregator(aggName);
+          const leafGetter = arrayGetter("__leaf");
           const wrappedAggregatorFunction = (items) => {
             return aggregatorFunction(items.map(leafGetter));
           };
