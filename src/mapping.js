@@ -65,8 +65,7 @@ export function validateMapperDefinition(dimensions) {
 
 export function validateMapping(dimensions, _mapping) {
   // validating that all required dimensions are provided to mapping
-  console.log("validateMapping", mapping);
-
+  
   const mapping = hydrateProxies(dimensions, _mapping);
 
   const requiredDimensions = dimensions
@@ -78,7 +77,6 @@ export function validateMapping(dimensions, _mapping) {
     .filter((k) => get(mapping[k], "value"))
     .sort();
 
-  console.log("c", requiredDimensions, providedDimensions);
   const missing = difference(requiredDimensions, providedDimensions);
 
   if (missing.length > 0) {
@@ -207,12 +205,12 @@ function arrayGetter(names) {
 function mapper(dimensions, _mapping, types) {
   validateMapperDefinition(dimensions);
 
-  // const mapping = hydrateProxies(dimensions, _mapping);
+  // let mapping = hydrateProxies(dimensions, _mapping);
 
   // console.log("hydrated", mapping, _mapping)
 
   const mapping = validateMapping(dimensions, _mapping);
-
+  
   if (types) {
     validateTypes(dimensions, mapping, types);
   }
