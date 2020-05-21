@@ -50,11 +50,6 @@ export function getAggregatorArray(aggregator, length){
 
 }
 
-
-
-
-
-
 // Aggregators available in RAW
 // general purpose
 registerAggregation("last", last)

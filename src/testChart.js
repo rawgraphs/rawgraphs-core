@@ -1,47 +1,109 @@
-import {select} from 'd3-selection'
-
+import { select } from "d3-selection";
+import { scaleLinear } from "d3-scale";
+import { extent } from "d3-array";
+import { axisBottom, axisLeft } from "d3-axis";
 
 const testChart = {
 
-  getDimensions : function(){
-    return {
+  dimensions: [
+    {
+      id: "x",
+      name: "x",
+      operation: "get",
+    },
+    {
+      id: "y",
+      name: "y",
+      operation: "get",
+    },
+  ],
 
-      x : {
-        types: [Number, Date],
-        required: true,
-      },
+  
+  render: function (node, data, visualOptions, mapping, originalData) {
+  
+    const { width, height } = visualOptions;
+    const margin = {
+      top: 25,
+      right: 20,
+      bottom: 35,
+      left: 40,
+    };
 
-      y : {
-        types: [Number, Date],
-        required: true,
-      },
+    const x = scaleLinear()
+      .domain(extent(data, (d) => d.x))
+      .nice()
+      .range([margin.left, width - margin.right]);
 
-      size: {
-        types: [Number],
-      },
+    const y = scaleLinear()
+      .domain(extent(data, (d) => d.y))
+      .nice()
+      .range([height - margin.bottom, margin.top]);
 
-      color: {
-        types: [Number, Date, String],
-      },
+    const xAxis = (g) =>
+      g
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(axisBottom(x).ticks(width / 80))
+        .call((g) => g.select(".domain").remove())
+        .call((g) =>
+          g
+            .append("text")
+            .attr("x", width)
+            .attr("y", margin.bottom - 4)
+            .attr("fill", "red")
+            .attr("text-anchor", "end")
+            .text(data.x)
+        );
 
-      label: {
-        types: [Number, Date, String],
-      }
+    const yAxis = (g) =>
+      g
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(axisLeft(y))
+        .call((g) => g.select(".domain").remove())
+        .call((g) =>
+          g
+            .append("text")
+            .attr("x", -margin.left)
+            .attr("y", 10)
+            .attr("fill", "red")
+            .attr("text-anchor", "start")
+            .text(data.y)
+        );
 
-
-    }
-
-
-  },
-
-  render: function(node, data, options) {
-
-    const selection = select(node)
-    selection.append('g')
+    const svg = select(node);
     
-  }
+    svg.append("g").call(xAxis);
 
+    svg.append("g").call(yAxis);
 
-}
+    // svg.append("g")
+    //     .call(grid);
 
-export default testChart
+    svg
+      .append("g")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr("fill", "none")
+      .selectAll("circle")
+      .data(data)
+      .join("circle")
+      .attr("cx", (d) => x(d.x))
+      .attr("cy", (d) => y(d.y))
+      .attr("r", 3);
+
+    svg
+      .append("g")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 10)
+      .selectAll("text")
+      .data(data)
+      .join("text")
+      .attr("dy", "0.35em")
+      .attr("x", (d) => x(d.x) + 7)
+      .attr("y", (d) => y(d.y))
+      .text((d) => d.y);
+
+   
+  },
+};
+
+export default testChart;

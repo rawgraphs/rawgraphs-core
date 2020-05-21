@@ -1,3 +1,8 @@
+/**
+ * dataset module.
+ * @module dataset
+ */
+
 import isNumber from "lodash/isNumber";
 import isBoolean from "lodash/isBoolean";
 import isDate from "lodash/isDate";
@@ -8,43 +13,39 @@ import isFunction from "lodash/isFunction";
 import maxBy from "lodash/maxBy";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import utc from 'dayjs/plugin/utc'
+import utc from "dayjs/plugin/utc";
 
 dayjs.extend(customParseFormat);
 
-dayjs.extend(utc)
-
+dayjs.extend(utc);
 
 function getType(dataType) {
   if (isPlainObject(dataType)) {
-    return getType(dataType.type)
+    return getType(dataType.type);
   }
 
   if (isString(dataType)) {
     switch (dataType.toLowerCase()) {
-      
-      case 'string':
-        return String
-      case 'number':
-        return Number
-      case 'boolean':
-        return Boolean
-      case 'date':
-        return Date
-      
-        default:
-        return String
+      case "string":
+        return String;
+      case "number":
+        return Number;
+      case "boolean":
+        return Boolean;
+      case "date":
+        return Date;
+
+      default:
+        return String;
     }
   }
 
-  return dataType
-
+  return dataType;
 }
-
 
 function getFormatter(dataType) {
   if (!isPlainObject(dataType)) {
-    return undefined
+    return undefined;
   }
 
   if (isFunction(dataType.decode)) {
@@ -53,7 +54,7 @@ function getFormatter(dataType) {
 
   if (getType(dataType) === Date) {
     if (isString(dataType.dateFormat)) {
-      return value => dayjs(value, dataType.dateFormat).utc().toDate();
+      return (value) => dayjs(value, dataType.dateFormat).utc().toDate();
     }
   }
 
@@ -64,12 +65,11 @@ function getFormatter(dataType) {
 }
 
 function getValueType(value, strict) {
-
-  let jsonValue = value
-  if(!strict){
+  let jsonValue = value;
+  if (!strict) {
     try {
-      jsonValue = JSON.parse(value)
-    } catch(err){} 
+      jsonValue = JSON.parse(value);
+    } catch (err) {}
   }
 
   if (isNumber(jsonValue)) {
@@ -87,39 +87,44 @@ function getValueType(value, strict) {
   return String;
 }
 
-function castTypeToString(type){
-  return type.name ? type.name.toLowerCase() : type
+function castTypeToString(type) {
+  return type.name ? type.name.toLowerCase() : type;
 }
 
-function castTypesToString(types){
+function castTypesToString(types) {
   return Object.keys(types).reduce((acc, item) => {
-    acc[item] = castTypeToString(types[item])
-    return acc
-  }, {})
-
+    acc[item] = castTypeToString(types[item]);
+    return acc;
+  }, {});
 }
 
-
+/**
+ * Types guessing
+ *
+ * @param {array} data data to be parsed (list of objects)
+ * @param {boolean} strict if strict is false, a JSON parsing of the values is tried. (if strict=false: "true" -> true)
+ * @return {object} the types guessed (object with column names as keys and value type as value)
+ */
 export function inferTypes(data, strict) {
   let candidateTypes = {};
-  if(!Array.isArray(data)){
-    return candidateTypes
+  if (!Array.isArray(data)) {
+    return candidateTypes;
   }
 
-  data.forEach(datum => {
-    Object.keys(datum).forEach(key => {
+  data.forEach((datum) => {
+    Object.keys(datum).forEach((key) => {
       if (candidateTypes[key] === undefined) {
         candidateTypes[key] = [];
       }
-      const inferredType = getValueType(datum[key], strict)
+      const inferredType = getValueType(datum[key], strict);
       candidateTypes[key].push(castTypeToString(inferredType));
     });
   });
 
   let inferredTypes = {};
-  Object.keys(candidateTypes).map(k => {
+  Object.keys(candidateTypes).map((k) => {
     let counts = {};
-    candidateTypes[k].forEach(type => {
+    candidateTypes[k].forEach((type) => {
       if (!counts[type]) {
         counts[type] = { count: 0, value: type };
       }
@@ -128,11 +133,11 @@ export function inferTypes(data, strict) {
 
     const mostFrequentTypeKey = maxBy(
       Object.keys(counts),
-      t => counts[t].count
+      (t) => counts[t].count
     );
     inferredTypes[k] = counts[mostFrequentTypeKey].value;
   });
-  return inferredTypes
+  return inferredTypes;
 }
 
 function basicGetter(rowValue, dataType) {
@@ -146,22 +151,21 @@ function basicGetter(rowValue, dataType) {
 function rowParser(types, onError) {
   let propGetters = {};
 
-  Object.keys(types).forEach(k => {
+  Object.keys(types).forEach((k) => {
     let dataType = types[k];
     const type = getType(dataType);
     const formatter = getFormatter(dataType);
-    propGetters[k] = row => {
+    propGetters[k] = (row) => {
       const rowValue = get(row, k);
       const formattedValue = formatter ? formatter(rowValue) : rowValue;
-      return basicGetter(formattedValue, formatter ? x => x : type);
+      return basicGetter(formattedValue, formatter ? (x) => x : type);
     };
-    
   });
 
-  return function(row) {
+  return function (row) {
     const error = {};
     let out = {};
-    Object.keys(propGetters).forEach(k => {
+    Object.keys(propGetters).forEach((k) => {
       const getter = propGetters[k];
       try {
         out[k] = getter(row);
@@ -177,13 +181,21 @@ function rowParser(types, onError) {
   };
 }
 
+
 function parseRows(data, dataTypes) {
   let errors = [];
-  const parser = rowParser(dataTypes, error => errors.push(error));
+  const parser = rowParser(dataTypes, (error) => errors.push(error));
   const dataset = data.map(parser);
   return [dataset, errors];
 }
 
+/**
+ * Dataset parser
+ *
+ * @param {array} data data to be parsed (list of objects)
+ * @param {object} types optional column types
+ * @return {array} dataset, dataTypes, errors
+ */
 export function parseDataset(data, types) {
   const dataTypes = types || inferTypes(data);
   const [dataset, errors] = parseRows(data, dataTypes);

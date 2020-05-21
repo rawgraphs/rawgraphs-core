@@ -1,3 +1,8 @@
+/**
+* mapping module.
+* @module mapping
+*/
+
 import { RAWError } from "./utils";
 import { getAggregator, getAggregatorArray } from "./expressionRegister";
 import difference from "lodash/difference";
@@ -58,8 +63,8 @@ export function validateMapperDefinition(dimensions) {
 /**
  * mapping validator
  *
- * @param {array} dimensions
- * @param {object} mapping
+ * @param {array} mapper definition
+ * @param {object} mapping configuration
  *
  */
 
@@ -196,13 +201,14 @@ function arrayGetter(names) {
 /**
  * mapper generator
  *
- * @param {array} dimensions
- * @param {object} mapping
+ * @param {array} dimensions mapper definition
+ * @param {object} mapping mapping configuration
+ * @param {types} types column types
  * @return {function} the mapper function
  */
 
 // #TODO: REFACTOR
-function mapper(dimensions, _mapping, types) {
+function makeMapper(dimensions, _mapping, types) {
   validateMapperDefinition(dimensions);
 
   // let mapping = hydrateProxies(dimensions, _mapping);
@@ -306,6 +312,10 @@ function mapper(dimensions, _mapping, types) {
   const rollupGrouperDimension = rollupDimension || rollupsDimension;
 
   return function (data) {
+    if(!data){
+      return
+    }
+
     let tabularData;
 
     //apply grouping operations if any
@@ -457,4 +467,4 @@ function mapper(dimensions, _mapping, types) {
   };
 }
 
-export default mapper;
+export default makeMapper;

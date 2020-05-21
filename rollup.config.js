@@ -1,6 +1,9 @@
 import babel from 'rollup-plugin-babel'
 // import fs from 'fs'
 import pkg from './package.json'
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
+import json from '@rollup/plugin-json';
 
 
 const vendors = []
@@ -12,20 +15,58 @@ const vendors = []
     // 'rocketjump-core/utils',
   )
 
-export default ['esm', 'cjs', 'amd'].map(format => ({
+
+const nonUmdConfig =  [
+   'cjs', 'esm'
+  ].map(format => ({
   input: {
     'index': 'src/index.js',
-    // 'logger': 'src/logger/index.js',
-    
   },
   output: [
     {
       dir: 'lib',
       entryFileNames: '[name].[format].js',
       exports: 'named',
+      name: 'raw',
       format
     }
   ],
   external: vendors,
-  plugins: [babel({ exclude: 'node_modules/**' })],
+  
+  plugins: [
+    resolve(),
+    commonjs(),
+    json(),  
+    babel({ exclude: [
+      'node_modules/**'
+    ] }),
+    
+  ],
 }))
+
+const umdConfig = {
+  input: {
+    'index': 'src/index.js',
+  },
+  output: [
+    {
+      dir: 'lib',
+      entryFileNames: '[name].[format].js',
+      exports: 'named',
+      name: 'raw',
+      format: 'umd',
+    }
+  ],
+  
+  plugins: [
+    resolve(),
+    commonjs(),
+    json(),  
+    babel({ exclude: [
+      'node_modules/**'
+    ] }),
+    
+  ],
+}
+
+export default nonUmdConfig.concat(umdConfig)
