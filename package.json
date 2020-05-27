@@ -13,7 +13,8 @@
     "prebuild": "rimraf lib",
     "build": "rollup -c",
     "nodebox": "NODE_ENV=test babel-node sandbox/node/index.js",
-    "webbox": "webpack-dev-server"
+    "webbox": "webpack-dev-server",
+    "generate-docs": "node_modules/.bin/jsdoc -c jsdoc.json"
   },
   "author": "",
   "license": "ISC",
@@ -28,7 +29,10 @@
     "babel-loader": "^8.0.6",
     "css-loader": "^3.4.2",
     "d3-selection": "^1.4.1",
+    "docdash": "^1.2.0",
     "jest": "^25.1.0",
+    "jsdoc": "^3.6.4",
+    "npm": "^6.14.5",
     "rimraf": "^3.0.2",
     "rollup": "^1.32.1",
     "rollup-plugin-babel": "^4.4.0",
