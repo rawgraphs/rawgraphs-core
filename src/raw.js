@@ -3,8 +3,8 @@
  * @module charts
  */
 
-import { getDocument } from "./utils";
 import makeMapper from "./mapping";
+import { RAWError } from "./utils";
 
 const defaultVisualOptions = {
   width: 500,
@@ -70,9 +70,9 @@ class Chart {
   * @param {Node} node
   * @returns {Node}
   */
-  getContainer(node) {
+  getContainer(document) {
     //const document = getDocument()
-    const document = node ? node.ownerDocument : getDocument();
+    // const document = node ? node.ownerDocument : getDocument();
     //#TODO: this could, in future, depend on visual model
     const container = document.createElement("svg");
     container.setAttribute("width", this._visualOptions.width);
@@ -94,7 +94,7 @@ class Chart {
   * @returns {DOMChart}
   */
   renderToDOM(node) {
-    const container = this.getContainer(node);
+    const container = this.getContainer(node.ownerDocument);
     const vizData = this.mapData();
     this._visualModel.render(
       container,
@@ -117,7 +117,10 @@ class Chart {
   /**
    * @returns {string}
    */
-  renderToString() {
+  renderToString(document) {
+    if(!document && window === undefined){
+      throw new RAWError("Document must be passed or window available")
+    }
     const container = this.getContainer();
     const vizData = this.mapData();
     this._visualModel.render(
