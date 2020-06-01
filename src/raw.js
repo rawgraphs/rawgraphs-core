@@ -67,14 +67,17 @@ class Chart {
   }
 
   /**
-  * @param {Node} node
-  * @returns {Node}
-  */
+   * @param {Node} node
+   * @returns {Node}
+   */
   getContainer(document) {
     //const document = getDocument()
     // const document = node ? node.ownerDocument : getDocument();
     //#TODO: this could, in future, depend on visual model
-    const container = document.createElement("svg");
+    const container = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg"
+    );
     container.setAttribute("width", this._visualOptions.width);
     container.setAttribute("height", this._visualOptions.height);
     container.style["background-color"] = this._visualOptions.background;
@@ -90,12 +93,13 @@ class Chart {
   }
 
   /**
-  * @param {Node} node
-  * @returns {DOMChart}
-  */
+   * @param {Node} node
+   * @returns {DOMChart}
+   */
   renderToDOM(node) {
     const container = this.getContainer(node.ownerDocument);
     const vizData = this.mapData();
+    node.innerHTML = "";
     this._visualModel.render(
       container,
       vizData,
@@ -103,7 +107,7 @@ class Chart {
       this._mapping,
       this._data
     );
-    node.innerHTML = container.outerHTML;
+    node.appendChild(container);
     return new DOMChart(
       node,
       this._visualModel,
@@ -118,8 +122,8 @@ class Chart {
    * @returns {string}
    */
   renderToString(document) {
-    if(!document && window === undefined){
-      throw new RAWError("Document must be passed or window available")
+    if (!document && window === undefined) {
+      throw new RAWError("Document must be passed or window available");
     }
     const container = this.getContainer();
     const vizData = this.mapData();
