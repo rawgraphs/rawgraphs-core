@@ -126,11 +126,16 @@ class Chart {
   * @returns {string}
   */
   renderToString(document) {
+    
+    if(!this._visualModel){
+      throw new RAWError("cannot render: visualModel is not set")
+    }
+
     if (!document && window === undefined) {
       throw new RAWError("Document must be passed or window available");
     }
     const container = this.getContainer(document || window.document);
-    const vizData = this.mapData();
+    const vizData = this._visualModel.skipMapping ? this._data : this.mapData();
     this._visualModel.render(
       container,
       vizData,
