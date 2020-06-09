@@ -1,7 +1,7 @@
 /**
-* mapping module.
-* @module mapping
-*/
+ * mapping module.
+ * @module mapping
+ */
 
 import { RAWError } from "./utils";
 import { getAggregator, getAggregatorArray } from "./expressionRegister";
@@ -65,14 +65,16 @@ export function validateMapperDefinition(dimensions) {
  *
  * @param {array} mapper definition
  * @param {object} mapping configuration
+ * @param {object} types column datatypes
  *
  */
 
-export function validateMapping(dimensions, _mapping) {
-  // validating that all required dimensions are provided to mapping
-  
+export function validateMapping(dimensions, _mapping, types) {
   const mapping = hydrateProxies(dimensions, _mapping);
 
+  const dimensionsById = keyBy(dimensions, "id");
+
+  // validating that all required dimensions are provided to mapping
   const requiredDimensions = dimensions
     .filter((d) => d.required)
     .map((d) => d.id)
@@ -84,31 +86,52 @@ export function validateMapping(dimensions, _mapping) {
 
   const missing = difference(requiredDimensions, providedDimensions);
 
+  let errors = [];
+
   if (missing.length > 0) {
-    throw new RAWError(
-      `Some required dimensions were not mapped. Missing ids are: ${missing.join(
-        ", "
-      )}`
-    );
+    const err = `Some required dimensions were not mapped. Missing ids are: ${missing.join(
+      ", "
+    )}`;
+    errors.push(err);
   }
+
+  // validating that provided dimensions are mapped to correct types
+  providedDimensions.forEach((d) => {
+    //value is always an array (guaranteed by hydrateProxies)
+    const values = mapping[d].value;
+    const dim = dimensionsById[d];
+    let validTypes = get(dim, "validTypes");
+    if (validTypes) {
+      validTypes = Array.isArray(validTypes) ? validTypes : [validTypes]
+      validTypes = validTypes.map(item => item.toLowerCase())
+
+      values.forEach((v) => {
+        const type = types[v];
+        if (validTypes.indexOf(type.toLowerCase()) === -1) {
+          errors.push(
+            `Invalid type: column ${v} of type ${type} cannot be used on dimension with id ${d}, accepting ${validTypes.join(
+              ", "
+            )}`
+          );
+        }
+      });
+    }
+  });
+
 
   // #TODO: [future] if using registered functions check for existence
   // #TODO: [future] if using expressions check for existence
+  // #TODO: check for multiple, minValues, maxValues
+
+  if (errors.length) {
+    throw new RAWError(errors.join("\n"));
+  }
+
+  
 
   return mapping;
 }
-
-/**
- * validateTypes validator
- *
- * @param {array} dimensions
- * @param {array} types
- *
- */
-
-function validateTypes(dimensions, mapping, types) {
-  // #TODO validate that all dimesions are mapped to correct types
-}
+ 
 
 function hydrateExternal(dimensions, mapping) {
   let m = mapValues(mapping, (v) => ({
@@ -211,18 +234,8 @@ function arrayGetter(names) {
 function makeMapper(dimensions, _mapping, types) {
   validateMapperDefinition(dimensions);
 
-  // let mapping = hydrateProxies(dimensions, _mapping);
 
-  // console.log("hydrated", mapping, _mapping)
-
-  const mapping = validateMapping(dimensions, _mapping);
-  
-  if (types) {
-    validateTypes(dimensions, mapping, types);
-  }
-
-  const dimensionsById = keyBy(dimensions, "id");
-
+  const mapping = validateMapping(dimensions, _mapping, types);
   const mappingValues = mapValues(mapping, (v) => v.value);
   const mappingConfigs = mapValues(mapping, (v) => get(v, "config"));
 
@@ -312,8 +325,8 @@ function makeMapper(dimensions, _mapping, types) {
   const rollupGrouperDimension = rollupDimension || rollupsDimension;
 
   return function (data) {
-    if(!data){
-      return
+    if (!data) {
+      return;
     }
 
     let tabularData;

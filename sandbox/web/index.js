@@ -26,4 +26,5 @@ const viz = chart(testChart, {
   visualOptions: {},
 });
 
-viz.renderToDOM(div);
+const x = viz.renderToDOM(div);
+

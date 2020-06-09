@@ -10,11 +10,15 @@ const testChart = {
       id: "x",
       name: "x",
       operation: "get",
+      validTypes: ["number"],
+      required: true,
     },
     {
       id: "y",
       name: "y",
       operation: "get",
+      validTypes: ["number"],
+      required: true,
     },
   ],
 

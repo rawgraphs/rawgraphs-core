@@ -4,6 +4,7 @@
  */
 
 import makeMapper from "./mapping";
+import { inferTypes } from "./dataset";
 import { RAWError } from "./utils";
 
 const defaultVisualOptions = {
@@ -27,7 +28,18 @@ class Chart {
   constructor(visualModel, data, dataTypes, mapping, visualOptions) {
     this._visualModel = visualModel;
     this._data = data;
-    this._dataTypes = dataTypes;
+
+    if (
+      data &&
+      (!this._dataTypes ||
+        (typeof this._dataType === "object" &&
+          Object.keys(this._dataTypes).length))
+    ) {
+      this._dataTypes = inferTypes(data);
+    } else {
+      this._dataTypes = dataTypes;
+    }
+
     this._mapping = mapping;
     this._visualOptions = visualOptions;
   }
@@ -40,10 +52,22 @@ class Chart {
     if (!arguments.length) {
       return this._data;
     }
+
+    let dataTypes;
+    if (
+      !this._dataTypes ||
+      (typeof this._dataType === "object" &&
+        Object.keys(this._dataTypes).length)
+    ) {
+      dataTypes = inferTypes(_data);
+    } else {
+      dataTypes = this.dataTypes;
+    }
+
     return new RAWChart(
       this._visualModel,
       _data,
-      this._dataTypes,
+      dataTypes,
       this._mapping,
       this._visualOptions
     );
@@ -84,8 +108,7 @@ class Chart {
 
   mapData() {
     const dimensions = this._visualModel.dimensions;
-    const dataTypes = this._dataTypes;
-    const mapFunction = makeMapper(dimensions, this._mapping, dataTypes);
+    const mapFunction = makeMapper(dimensions, this._mapping, this._dataTypes);
     return mapFunction(this._data);
   }
 
@@ -94,9 +117,8 @@ class Chart {
    * @returns {DOMChart}
    */
   renderToDOM(node) {
-
-    if(!this._visualModel){
-      throw new RAWError("cannot render: visualModel is not set")
+    if (!this._visualModel) {
+      throw new RAWError("cannot render: visualModel is not set");
     }
 
     const container = this.getContainer(node.ownerDocument);
@@ -108,8 +130,8 @@ class Chart {
       this._mapping,
       this._data
     );
-    node.innerHTML = '';
-    node.appendChild(container)
+    node.innerHTML = "";
+    node.appendChild(container);
 
     return new DOMChart(
       node,
@@ -122,13 +144,12 @@ class Chart {
   }
 
   /**
-  * @param {document} document HTML document context (optional if window is available)
-  * @returns {string}
-  */
+   * @param {document} document HTML document context (optional if window is available)
+   * @returns {string}
+   */
   renderToString(document) {
-    
-    if(!this._visualModel){
-      throw new RAWError("cannot render: visualModel is not set")
+    if (!this._visualModel) {
+      throw new RAWError("cannot render: visualModel is not set");
     }
 
     if (!document && window === undefined) {
@@ -172,7 +193,7 @@ class DOMChart extends Chart {
  * @property {Boolean} [multiple=false] # to be implemented
  * @property {number} minValues # to be implemented
  * @property {number} maxValues  # to be implemented
- * @property {Array} validTypes # to be implemented
+ * @property {Array} validTypes valid data types for the dimension (one or more of 'number', 'string', 'date', 'boolean')
  */
 
 /**
