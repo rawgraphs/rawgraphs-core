@@ -71,10 +71,8 @@ class Chart {
   * @returns {Node}
   */
   getContainer(document) {
-    //const document = getDocument()
-    // const document = node ? node.ownerDocument : getDocument();
     //#TODO: this could, in future, depend on visual model
-    const container = document.createElement("svg");
+    const container = document.createElementNS("http://www.w3.org/2000/svg","svg");
     container.setAttribute("width", this._visualOptions.width);
     container.setAttribute("height", this._visualOptions.height);
     container.style["background-color"] = this._visualOptions.background;
@@ -103,7 +101,9 @@ class Chart {
       this._mapping,
       this._data
     );
-    node.innerHTML = container.outerHTML;
+    node.innerHTML = '';
+    node.appendChild(container)
+    
     return new DOMChart(
       node,
       this._visualModel,
@@ -115,13 +115,14 @@ class Chart {
   }
 
   /**
-   * @returns {string}
-   */
+  * @param {document} document HTML document context (optional if window is available)
+  * @returns {string}
+  */
   renderToString(document) {
     if(!document && window === undefined){
       throw new RAWError("Document must be passed or window available")
     }
-    const container = this.getContainer();
+    const container = this.getContainer(document || window.document);
     const vizData = this.mapData();
     this._visualModel.render(
       container,
