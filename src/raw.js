@@ -80,7 +80,6 @@ class Chart {
   }
 
   mapData() {
-    //#TODO: check that data and other needed stuff is populated
     const dimensions = this._visualModel.dimensions;
     const dataTypes = this._dataTypes;
     const mapFunction = makeMapper(dimensions, this._mapping, dataTypes);
@@ -92,8 +91,13 @@ class Chart {
   * @returns {DOMChart}
   */
   renderToDOM(node) {
+
+    if(!this._visualModel){
+      throw new RAWError("cannot render: visualModel is not set")
+    }
+
     const container = this.getContainer(node.ownerDocument);
-    const vizData = this.mapData();
+    const vizData = this._visualModel.skipMapping ? this._data : this.mapData();
     this._visualModel.render(
       container,
       vizData,
@@ -103,7 +107,7 @@ class Chart {
     );
     node.innerHTML = '';
     node.appendChild(container)
-    
+
     return new DOMChart(
       node,
       this._visualModel,
@@ -157,7 +161,7 @@ class DOMChart extends Chart {
  * @property {boolean} required
  * @property {'get'| 'group'|'groups'|'rollup'|'rollup'|'rollups'|'groupAggregate'|'groupBy'|'proxy'} operation the operation type
  * @property {Object} targets  only for proxy operations
- * @property {Boolean} multiple # to be implemented
+ * @property {Boolean} [multiple=false] # to be implemented
  * @property {number} minValues # to be implemented
  * @property {number} maxValues  # to be implemented
  * @property {Array} validTypes # to be implemented
@@ -217,6 +221,7 @@ class DOMChart extends Chart {
  * @property {RenderFunction} render the render function
  * @property {MappingDefinition} dimensions the dimensions configuration (mapping definition)
  * @property {VisualOptionsDefinition} options the visual options exposed by the model
+ * @property {Boolean} [skipMapping=false] if set to true will skip the mapping phase (current mapping is still passed to the render function)
  */
 
 /**
