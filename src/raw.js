@@ -188,7 +188,7 @@ class DOMChart extends Chart {
  * @property {string} id unique id
  * @property {string} name label
  * @property {boolean} required
- * @property {'get'| 'group'|'groups'|'rollup'|'rollup'|'rollups'|'groupAggregate'|'groupBy'|'proxy'} operation the operation type
+ * @property {'get'| 'group'|'groups'|'rollup'|'rollup-leaf'|'rollups'|'groupAggregate'|'groupBy'|'proxy'} operation the operation type
  * @property {Object} targets  only for proxy operations
  * @property {Boolean} [multiple=false] controls if a dimension accept a value with more than one item
  * @property {number} [minValues=undefined] min number of items required for the value of the dimension

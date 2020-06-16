@@ -101,8 +101,8 @@ export function validateMapping(dimensions, _mapping, types) {
     const dim = dimensionsById[d];
     let validTypes = get(dim, "validTypes");
     if (validTypes && types) {
-      validTypes = Array.isArray(validTypes) ? validTypes : [validTypes]
-      validTypes = validTypes.map(item => item.toLowerCase())
+      validTypes = Array.isArray(validTypes) ? validTypes : [validTypes];
+      validTypes = validTypes.map((item) => item.toLowerCase());
 
       values.forEach((v) => {
         const type = types[v];
@@ -116,23 +116,27 @@ export function validateMapping(dimensions, _mapping, types) {
       });
     }
 
-    let multiple = get(dim, 'multiple', false)
-    if(!multiple && values && values.length > 1){
-      errors.push(`dimension ${d} does not support multiple columns in mapping` )
+    let multiple = get(dim, "multiple", false);
+    if (!multiple && values && values.length > 1) {
+      errors.push(
+        `dimension ${d} does not support multiple columns in mapping`
+      );
     }
 
-    let minValues = get(dim, 'minValues')
-    if(minValues !== undefined && (!values || values.length < minValues)){
-      errors.push(`dimension ${d} requires at least ${minValues} columns in mappung` )
+    let minValues = get(dim, "minValues");
+    if (minValues !== undefined && (!values || values.length < minValues)) {
+      errors.push(
+        `dimension ${d} requires at least ${minValues} columns in mappung`
+      );
     }
 
-    let maxValues = get(dim, 'maxValues')
-    if(maxValues !== undefined && (!values || values.length > maxValues)){
-      errors.push(`dimension ${d} accepts at most ${maxValues} columns in mappung` )
+    let maxValues = get(dim, "maxValues");
+    if (maxValues !== undefined && (!values || values.length > maxValues)) {
+      errors.push(
+        `dimension ${d} accepts at most ${maxValues} columns in mappung`
+      );
     }
-
   });
-
 
   // #TODO: [future] if using registered functions check for existence
   // #TODO: [future] if using expressions check for existence
@@ -142,11 +146,8 @@ export function validateMapping(dimensions, _mapping, types) {
     throw new RAWError(errors.join("\n"));
   }
 
-  
-
   return mapping;
 }
- 
 
 function hydrateExternal(dimensions, mapping) {
   let m = mapValues(mapping, (v) => ({
@@ -249,7 +250,6 @@ function arrayGetter(names) {
 function makeMapper(dimensions, _mapping, types) {
   validateMapperDefinition(dimensions);
 
-
   const mapping = validateMapping(dimensions, _mapping, types);
   const mappingValues = mapValues(mapping, (v) => v.value);
   const mappingConfigs = mapValues(mapping, (v) => get(v, "config"));
@@ -301,6 +301,14 @@ function makeMapper(dimensions, _mapping, types) {
     find(
       dimensions,
       (d) => d.operation === "rollups" && mappingValues[d.id] !== undefined
+    ),
+    "id"
+  );
+
+  const rollupLeafDimension = get(
+    find(
+      dimensions,
+      (d) => d.operation === "rollupLeaf" && mappingValues[d.id] !== undefined
     ),
     "id"
   );
@@ -397,8 +405,8 @@ function makeMapper(dimensions, _mapping, types) {
     } else {
       tabularData = data.map((row) => {
         let item = {};
+        
         getDimensions.forEach((id) => {
-          //#GET HERE
           const getterFunction = arrayGetter(mappingValues[id]);
           item[id] = getterFunction(row);
         });
@@ -411,14 +419,24 @@ function makeMapper(dimensions, _mapping, types) {
             item[grouperDimension] = get(row, mappingValues[grouperDimension]);
           }
         }
-
         // getter for rollup aggregation
         // notice that the name __leaf is used only internally.
-        if (rollupGrouperDimension && mappingConfigs[rollupGrouperDimension]) {
-          const rollupConfigAggregationTarget = get(
-            mappingConfigs,
-            `[${rollupGrouperDimension}].leafAggregation[1]`
-          );
+        if (
+          rollupGrouperDimension &&
+          mappingConfigs[rollupGrouperDimension] || rollupLeafDimension
+        ) {
+          let rollupConfigAggregationTarget;
+          if (rollupLeafDimension) {
+            rollupConfigAggregationTarget = get(
+              mappingValues,
+              rollupLeafDimension
+            );
+          } else {
+            rollupConfigAggregationTarget = get(
+              mappingConfigs,
+              `[${rollupGrouperDimension}].leafAggregation[1]`
+            );
+          }
           const getterFunction = arrayGetter(rollupConfigAggregationTarget);
           item["__leaf"] = getterFunction(row);
         }
@@ -454,26 +472,44 @@ function makeMapper(dimensions, _mapping, types) {
       }
 
       if (rollupGrouperDimension) {
-        const rollupConfigAggregation = get(
-          mappingConfigs,
-          `[${rollupGrouperDimension}].leafAggregation`
-        );
-
         let rollupAggregation = (v) => v.length;
-        if (rollupConfigAggregation) {
-          if (
-            !Array.isArray(rollupConfigAggregation) ||
-            rollupConfigAggregation.length !== 2
-          ) {
-            throw new RAWError(
-              "Rollup aggregation should be an array with aggregation function and target column"
-            );
-          }
-          const [aggName, targetColumn] = rollupConfigAggregation;
-          const aggregatorFunction =
+        let aggregatorFunction;
+
+        if (rollupLeafDimension) {
+          let [aggName, targetColumn] = [
+            get(mappingConfigs, `[${rollupLeafDimension}].aggregation`),
+            get(mappingValues, rollupLeafDimension),
+          ];
+
+          aggregatorFunction =
             Array.isArray(targetColumn) && targetColumn.length > 1
               ? getAggregatorArray(aggName, targetColumn.length)
               : getAggregator(aggName);
+        } else {
+          const rollupConfigAggregation = get(
+            mappingConfigs,
+            `[${rollupGrouperDimension}].leafAggregation`
+          );
+
+          if (rollupConfigAggregation) {
+            if (
+              !Array.isArray(rollupConfigAggregation) ||
+              rollupConfigAggregation.length !== 2
+            ) {
+              throw new RAWError(
+                "Rollup aggregation should be an array with aggregation function and target column"
+              );
+            }
+            const [aggName, targetColumn] = rollupConfigAggregation;
+
+            aggregatorFunction =
+              Array.isArray(targetColumn) && targetColumn.length > 1
+                ? getAggregatorArray(aggName, targetColumn.length)
+                : getAggregator(aggName);
+          }
+        }
+
+        if (aggregatorFunction) {
           const leafGetter = arrayGetter("__leaf");
           const wrappedAggregatorFunction = (items) => {
             return aggregatorFunction(items.map(leafGetter));
