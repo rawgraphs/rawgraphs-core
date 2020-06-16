@@ -6,10 +6,8 @@
 import { RAWError } from "./utils";
 import { getAggregator, getAggregatorArray } from "./expressionRegister";
 import difference from "lodash/difference";
-import pick from "lodash/pick";
 import get from "lodash/get";
 import set from "lodash/set";
-import setWith from "lodash/setWith";
 import groupBy from "lodash/groupBy";
 import groupByAsMap from "./groupBy";
 import mapValues from "lodash/mapValues";
@@ -95,19 +93,20 @@ export function validateMapping(dimensions, _mapping, types) {
     errors.push(err);
   }
 
-  // validating that provided dimensions are mapped to correct types
+  // validating that provided dimensions are mapped to correct types ("validTypes" attibute of dimension)
+  // validating multiple attribute
   providedDimensions.forEach((d) => {
     //value is always an array (guaranteed by hydrateProxies)
     const values = mapping[d].value;
     const dim = dimensionsById[d];
     let validTypes = get(dim, "validTypes");
-    if (validTypes) {
+    if (validTypes && types) {
       validTypes = Array.isArray(validTypes) ? validTypes : [validTypes]
       validTypes = validTypes.map(item => item.toLowerCase())
 
       values.forEach((v) => {
         const type = types[v];
-        if (validTypes.indexOf(type.toLowerCase()) === -1) {
+        if (validTypes && validTypes.indexOf(type.toLowerCase()) === -1) {
           errors.push(
             `Invalid type: column ${v} of type ${type} cannot be used on dimension with id ${d}, accepting ${validTypes.join(
               ", "
@@ -116,6 +115,22 @@ export function validateMapping(dimensions, _mapping, types) {
         }
       });
     }
+
+    let multiple = get(dim, 'multiple', false)
+    if(!multiple && values && values.length > 1){
+      errors.push(`dimension ${d} does not support multiple columns in mapping` )
+    }
+
+    let minValues = get(dim, 'minValues')
+    if(minValues !== undefined && (!values || values.length < minValues)){
+      errors.push(`dimension ${d} requires at least ${minValues} columns in mappung` )
+    }
+
+    let maxValues = get(dim, 'maxValues')
+    if(maxValues !== undefined && (!values || values.length > maxValues)){
+      errors.push(`dimension ${d} accepts at most ${maxValues} columns in mappung` )
+    }
+
   });
 
 

@@ -1,5 +1,5 @@
-import {raw} from '../../src';
-import testChart from '../../src/testChart';
+import {chart} from '../../src';
+import testChart from '../../src/testSupport/chart';
 import { tsvParse } from 'd3-dsv'
 import {JSDOM} from "jsdom";
 
@@ -26,7 +26,7 @@ const dispersionMapping = {
 }
 
 
-const viz = raw(testChart, {
+const viz = chart(testChart, {
   data: testData,
   mapping: dispersionMapping,
   //dataTypes: some,

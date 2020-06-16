@@ -190,9 +190,9 @@ class DOMChart extends Chart {
  * @property {boolean} required
  * @property {'get'| 'group'|'groups'|'rollup'|'rollup'|'rollups'|'groupAggregate'|'groupBy'|'proxy'} operation the operation type
  * @property {Object} targets  only for proxy operations
- * @property {Boolean} [multiple=false] # to be implemented
- * @property {number} minValues # to be implemented
- * @property {number} maxValues  # to be implemented
+ * @property {Boolean} [multiple=false] controls if a dimension accept a value with more than one item
+ * @property {number} [minValues=undefined] min number of items required for the value of the dimension
+ * @property {number} [maxValues=undefined]  max number of items required for the value of the dimension
  * @property {Array} validTypes valid data types for the dimension (one or more of 'number', 'string', 'date', 'boolean')
  */
 

@@ -1,8 +1,7 @@
-import mapper from '../mapping'
-import { tsvParse } from 'd3-dsv'
-import mean from 'lodash/mean'
-
 import fs from 'fs'
+import makeMapper from '../mapping'
+import { tsvParse } from 'd3-dsv'
+import { RAWError } from '../utils'
 
 var titanic = fs.readFileSync('data/titanic.tsv', "utf8")
 
@@ -30,6 +29,7 @@ const groupAgg = {
   validTypes: ["number", "date"],
   required: true,
   operation: 'groupAggregate',
+  multiple: true,
 
 }
 
@@ -39,14 +39,13 @@ const group = {
   validTypes: ["number", "date"],
   required: true,
   operation: 'group',
+  multiple: true,
 }
-
 
 
 const dispersionDimensions = [x, y]
 const groupAggregateDimensions = [groupAgg, x, y]
 const groupDimensions = [group, x, y]
-
 
 const testData = tsvParse(titanic)
 
@@ -92,27 +91,84 @@ const groupMapping = {
 }
 
 
-describe('mapper', () => {
-  it('should map x and y', () => {
+describe('makeMapper', () => {
+  it('should perform some mappings', () => {
 
-    const mappingFunctionDispersion = mapper(dispersionDimensions, dispersionMapping )
+    const mappingFunctionDispersion = makeMapper(dispersionDimensions, dispersionMapping )
     const mappedDataDispersion = mappingFunctionDispersion(testData)
 
     // console.log(mappedDataDispersion)
 
-    const mappingFunctionGroupAggregate = mapper(groupAggregateDimensions, groupAggregateMapping )
+    const mappingFunctionGroupAggregate = makeMapper(groupAggregateDimensions, groupAggregateMapping )
     const mappedDataGroupAggregate = mappingFunctionGroupAggregate(testData)
 
     // console.log(mappedDataGroupAggregate)
 
-    const mappingFunctionGroup = mapper(groupDimensions, groupMapping )
+    const mappingFunctionGroup = makeMapper(groupDimensions, groupMapping )
     const mappedDataGroup = mappingFunctionGroup(testData)
 
-    // console.log(mappedDataGroup)
+  })
 
-    // expect(1)
-    //   .toBe(1)
 
+  it('throw an error if a required dimension is not set', () => {
+    const requiredException = {
+      y: {
+        value: 'Fare'
+      },
+      group: {
+        value: ['Gender', 'Destination']
+      },
+    
+    }
+    expect(() => { makeMapper(groupDimensions, requiredException)}).toThrow(RAWError);
+  })
+
+  it('throw an error if multiple is not set on dimension x', () => {
+    const groupMultipleException = {
+      x: {
+        value: ['Age', 'Fare']
+      },
+      y: {
+        value: 'Fare'
+      },
+      group: {
+        value: ['Gender', 'Destination']
+      },
+    
+    }
+    expect(() => { makeMapper(groupDimensions, groupMultipleException)}).toThrow(RAWError);
+  })
+
+  it('throw an error if minValues and maxValues are not ok', () => {
+
+    const testMappingMinMax = [{
+      id: 'x',
+      name: 'x',
+      validTypes: ["number", "date"],
+      required: true,
+      operation: 'get',
+      multiple: true,
+      minValues: 3,
+      maxValues: 4,
+    }]
+
+    const testMappingMinMaxExceptionMin = {
+      x: {
+        value: ['Gender', 'Destination']
+      },
+    
+    }
+    expect(() => { makeMapper(testMappingMinMax, testMappingMinMaxExceptionMin)}).toThrow(RAWError);
+
+    const testMappingMinMaxExceptionMax = {
+      x: {
+        value: ['Gender', 'Destination', 'Age', 'Fare', 'Survival']
+      },
+    
+    }
+    expect(() => { makeMapper(testMappingMinMax, testMappingMinMaxExceptionMax)}).toThrow(RAWError);
 
   })
+
+  
 }) 
