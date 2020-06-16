@@ -403,13 +403,18 @@ function makeMapper(dimensions, _mapping, types) {
         return item;
       });
     } else {
+
+      let getterFunctionsById = getDimensions.reduce((acc, id) => {
+        acc[id] = arrayGetter(mappingValues[id]);
+        return acc
+      }, {})
+
+      let itemFiller = row => mapValues(
+        getterFunctionsById, f => f(row)
+      )
+      
       tabularData = data.map((row) => {
-        let item = {};
-        
-        getDimensions.forEach((id) => {
-          const getterFunction = arrayGetter(mappingValues[id]);
-          item[id] = getterFunction(row);
-        });
+        let item = itemFiller(row)
         if (grouperDimension && mappingValues[grouperDimension]) {
           if (Array.isArray(mappingValues[grouperDimension])) {
             item[grouperDimension] = mappingValues[grouperDimension].map((v) =>
