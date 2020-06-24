@@ -307,7 +307,7 @@ class DOMChart extends Chart {
 function chart(visualModel, config = {}) {
   const { data, dataTypes, mapping, visualOptions = {} } = config;
   const finalVisualOptions = getOptions(
-    getDefaultOptions(defaultVisualOptions),
+    getDefaultOptions(baseOptions),
     visualOptions
   );
   return new Chart(visualModel, data, dataTypes, mapping, finalVisualOptions);
