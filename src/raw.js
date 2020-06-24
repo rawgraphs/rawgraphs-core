@@ -3,10 +3,12 @@
  * @module charts
  */
 
-import makeMapper from "./mapping";
+import {validateMapperDefinition, validateMapping, default as makeMapper} from "./mapping";
 import { inferTypes } from "./dataset";
 import { RAWError } from "./utils";
 import { getOptions, getDefaultOptions } from "./options";
+import isObject from 'lodash/isObject'
+import isFunction from 'lodash/isFunction'
 
 export const baseOptions = {
   width: {
@@ -59,6 +61,7 @@ class Chart {
 
     this._mapping = mapping;
     this._visualOptions = visualOptions;
+    
   }
 
   /**
@@ -125,7 +128,21 @@ class Chart {
 
   mapData() {
     const dimensions = this._visualModel.dimensions;
+    validateMapperDefinition(dimensions)
+    validateMapping(dimensions, this._mapping, this._dataTypes)
+    
+    if(isFunction(this._visualOptions.mapData)){
+
+    } else if(isObject(this._visualOptions.mapData)){
+
+    } else {
+      throw new RAWError('mapData property of chart should be a function or an object')
+    }
+    
+    
     const mapFunction = makeMapper(dimensions, this._mapping, this._dataTypes);
+    
+    
     return mapFunction(this._data);
   }
 

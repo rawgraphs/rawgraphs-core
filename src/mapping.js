@@ -32,6 +32,16 @@ export function validateMapperDefinition(dimensions) {
     throw new RAWError("empty dimensions");
   }
 
+  
+}
+
+
+export function validateDeclarativeMapperDefinition(dimensions) {
+
+  if (dimensions.length === 0) {
+    throw new RAWError("empty dimensions");
+  }
+  
   const getters = dimensions.filter((d) => d.operation === "get");
   const grouperTypes = ["rollup", "rollups"];
   let grouperDimension = dimensions.filter(
@@ -67,8 +77,8 @@ export function validateMapperDefinition(dimensions) {
  *
  */
 
-export function validateMapping(dimensions, _mapping, types) {
-  const mapping = hydrateProxies(dimensions, _mapping);
+export function validateMapping(dimensions, mapping, types) {
+  
 
   const dimensionsById = keyBy(dimensions, "id");
 
@@ -145,54 +155,9 @@ export function validateMapping(dimensions, _mapping, types) {
   if (errors.length) {
     throw new RAWError(errors.join("\n"));
   }
-
-  return mapping;
 }
 
-function hydrateExternal(dimensions, mapping) {
-  let m = mapValues(mapping, (v) => ({
-    ...v,
-    value: Array.isArray(v.value) ? v.value : [v.value],
-  }));
-  dimensions.forEach((dimension) => {
-    const slots = get(dimension, "external", {});
-    Object.keys(slots).map((key) => {
-      const slotConfig = slots[key];
 
-      let targets = get(slotConfig, "target");
-      let sources = get(slotConfig, "source", "value");
-
-      // #TODO: THIS SHOULD GO TO VALIDATION...
-      const isTargetArray = Array.isArray(targets);
-      const isSourceArray = Array.isArray(sources);
-      if (isTargetArray != isSourceArray) {
-        throw new RAWError(
-          "in external slots, target and source must be both arrays or both scalars"
-        );
-      }
-      if (isTargetArray && isSourceArray && targets.length !== sources.length) {
-        throw new RAWError(
-          `in external slots, target and source must have the same length (${targets.length}, ${sources.length})`
-        );
-      }
-      if (!targets) {
-        throw new RAWError("in external slots, target must be specified");
-      }
-
-      if (!isTargetArray) {
-        targets = [targets];
-        sources = [sources];
-      }
-      targets.map((target, i) => {
-        const source = sources[i];
-        const value = get(mapping, `[${key}][${source}]`);
-        set(m[dimension.id], target, value);
-      });
-    });
-  });
-
-  return m;
-}
 
 function hydrateProxies(dimensions, mapping) {
   let m = mapValues(mapping, (v) => ({
@@ -247,20 +212,21 @@ function arrayGetter(names) {
  */
 
 // #TODO: REFACTOR
-function makeMapper(dimensions, _mapping, types) {
-  validateMapperDefinition(dimensions);
-
-  const mapping = validateMapping(dimensions, _mapping, types);
+function makeMapper(dimensionsWithOperations, _mapping, types) {
+  validateDeclarativeMapperDefinition(dimensionsWithOperations);
+  const mapping = hydrateProxies(dimensionsWithOperations, _mapping);
+  validateMapping(dimensionsWithOperations, mapping, types);
+  
   const mappingValues = mapValues(mapping, (v) => v.value);
   const mappingConfigs = mapValues(mapping, (v) => get(v, "config"));
 
-  const getDimensions = dimensions
+  const getDimensions = dimensionsWithOperations
     .filter((d) => d.operation === "get" && mappingValues[d.id] !== undefined)
     .map((g) => g.id);
 
   const groupAggregateDimension = get(
     find(
-      dimensions,
+      dimensionsWithOperations,
       (d) =>
         d.operation === "groupAggregate" && mappingValues[d.id] !== undefined
     ),
@@ -269,21 +235,21 @@ function makeMapper(dimensions, _mapping, types) {
 
   const groupByDimension = get(
     find(
-      dimensions,
+      dimensionsWithOperations,
       (d) => d.operation === "groupBy" && mappingValues[d.id] !== undefined
     ),
     "id"
   );
   const groupDimension = get(
     find(
-      dimensions,
+      dimensionsWithOperations,
       (d) => d.operation === "group" && mappingValues[d.id] !== undefined
     ),
     "id"
   );
   const groupsDimension = get(
     find(
-      dimensions,
+      dimensionsWithOperations,
       (d) => d.operation === "groups" && mappingValues[d.id] !== undefined
     ),
     "id"
@@ -291,7 +257,7 @@ function makeMapper(dimensions, _mapping, types) {
 
   const rollupDimension = get(
     find(
-      dimensions,
+      dimensionsWithOperations,
       (d) => d.operation === "rollup" && mappingValues[d.id] !== undefined
     ),
     "id"
@@ -299,7 +265,7 @@ function makeMapper(dimensions, _mapping, types) {
 
   const rollupsDimension = get(
     find(
-      dimensions,
+      dimensionsWithOperations,
       (d) => d.operation === "rollups" && mappingValues[d.id] !== undefined
     ),
     "id"
@@ -307,7 +273,7 @@ function makeMapper(dimensions, _mapping, types) {
 
   const rollupLeafDimension = get(
     find(
-      dimensions,
+      dimensionsWithOperations,
       (d) => d.operation === "rollupLeaf" && mappingValues[d.id] !== undefined
     ),
     "id"
@@ -316,7 +282,7 @@ function makeMapper(dimensions, _mapping, types) {
   //#TODO ... is this still needed?
   const hierarchyDimension = get(
     find(
-      dimensions,
+      dimensionsWithOperations,
       (d) => d.operation === "hierarchy" && mappingValues[d.id] !== undefined
     ),
     "id"
@@ -535,5 +501,5 @@ function makeMapper(dimensions, _mapping, types) {
     return tabularData;
   };
 }
-
+//#TODO: SHOULD NOT BE DEFAULT
 export default makeMapper;

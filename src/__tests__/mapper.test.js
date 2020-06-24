@@ -1,5 +1,5 @@
 import fs from "fs";
-import makeMapper from "../mapping";
+import makeMapper, { validateMapping } from "../mapping";
 import { tsvParse } from "d3-dsv";
 import { RAWError } from "../utils";
 
@@ -115,6 +115,7 @@ describe("makeMapper", () => {
       },
     };
     expect(() => {
+      validateMapping(groupDimensions, requiredException)
       makeMapper(groupDimensions, requiredException);
     }).toThrow(RAWError);
   });
@@ -132,7 +133,8 @@ describe("makeMapper", () => {
       },
     };
     expect(() => {
-      makeMapper(groupDimensions, groupMultipleException);
+      validateMapping(groupDimensions, groupMultipleException)
+      //makeMapper(groupDimensions, groupMultipleException);
     }).toThrow(RAWError);
   });
 
@@ -156,7 +158,8 @@ describe("makeMapper", () => {
       },
     };
     expect(() => {
-      makeMapper(testMappingMinMax, testMappingMinMaxExceptionMin);
+      validateMapping(testMappingMinMax, testMappingMinMaxExceptionMin)
+      //makeMapper(testMappingMinMax, testMappingMinMaxExceptionMin);
     }).toThrow(RAWError);
 
     const testMappingMinMaxExceptionMax = {
@@ -165,6 +168,7 @@ describe("makeMapper", () => {
       },
     };
     expect(() => {
+      validateMapping(testMappingMinMax, testMappingMinMaxExceptionMax)
       makeMapper(testMappingMinMax, testMappingMinMaxExceptionMax);
     }).toThrow(RAWError);
   });
@@ -199,7 +203,7 @@ describe("makeMapper", () => {
     };
     const rollupMapperLeaf = makeMapper(rollupConfig, rollupMappingLeaf);
     const rolledUpDataLeaf = rollupMapperLeaf(testData);
-    console.log(rolledUpDataLeaf);
+    
     
   });
 
@@ -230,7 +234,6 @@ describe("makeMapper", () => {
 
   const rollupMapperWithLeaf = makeMapper(rollupWithLeafConfig, rollupMappingWithLeaf);
   const rolledUpDataWithLeafData = rollupMapperWithLeaf(testData);
-  console.log(rolledUpDataWithLeafData);
-
+  
 
 });
