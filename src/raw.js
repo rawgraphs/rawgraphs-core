@@ -6,11 +6,28 @@
 import makeMapper from "./mapping";
 import { inferTypes } from "./dataset";
 import { RAWError } from "./utils";
+import { getOptions, getDefaultOptions } from "./options";
 
-const defaultVisualOptions = {
-  width: 500,
-  height: 500,
-  background: "#FFFFFF",
+export const baseOptions = {
+  width: {
+    type: "number",
+    default: 500,
+  },
+
+  height: {
+    type: "number",
+    default: 500,
+  },
+
+  background: {
+    type: "color",
+    default: "#FFFFFF",
+  },
+
+  margins: {
+    type: "number",
+    default: 10,
+  },
 };
 
 /**
@@ -272,10 +289,10 @@ class DOMChart extends Chart {
  */
 function chart(visualModel, config = {}) {
   const { data, dataTypes, mapping, visualOptions = {} } = config;
-  const finalVisualOptions = {
-    ...defaultVisualOptions,
-    ...visualOptions,
-  };
+  const finalVisualOptions = getOptions(
+    getDefaultOptions(defaultVisualOptions),
+    visualOptions
+  );
   return new Chart(visualModel, data, dataTypes, mapping, finalVisualOptions);
 }
 
