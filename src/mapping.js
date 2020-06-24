@@ -77,7 +77,12 @@ export function validateDeclarativeMapperDefinition(dimensions) {
  *
  */
 
-export function validateMapping(dimensions, mapping, types) {
+export function validateMapping(dimensions, _mapping, types) {
+
+  let mapping = mapValues(_mapping, (v) => ({
+    ...v,
+    value: Array.isArray(v.value) ? v.value : [v.value],
+  }));
   
 
   const dimensionsById = keyBy(dimensions, "id");
@@ -106,8 +111,8 @@ export function validateMapping(dimensions, mapping, types) {
   // validating that provided dimensions are mapped to correct types ("validTypes" attibute of dimension)
   // validating multiple attribute
   providedDimensions.forEach((d) => {
-    //value is always an array (guaranteed by hydrateProxies)
-    const values = mapping[d].value;
+    
+    const values = mapping[d].value || [];
     const dim = dimensionsById[d];
     let validTypes = get(dim, "validTypes");
     if (validTypes && types) {
@@ -155,6 +160,8 @@ export function validateMapping(dimensions, mapping, types) {
   if (errors.length) {
     throw new RAWError(errors.join("\n"));
   }
+
+  return mapping
 }
 
 
@@ -193,7 +200,7 @@ function hydrateProxies(dimensions, mapping) {
   return m;
 }
 
-function arrayGetter(names) {
+export function arrayGetter(names) {
   if (Array.isArray(names)) {
     return names.length === 1
       ? (item) => get(item, names[0])
@@ -214,8 +221,8 @@ function arrayGetter(names) {
 // #TODO: REFACTOR
 function makeMapper(dimensionsWithOperations, _mapping, types) {
   validateDeclarativeMapperDefinition(dimensionsWithOperations);
-  const mapping = hydrateProxies(dimensionsWithOperations, _mapping);
-  validateMapping(dimensionsWithOperations, mapping, types);
+  let mapping = hydrateProxies(dimensionsWithOperations, _mapping);
+  mapping = validateMapping(dimensionsWithOperations, mapping, types);
   
   const mappingValues = mapValues(mapping, (v) => v.value);
   const mappingConfigs = mapValues(mapping, (v) => get(v, "config"));

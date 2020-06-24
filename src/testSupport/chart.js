@@ -22,6 +22,16 @@ const testChart = {
     },
   ],
 
+
+  mapData: {
+    x : "get",
+    y: "get",
+  },
+
+  // mapData: function(data, mapping, dataTypes, dimensions){
+  //   return []
+  // },
+
   
   render: function (node, data, visualOptions, mapping, originalData) {
   

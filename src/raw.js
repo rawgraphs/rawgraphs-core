@@ -9,6 +9,8 @@ import { RAWError } from "./utils";
 import { getOptions, getDefaultOptions } from "./options";
 import isObject from 'lodash/isObject'
 import isFunction from 'lodash/isFunction'
+import mapValues from "lodash/mapValues";
+import get from "lodash/get";
 
 export const baseOptions = {
   width: {
@@ -127,23 +129,32 @@ class Chart {
   }
 
   mapData() {
-    const dimensions = this._visualModel.dimensions;
-    validateMapperDefinition(dimensions)
-    validateMapping(dimensions, this._mapping, this._dataTypes)
+    let dimensions = this._visualModel.dimensions;
     
-    if(isFunction(this._visualOptions.mapData)){
+    validateMapperDefinition(dimensions)
+    const mapping = validateMapping(dimensions, this._mapping, this._dataTypes)
 
-    } else if(isObject(this._visualOptions.mapData)){
+    
+    if(isFunction(this._visualModel.mapData)){
+      return this._visualModel.mapData(this._data, mapping, this._dataTypes, dimensions)
+      
+
+    } else if(isObject(this._visualModel.mapData)){
+
+      dimensions = dimensions.map(dim => {
+        return {
+          ...dim,
+          operation: this._visualModel.mapData[dim.id]
+        }
+      })
+      const mapFunction= makeMapper(dimensions, mapping, this._dataTypes);
+      return mapFunction(this._data);
 
     } else {
-      throw new RAWError('mapData property of chart should be a function or an object')
+      throw new RAWError('mapData property of visualModel should be a function or an object')
     }
     
     
-    const mapFunction = makeMapper(dimensions, this._mapping, this._dataTypes);
-    
-    
-    return mapFunction(this._data);
   }
 
   /**
