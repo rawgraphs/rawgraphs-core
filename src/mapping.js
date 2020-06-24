@@ -84,6 +84,15 @@ export function validateMapping(dimensions, _mapping, types) {
     value: Array.isArray(v.value) ? v.value : [v.value],
   }));
   
+  dimensions.forEach(dim => {
+    if(!mapping[dim.id]){
+      mapping[dim.id] = {
+        value: [],
+      }
+    }
+  })
+
+  
 
   const dimensionsById = keyBy(dimensions, "id");
 
@@ -94,7 +103,7 @@ export function validateMapping(dimensions, _mapping, types) {
     .sort();
 
   const providedDimensions = Object.keys(mapping)
-    .filter((k) => get(mapping[k], "value"))
+    .filter((k) => get(mapping[k], "value") && mapping[k].value.length > 0)
     .sort();
 
   const missing = difference(requiredDimensions, providedDimensions);
