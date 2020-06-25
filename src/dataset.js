@@ -200,5 +200,5 @@ export function parseDataset(data, types) {
   const dataTypes = types || inferTypes(data);
   const [dataset, errors] = parseRows(data, dataTypes);
 
-  return [dataset, dataTypes, errors];
+  return {dataset, dataTypes, errors};
 }
