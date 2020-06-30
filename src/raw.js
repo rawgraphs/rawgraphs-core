@@ -3,12 +3,17 @@
  * @module charts
  */
 
-import {validateMapperDefinition, validateMapping, default as makeMapper} from "./mapping";
+import {
+  validateMapperDefinition,
+  validateMapping,
+  annotateMapping,
+  default as makeMapper,
+} from "./mapping";
 import { inferTypes } from "./dataset";
 import { RAWError } from "./utils";
 import { getOptions, getDefaultOptions } from "./options";
-import isObject from 'lodash/isObject'
-import isFunction from 'lodash/isFunction'
+import isObject from "lodash/isObject";
+import isFunction from "lodash/isFunction";
 import mapValues from "lodash/mapValues";
 import get from "lodash/get";
 
@@ -63,7 +68,6 @@ class Chart {
 
     this._mapping = mapping;
     this._visualOptions = visualOptions;
-    
   }
 
   /**
@@ -130,31 +134,40 @@ class Chart {
 
   mapData() {
     let dimensions = this._visualModel.dimensions;
-    
-    validateMapperDefinition(dimensions)
-    const mapping = validateMapping(dimensions, this._mapping, this._dataTypes)
 
-    
-    if(isFunction(this._visualModel.mapData)){
-      return this._visualModel.mapData(this._data, mapping, this._dataTypes, dimensions)
-      
+    validateMapperDefinition(dimensions);
+    validateMapping(dimensions, this._mapping, this._dataTypes);
 
-    } else if(isObject(this._visualModel.mapData)){
-
-      dimensions = dimensions.map(dim => {
+    if (isFunction(this._visualModel.mapData)) {
+      const annotatedMapping = annotateMapping(
+        dimensions,
+        this._mapping,
+        this._dataTypes
+      );
+      return this._visualModel.mapData(
+        this._data,
+        annotatedMapping,
+        this._dataTypes,
+        dimensions
+      );
+    } else if (isObject(this._visualModel.mapData)) {
+      const dimensionsWithOperations = dimensions.map((dim) => {
         return {
           ...dim,
-          operation: this._visualModel.mapData[dim.id]
-        }
-      })
-      const mapFunction= makeMapper(dimensions, mapping, this._dataTypes);
+          operation: this._visualModel.mapData[dim.id],
+        };
+      });
+      const mapFunction = makeMapper(
+        dimensionsWithOperations,
+        this._mapping,
+        this._dataTypes
+      );
       return mapFunction(this._data);
-
     } else {
-      throw new RAWError('mapData property of visualModel should be a function or an object')
+      throw new RAWError(
+        "mapData property of visualModel should be a function or an object"
+      );
     }
-    
-    
   }
 
   /**
@@ -168,11 +181,18 @@ class Chart {
 
     const container = this.getContainer(node.ownerDocument);
     const vizData = this._visualModel.skipMapping ? this._data : this.mapData();
+    const dimensions = this._visualModel.dimensions;
+    const annotatedMapping = annotateMapping(
+      dimensions,
+      this._mapping,
+      this._dataTypes
+    );
+
     this._visualModel.render(
       container,
       vizData,
       this._visualOptions,
-      this._mapping,
+      annotatedMapping,
       this._data
     );
     node.innerHTML = "";
@@ -202,11 +222,18 @@ class Chart {
     }
     const container = this.getContainer(document || window.document);
     const vizData = this._visualModel.skipMapping ? this._data : this.mapData();
+    const dimensions = this._visualModel.dimensions;
+    const annotatedMapping = annotateMapping(
+      dimensions,
+      this._mapping,
+      this._dataTypes
+    );
+
     this._visualModel.render(
       container,
       vizData,
       this._visualOptions,
-      this._mapping,
+      annotatedMapping,
       this._data
     );
     return container.outerHTML;

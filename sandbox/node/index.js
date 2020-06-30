@@ -17,7 +17,7 @@ const testData = tsvParse(titanic)
 
 const dispersionMapping = {
   x: {
-    value: 'Age'
+    value: ['Age']
   },
   y: {
     value: 'Fare'

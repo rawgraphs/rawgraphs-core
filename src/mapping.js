@@ -16,6 +16,7 @@ import keyBy from "lodash/keyBy";
 import find from "lodash/find";
 import range from "lodash/range";
 import { group, groups, rollup, rollups } from "d3-array";
+import isString from "lodash/isString";
 
 /**
  * dimensions validator
@@ -31,17 +32,13 @@ export function validateMapperDefinition(dimensions) {
   if (dimensions.length === 0) {
     throw new RAWError("empty dimensions");
   }
-
-  
 }
 
-
 export function validateDeclarativeMapperDefinition(dimensions) {
-
   if (dimensions.length === 0) {
     throw new RAWError("empty dimensions");
   }
-  
+
   const getters = dimensions.filter((d) => d.operation === "get");
   const grouperTypes = ["rollup", "rollups"];
   let grouperDimension = dimensions.filter(
@@ -78,21 +75,25 @@ export function validateDeclarativeMapperDefinition(dimensions) {
  */
 
 export function validateMapping(dimensions, _mapping, types) {
-
+  //mapping values must be column names
   let mapping = mapValues(_mapping, (v) => ({
     ...v,
-    value: Array.isArray(v.value) ? v.value : [v.value],
+    value: Array.isArray(v.value)
+      ? v.value
+      : isString(v.value)
+      ? [v.value]
+      : [],
   }));
-  
-  dimensions.forEach(dim => {
-    if(!mapping[dim.id]){
-      mapping[dim.id] = {
-        value: [],
-      }
-    }
-  })
 
-  
+  // dimensions.forEach(dim => {
+  //   //dimension not mapped: set value to empty array
+  //   if(!mapping[dim.id]){
+  //     mapping[dim.id] = {
+  //       value: [],
+  //     }
+  //   }
+
+  // })
 
   const dimensionsById = keyBy(dimensions, "id");
 
@@ -120,7 +121,6 @@ export function validateMapping(dimensions, _mapping, types) {
   // validating that provided dimensions are mapped to correct types ("validTypes" attibute of dimension)
   // validating multiple attribute
   providedDimensions.forEach((d) => {
-    
     const values = mapping[d].value || [];
     const dim = dimensionsById[d];
     let validTypes = get(dim, "validTypes");
@@ -169,11 +169,34 @@ export function validateMapping(dimensions, _mapping, types) {
   if (errors.length) {
     throw new RAWError(errors.join("\n"));
   }
-
-  return mapping
 }
 
+export function annotateMapping(dimensions, _mapping, types) {
+  const dimensionsById = keyBy(dimensions, "id");
+  const mapping = { ..._mapping };
 
+  Object.keys(_mapping).forEach((id) => {
+    const dim = dimensionsById[id];
+    //dimension not mapped: set value to undefined
+    if (!mapping[id].value || mapping[id].value === undefined) {
+      mapping[id].value = undefined;
+    } else {
+      //not-multiple values back to scalar
+      if (!dim.multiple) {
+        const v = Array.isArray(mapping[id].value)
+          ? mapping[id].value[0]
+          : mapping[id].value;
+        mapping[id].value = v
+        //setting data type
+        mapping[id].dataType = get(types, v);
+      } else {
+        //setting data types for multiple dimensions
+        mapping[id].dataType = mapping[id].value.map((v) => get(types, v));
+      }
+    }
+  });
+  return mapping;
+}
 
 function hydrateProxies(dimensions, mapping) {
   let m = mapValues(mapping, (v) => ({
@@ -231,8 +254,17 @@ export function arrayGetter(names) {
 function makeMapper(dimensionsWithOperations, _mapping, types) {
   validateDeclarativeMapperDefinition(dimensionsWithOperations);
   let mapping = hydrateProxies(dimensionsWithOperations, _mapping);
-  mapping = validateMapping(dimensionsWithOperations, mapping, types);
-  
+  validateMapping(dimensionsWithOperations, mapping, types);
+
+  mapping = mapValues(_mapping, (v) => ({
+    ...v,
+    value: Array.isArray(v.value)
+      ? v.value
+      : isString(v.value)
+      ? [v.value]
+      : [],
+  }));
+
   const mappingValues = mapValues(mapping, (v) => v.value);
   const mappingConfigs = mapValues(mapping, (v) => get(v, "config"));
 
@@ -385,18 +417,15 @@ function makeMapper(dimensionsWithOperations, _mapping, types) {
         return item;
       });
     } else {
-
       let getterFunctionsById = getDimensions.reduce((acc, id) => {
         acc[id] = arrayGetter(mappingValues[id]);
-        return acc
-      }, {})
+        return acc;
+      }, {});
 
-      let itemFiller = row => mapValues(
-        getterFunctionsById, f => f(row)
-      )
-      
+      let itemFiller = (row) => mapValues(getterFunctionsById, (f) => f(row));
+
       tabularData = data.map((row) => {
-        let item = itemFiller(row)
+        let item = itemFiller(row);
         if (grouperDimension && mappingValues[grouperDimension]) {
           if (Array.isArray(mappingValues[grouperDimension])) {
             item[grouperDimension] = mappingValues[grouperDimension].map((v) =>
@@ -409,8 +438,8 @@ function makeMapper(dimensionsWithOperations, _mapping, types) {
         // getter for rollup aggregation
         // notice that the name __leaf is used only internally.
         if (
-          rollupGrouperDimension &&
-          mappingConfigs[rollupGrouperDimension] || rollupLeafDimension
+          (rollupGrouperDimension && mappingConfigs[rollupGrouperDimension]) ||
+          rollupLeafDimension
         ) {
           let rollupConfigAggregationTarget;
           if (rollupLeafDimension) {

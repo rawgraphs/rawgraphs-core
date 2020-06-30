@@ -1,7 +1,9 @@
 import { select } from "d3-selection";
 import { scaleLinear } from "d3-scale";
+import {arrayGetter} from '../../src';
 import { extent } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
+
 
 const testChart = {
 
@@ -22,8 +24,21 @@ const testChart = {
     },
   ],
 
+  mapData: function(data, mapping, dataTypes, dimensions){
+    
+    const getX = arrayGetter(mapping['x'].value)
+    const getY = arrayGetter(mapping['y'].value)
+    
+    const out = data.map(d => ({
+      x: getX(d),
+      y: getY(d),
+      
+    }))
+    return out
+  },
 
-  mapData: {
+  //declarative version ... with automatic mapping
+  mapData_: {
     x : "get",
     y: "get",
   },
