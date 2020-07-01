@@ -21,16 +21,19 @@ export const baseOptions = {
   width: {
     type: "number",
     default: 500,
+    container : 'width'
   },
 
   height: {
     type: "number",
     default: 500,
+    container : 'height'
   },
 
   background: {
     type: "color",
     default: "#FFFFFF",
+    container : 'background'
   },
 
   margins: {
@@ -126,9 +129,34 @@ class Chart {
       "http://www.w3.org/2000/svg",
       "svg"
     );
-    container.setAttribute("width", this._visualOptions.width);
-    container.setAttribute("height", this._visualOptions.height);
-    container.style["background-color"] = this._visualOptions.background;
+
+    const options = this._visualModel.options || baseOptions
+    const optionsValues = getDefaultOptions(baseOptions, this._visualOptions)
+
+    const widthOptions = Object.keys(options).filter(
+      name => get(options[name], 'container') === 'width'
+    )
+    const heightOptions = Object.keys(options).filter(
+      name => get(options[name], 'container') === 'height'
+    )
+    const backgroundOptions = Object.keys(options).filter(
+      name => get(options[name], 'container') === 'background'
+    )
+    
+    const width = widthOptions.reduce((acc, item) => {
+      return acc + optionsValues[item] || 0
+    }, 0)
+    const height = heightOptions.reduce((acc, item) => {
+      return acc + optionsValues[item] || 0
+    }, 0)
+    
+    container.setAttribute("width", width);
+    container.setAttribute("height", height);
+
+    if(backgroundOptions.length){
+      container.style["background"] = optionsValues[backgroundOptions[0]];
+    }
+    
     return container;
   }
 
