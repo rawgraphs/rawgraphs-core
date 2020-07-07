@@ -207,11 +207,21 @@ function parseRows(data, dataTypes) {
 }
 
 /**
+ * @typedef ParserResult
+ * @global
+ * @type {object}
+ * @property {Array} dataset parsed dataset (list of objects)
+ * @property {Object} dataTypes dataTypes used for parsing dataset 
+ * @property {Array} errors list of errors from parsing
+ */
+
+
+/**
  * Dataset parser
  *
  * @param {array} data data to be parsed (list of objects)
  * @param {object} types optional column types
- * @return {array} dataset, dataTypes, errors
+ * @return {ParserResult} dataset, dataTypes, errors
  */
 export function parseDataset(data, types) {
   const dataTypes = types || inferTypes(data);
