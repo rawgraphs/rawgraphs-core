@@ -14,6 +14,7 @@ import maxBy from "lodash/maxBy";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
+import { RAWError } from './utils'
 
 dayjs.extend(customParseFormat);
 
@@ -147,6 +148,19 @@ function basicGetter(rowValue, dataType) {
   return dataType(rowValue);
 }
 
+
+function checkType(value, type){
+ 
+  if(type === Number && isNaN(value )){
+    throw new RAWError(`invalid type number for value ${value}`)
+  }
+
+  if(type === Date && (!(value instanceof Date) || !dayjs(value).isValid())){
+    throw new RAWError(`invalid type date for value ${value}`)
+  }
+
+}
+
 // builds a parser function
 function rowParser(types, onError) {
   let propGetters = {};
@@ -158,11 +172,13 @@ function rowParser(types, onError) {
     propGetters[k] = (row) => {
       const rowValue = get(row, k);
       const formattedValue = formatter ? formatter(rowValue) : rowValue;
-      return basicGetter(formattedValue, formatter ? (x) => x : type);
+      const out = basicGetter(formattedValue, formatter ? (x) => x : type);
+      checkType(out, type)
+      return out
     };
   });
 
-  return function (row) {
+  return function (row, i) {
     const error = {};
     let out = {};
     Object.keys(propGetters).forEach((k) => {
@@ -174,8 +190,9 @@ function rowParser(types, onError) {
         error[k] = err;
       }
     });
+    
     if (Object.keys(error).length) {
-      onError && onError(error);
+      onError && onError(error, i);
     }
     return out;
   };
@@ -184,17 +201,27 @@ function rowParser(types, onError) {
 
 function parseRows(data, dataTypes) {
   let errors = [];
-  const parser = rowParser(dataTypes, (error) => errors.push(error));
+  const parser = rowParser(dataTypes, (error, i) => errors.push({row: i, error}));
   const dataset = data.map(parser);
   return [dataset, errors];
 }
+
+/**
+ * @typedef ParserResult
+ * @global
+ * @type {object}
+ * @property {Array} dataset parsed dataset (list of objects)
+ * @property {Object} dataTypes dataTypes used for parsing dataset 
+ * @property {Array} errors list of errors from parsing
+ */
+
 
 /**
  * Dataset parser
  *
  * @param {array} data data to be parsed (list of objects)
  * @param {object} types optional column types
- * @return {array} dataset, dataTypes, errors
+ * @return {ParserResult} dataset, dataTypes, errors
  */
 export function parseDataset(data, types) {
   const dataTypes = types || inferTypes(data);
