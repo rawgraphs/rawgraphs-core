@@ -173,9 +173,11 @@ export function validateMapping(dimensions, _mapping, types) {
 
 export function annotateMapping(dimensions, _mapping, types) {
   const dimensionsById = keyBy(dimensions, "id");
-  const mapping = { ..._mapping };
-
+  let mapping = {}
+  
   Object.keys(_mapping).forEach((id) => {
+    mapping[id] = {..._mapping[id]}
+
     const dim = dimensionsById[id];
     //dimension not mapped: set value to undefined
     if (!mapping[id].value || mapping[id].value === undefined) {
