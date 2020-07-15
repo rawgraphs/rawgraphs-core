@@ -41,11 +41,7 @@ export const baseOptions = {
     container: { style: "background" },
     group: "artboard",
   },
-
-  
 };
-
-
 
 const inputTypeToOptions = {
   text: {
@@ -155,7 +151,6 @@ function validateText(def, value) {
 }
 
 function validateNumber(def, value) {
-
   if (!isNumber(value)) {
     throw new RAWError("Number expected");
   }
@@ -181,9 +176,8 @@ function validateBoolean(def, value) {
   return value;
 }
 
-
 /**
- * default validators. 
+ * default validators.
  * #TODO: registration approach?
  */
 const validators = {
@@ -195,11 +189,10 @@ const validators = {
   boolean: validateBoolean,
 };
 
-
 /**
  * options validation and deserialization
  *
- * @param {object} optionsConfig 
+ * @param {object} optionsConfig
  * @param {object} optionsValues
  */
 export function validateOptions(optionsConfig, optionsValues) {
@@ -207,23 +200,25 @@ export function validateOptions(optionsConfig, optionsValues) {
   let errors = {};
 
   //validating not undefined values
-  Object.keys(optionsValues).filter(k => optionsValues[k] !== undefined).map((name) => {
-    const optionConfig = optionsConfig[name];
-    if (!optionConfig) {
-      throw new ValidationError(`Visual option ${name} is not available`);
-    }
-
-    const validator = get(validators, optionConfig.type);
-    if (validator) {
-      try {
-        validated[name] = validator(optionConfig, optionsValues[name]);
-      } catch (err) {
-        errors[name] = err.message;
+  Object.keys(optionsValues)
+    .filter((k) => optionsValues[k] !== undefined)
+    .map((name) => {
+      const optionConfig = optionsConfig[name];
+      if (!optionConfig) {
+        throw new ValidationError(`Visual option ${name} is not available`);
       }
-    } else {
-      validated[name] = optionsValues[name];
-    }
-  });
+
+      const validator = get(validators, optionConfig.type);
+      if (validator) {
+        try {
+          validated[name] = validator(optionConfig, optionsValues[name]);
+        } catch (err) {
+          errors[name] = err.message;
+        }
+      } else {
+        validated[name] = optionsValues[name];
+      }
+    });
 
   const errorNames = Object.keys(errors);
   if (errorNames.length) {

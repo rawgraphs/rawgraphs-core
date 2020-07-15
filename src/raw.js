@@ -187,7 +187,7 @@ class Chart {
 
 
   _getOptions(){
-    const optionsConfig = getOptionsConfig(this._visualModel.options);
+    const optionsConfig = getOptionsConfig(this._visualModel.visualOptions);
     const optionsValues = getOptionsValues(optionsConfig, this._visualOptions);
     return { optionsConfig, optionsValues }
   }
@@ -372,10 +372,6 @@ class DOMChart extends Chart {
  */
 function chart(visualModel, config = {}) {
   const { data, dataTypes, mapping, visualOptions = {} } = config;
-  // const finalVisualOptions = getOptions(
-  //   getDefaultOptions(baseOptions),
-  //   visualOptions
-  // );
   return new Chart(visualModel, data, dataTypes, mapping, visualOptions);
 }
 
