@@ -11,36 +11,14 @@ import {
 } from "./mapping";
 import { inferTypes } from "./dataset";
 import { RAWError } from "./utils";
-import { getOptions, getDefaultOptions } from "./options";
+import {
+  getOptionsValues,
+  getOptionsConfig,
+  getContainerOptions,
+} from "./options";
 import isObject from "lodash/isObject";
 import isFunction from "lodash/isFunction";
 import mapValues from "lodash/mapValues";
-import get from "lodash/get";
-
-export const baseOptions = {
-  width: {
-    type: "number",
-    default: 500,
-    container : 'width'
-  },
-
-  height: {
-    type: "number",
-    default: 500,
-    container : 'height'
-  },
-
-  background: {
-    type: "color",
-    default: "#FFFFFF",
-    container : 'background'
-  },
-
-  margins: {
-    type: "number",
-    default: 10,
-  },
-};
 
 /**
  * @class
@@ -120,6 +98,23 @@ class Chart {
   }
 
   /**
+   * @param {VisualOptions} _visualOptions
+   * @returns {Chart}
+   */
+  visualOptions(_visualOptions) {
+    if (!arguments.length) {
+      return this._visualOptions;
+    }
+    return new RAWChart(
+      this._visualModel,
+      this._data,
+      this._dataTypes,
+      this._mapping,
+      _visualOptions
+    );
+  }
+
+  /**
    * @param {Node} node
    * @returns {Node}
    */
@@ -130,33 +125,25 @@ class Chart {
       "svg"
     );
 
-    const options = this._visualModel.options || baseOptions
-    const optionsValues = getDefaultOptions(baseOptions, this._visualOptions)
+    const { optionsConfig, optionsValues } = this._getOptions()
 
-    const widthOptions = Object.keys(options).filter(
-      name => get(options[name], 'container') === 'width'
-    )
-    const heightOptions = Object.keys(options).filter(
-      name => get(options[name], 'container') === 'height'
-    )
-    const backgroundOptions = Object.keys(options).filter(
-      name => get(options[name], 'container') === 'background'
-    )
-    
-    const width = widthOptions.reduce((acc, item) => {
-      return acc + optionsValues[item] || 0
-    }, 0)
-    const height = heightOptions.reduce((acc, item) => {
-      return acc + optionsValues[item] || 0
-    }, 0)
-    
-    container.setAttribute("width", width);
-    container.setAttribute("height", height);
-
-    if(backgroundOptions.length){
-      container.style["background"] = optionsValues[backgroundOptions[0]];
+    const { width, height, style } = getContainerOptions(
+      optionsConfig,
+      optionsValues
+    );
+    if (width) {
+      container.setAttribute("width", width);
     }
-    
+    if (height) {
+      container.setAttribute("height", height);
+    }
+
+    if (style) {
+      Object.keys(style).forEach((k) => {
+        container.style[k] = style[k];
+      });
+    }
+
     return container;
   }
 
@@ -198,6 +185,15 @@ class Chart {
     }
   }
 
+
+  _getOptions(){
+    const optionsConfig = getOptionsConfig(this._visualModel.options);
+    const optionsValues = getOptionsValues(optionsConfig, this._visualOptions);
+    return { optionsConfig, optionsValues }
+  }
+
+
+
   /**
    * @param {Node} node
    * @returns {DOMChart}
@@ -216,10 +212,12 @@ class Chart {
       this._dataTypes
     );
 
+    const { optionsConfig, optionsValues } = this._getOptions()
+    
     this._visualModel.render(
       container,
       vizData,
-      this._visualOptions,
+      optionsValues,
       annotatedMapping,
       this._data
     );
@@ -257,10 +255,12 @@ class Chart {
       this._dataTypes
     );
 
+    const { optionsConfig, optionsValues } = this._getOptions()
+
     this._visualModel.render(
       container,
       vizData,
-      this._visualOptions,
+      optionsValues,
       annotatedMapping,
       this._data
     );
@@ -372,11 +372,11 @@ class DOMChart extends Chart {
  */
 function chart(visualModel, config = {}) {
   const { data, dataTypes, mapping, visualOptions = {} } = config;
-  const finalVisualOptions = getOptions(
-    getDefaultOptions(baseOptions),
-    visualOptions
-  );
-  return new Chart(visualModel, data, dataTypes, mapping, finalVisualOptions);
+  // const finalVisualOptions = getOptions(
+  //   getDefaultOptions(baseOptions),
+  //   visualOptions
+  // );
+  return new Chart(visualModel, data, dataTypes, mapping, visualOptions);
 }
 
 export default chart;

@@ -1,12 +1,10 @@
 import { select } from "d3-selection";
 import { scaleLinear } from "d3-scale";
-import {arrayGetter} from '../../src';
+import { arrayGetter } from "../../src";
 import { extent } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 
-
 const testChart = {
-
   dimensions: [
     {
       id: "x",
@@ -24,22 +22,20 @@ const testChart = {
     },
   ],
 
-  mapData: function(data, mapping, dataTypes, dimensions){
-    
-    const getX = arrayGetter(mapping['x'].value)
-    const getY = arrayGetter(mapping['y'].value)
-    
-    const out = data.map(d => ({
+  mapData: function (data, mapping, dataTypes, dimensions) {
+    const getX = arrayGetter(mapping["x"].value);
+    const getY = arrayGetter(mapping["y"].value);
+
+    const out = data.map((d) => ({
       x: getX(d),
       y: getY(d),
-      
-    }))
-    return out
+    }));
+    return out;
   },
 
   //declarative version ... with automatic mapping
   mapData_: {
-    x : "get",
+    x: "get",
     y: "get",
   },
 
@@ -47,9 +43,19 @@ const testChart = {
   //   return []
   // },
 
-  
+
+  options: {
+    "setOriginAt0" : {
+      type: "boolean",
+      default: true,
+      group: "chart",
+      label: "Set origin at 0,0"
+
+    }
+
+  },
+
   render: function (node, data, visualOptions, mapping, originalData) {
-  
     const { width, height } = visualOptions;
     const margin = {
       top: 25,
@@ -99,7 +105,7 @@ const testChart = {
         );
 
     const svg = select(node);
-    
+
     svg.append("g").call(xAxis);
 
     svg.append("g").call(yAxis);
@@ -130,8 +136,6 @@ const testChart = {
       .attr("x", (d) => x(d.x) + 7)
       .attr("y", (d) => y(d.y))
       .text((d) => d.y);
-
-   
   },
 };
 

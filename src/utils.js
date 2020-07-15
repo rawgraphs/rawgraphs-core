@@ -5,3 +5,13 @@ export class RAWError extends Error {
     this.message = message
   }
 }
+
+
+
+export class ValidationError extends Error {
+  constructor(errors) {
+    super(message)
+    this.name = 'ValidationError'
+    this.errors = errors
+  }
+}
