@@ -38,9 +38,9 @@ class Chart {
 
     if (
       data &&
-      (!this._dataTypes ||
-        (typeof this._dataType === "object" &&
-          Object.keys(this._dataTypes).length))
+      (!dataTypes ||
+        (typeof dataTypes === "object" &&
+          Object.keys(dataTypes).length === 0))
     ) {
       this._dataTypes = inferTypes(data);
     } else {
