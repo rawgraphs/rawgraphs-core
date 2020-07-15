@@ -10,7 +10,8 @@ export class RAWError extends Error {
 
 export class ValidationError extends Error {
   constructor(errors) {
-    super(message)
+    //super(message)
+    super('validation error')
     this.name = 'ValidationError'
     this.errors = errors
   }

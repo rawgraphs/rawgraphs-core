@@ -206,8 +206,8 @@ export function validateOptions(optionsConfig, optionsValues) {
   let validated = {};
   let errors = {};
 
-  //validating values
-  Object.keys(optionsValues).map((name) => {
+  //validating not undefined values
+  Object.keys(optionsValues).filter(k => optionsValues[k] !== undefined).map((name) => {
     const optionConfig = optionsConfig[name];
     if (!optionConfig) {
       throw new ValidationError(`Visual option ${name} is not available`);
