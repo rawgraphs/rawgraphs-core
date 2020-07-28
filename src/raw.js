@@ -131,6 +131,7 @@ class Chart {
       optionsConfig,
       optionsValues
     );
+
     if (width) {
       container.setAttribute("width", width);
     }

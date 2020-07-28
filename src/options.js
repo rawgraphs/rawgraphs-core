@@ -101,11 +101,10 @@ export function getContainerOptions(optionsConfig, optionsValues) {
   const heightOptions = Object.keys(optionsConfig).filter(
     (name) => get(optionsConfig[name], "container") === "height"
   );
-  const backgroundOptions = Object.keys(optionsConfig).filter(
-    (name) =>
-      get(optionsConfig[name], "container") === "style" &&
-      get(optionsConfig[name], "container")["style"] === "background"
-  );
+  const backgroundOptions = Object.keys(optionsConfig).filter((name) => {
+    const container = get(optionsConfig[name], "container");
+    return get(container, "style") === "background";
+  });
 
   const width = widthOptions.reduce((acc, item) => {
     return acc + optionsValues[item] || 0;
