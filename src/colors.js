@@ -132,7 +132,7 @@ function getUserScaleValuesMapped(userScaleValues) {
 }
 
 export function getInitialScaleValues(domain, scaleType, interpolator) {
-  const inputScale = getScale(scaleType, domain, interpolator);
+  const inputScale = getPresetScale(scaleType, domain, interpolator);
   return domain.map((d, i) => ({
     domain: d,
     range: d3Color.color(inputScale(d)).hex(),
