@@ -14,35 +14,12 @@ import maxBy from "lodash/maxBy";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
-import { RAWError } from './utils'
+import { RAWError, getType } from './utils'
 
 dayjs.extend(customParseFormat);
 
 dayjs.extend(utc);
 
-function getType(dataType) {
-  if (isPlainObject(dataType)) {
-    return getType(dataType.type);
-  }
-
-  if (isString(dataType)) {
-    switch (dataType.toLowerCase()) {
-      case "string":
-        return String;
-      case "number":
-        return Number;
-      case "boolean":
-        return Boolean;
-      case "date":
-        return Date;
-
-      default:
-        return String;
-    }
-  }
-
-  return dataType;
-}
 
 function getFormatter(dataType) {
   if (!isPlainObject(dataType)) {
@@ -150,7 +127,6 @@ function basicGetter(rowValue, dataType) {
 
 
 function checkType(value, type){
- 
   if(type === Number && isNaN(value )){
     throw new RAWError(`invalid type number for value ${value}`)
   }

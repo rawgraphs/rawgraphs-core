@@ -130,6 +130,7 @@ export function validateMapping(dimensions, _mapping, types) {
 
       values.forEach((v) => {
         const type = types[v];
+        console.log("type", type)
         if (validTypes && validTypes.indexOf(type.toLowerCase()) === -1) {
           errors.push(
             `Invalid type: column ${v} of type ${type} cannot be used on dimension with id ${d}, accepting ${validTypes.join(
