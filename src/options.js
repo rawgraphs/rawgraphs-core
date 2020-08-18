@@ -168,11 +168,11 @@ function validateColor(def, value) {
   return value;
 }
 
-function validateColorScale(def, value, mapping, dataTypes, data) {
+function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
   
   const dimension = def.dimension
   const mappingValue = get(mapping, `[${dimension}].value`);
-  const colorDataset = data.map((d) => get(d, mappingValue))
+  const colorDataset = vizData.map(d => get(d, def.dimension))
   const colorDataType = dataTypes[mappingValue]
   ? getTypeName(dataTypes[mappingValue])
   : undefined;
@@ -218,7 +218,7 @@ const validators = {
  * @param {object} optionsConfig
  * @param {object} optionsValues
  */
-export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes, data) {
+export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes, data, vizData) {
   let validated = {};
   let errors = {};
 
@@ -234,7 +234,7 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
       const validator = get(validators, optionConfig.type);
       if (validator) {
         try {
-          validated[name] = validator(optionConfig, optionsValues[name], mapping, dataTypes, data);
+          validated[name] = validator(optionConfig, optionsValues[name], mapping, dataTypes, data, vizData);
         } catch (err) {
           errors[name] = err.message;
         }
@@ -251,11 +251,11 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
   return validated;
 }
 
-export function getOptionsValues(definition, values, mapping, dataTypes, data) {
+export function getOptionsValues(definition, values, mapping, dataTypes, data, vizData) {
   const opts = getDefaultOptionsValues(definition);
   const allValues = {
     ...opts,
     ...values,
   };
-  return validateOptions(definition, allValues, mapping, dataTypes, data);
+  return validateOptions(definition, allValues, mapping, dataTypes, data, vizData);
 }
