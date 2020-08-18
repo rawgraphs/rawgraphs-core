@@ -4,6 +4,7 @@ import { scaleDiverging, scaleSequential, scaleOrdinal } from "d3-scale";
 import { min, mean, max, extent } from "d3-array";
 import isEqual from "lodash/isEqual";
 import { quantize, interpolateRgbBasis } from "d3-interpolate";
+import uniq from "lodash/uniq";
 
 const sequential = {
   interpolateBlues: {
@@ -68,12 +69,12 @@ export function getPresetScale(scaleType, domain, interpolator) {
       .unknown("#ccc")
       .clamp(true);
   } else {
+
+    const interpolatorValue = colorPresets.ordinal[interpolator].value
     let scaleRange =
-      interpolator === "schemeCategory10"
-        ? colorPresets.ordinal[interpolator].value
-        : colorPresets.ordinal[interpolator].value[domain.length]
-        ? colorPresets.ordinal[interpolator].value[domain.length]
-        : quantize(colorPresets.ordinal[interpolator].value, domain.length);
+      Array.isArray(interpolatorValue) 
+      ? interpolatorValue
+      : quantize(interpolatorValue, domain.length)
 
     let finalDomain = domain;
 
@@ -84,14 +85,14 @@ export function getPresetScale(scaleType, domain, interpolator) {
       //const rangeToAdd = Array.from({length: diff}, () => "#ccc")
       //scaleRange = [...scaleRange, ...rangeToAdd]
     }
-
+    
     return scaleOrdinal().domain(finalDomain).range(scaleRange).unknown("#ccc");
   }
 }
 
-function getColorDomain(colorDataset, colorDataType, scaleType) {
-  if (colorDataType === "string") {
-    return [...new Set(colorDataset)];
+export function getColorDomain(colorDataset, colorDataType, scaleType) {
+  if (colorDataType === "string" || scaleType === "ordinal") {
+    return uniq(colorDataset.sort());
   } else {
     if (scaleType === "diverging") {
       return [min(colorDataset), mean(colorDataset), max(colorDataset)];
@@ -148,15 +149,10 @@ export function getColorScale(
   userScaleValues
 ) {
   const domain = getColorDomain(colorDataset, colorDataType, scaleType);
-  // console.log("domain", domain, scaleType)
   const presetScale = getPresetScale(scaleType, domain, interpolator);
-  // console.log("inputScale", inputScale)
   const scaleValues =
     userScaleValues || getInitialScaleValues(domain, scaleType, interpolator);
-  // console.log("scaleValues", scaleValues)
   const scaleValuesMapped = getUserScaleValuesMapped(scaleValues);
-  // console.log("scaleValuesMapped", scaleValuesMapped)
   const finalScale = finalizeScale(presetScale, scaleValuesMapped, scaleType);
-  // console.log("finalScale", finalScale)
   return finalScale;
 }

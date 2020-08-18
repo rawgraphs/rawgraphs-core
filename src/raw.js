@@ -189,7 +189,7 @@ class Chart {
 
   _getOptions(){
     const optionsConfig = getOptionsConfig(this._visualModel.visualOptions);
-    const optionsValues = getOptionsValues(optionsConfig, this._visualOptions);
+    const optionsValues = getOptionsValues(optionsConfig, this._visualOptions, this._mapping, this._dataTypes, this._data);
     return { optionsConfig, optionsValues }
   }
 
@@ -214,7 +214,7 @@ class Chart {
     );
 
     const { optionsConfig, optionsValues } = this._getOptions()
-    
+
     this._visualModel.render(
       container,
       vizData,

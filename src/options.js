@@ -7,8 +7,9 @@ import get from "lodash/get";
 import isString from "lodash/isString";
 import isNumber from "lodash/isNumber";
 import isArray from "lodash/isArray";
-import { ValidationError, RAWError } from "./utils";
+import { ValidationError, RAWError, getTypeName } from "./utils";
 import mapValues from "lodash/mapValues";
+import { getColorScale } from './colors'
 
 export const baseOptions = {
   width: {
@@ -167,8 +168,31 @@ function validateColor(def, value) {
   return value;
 }
 
-function validateColorScale(def, value) {
-  return value;
+function validateColorScale(def, value, mapping, dataTypes, data) {
+  
+  const dimension = def.dimension
+  const mappingValue = get(mapping, `[${dimension}].value`);
+  const colorDataset = data.map((d) => get(d, mappingValue))
+  const colorDataType = dataTypes[mappingValue]
+  ? getTypeName(dataTypes[mappingValue])
+  : undefined;
+
+  if(!mappingValue || !colorDataset || !colorDataset.length || !colorDataType){
+    throw new RAWError("Cannot instantiate color scale");
+  }
+
+  const {
+    scaleType,
+    interpolator,
+    userScaleValues,
+  } = value
+  const scale = getColorScale(
+    colorDataset,
+    colorDataType,
+    scaleType,
+    interpolator,
+    userScaleValues)
+  return scale;
 }
 
 function validateBoolean(def, value) {
@@ -194,7 +218,7 @@ const validators = {
  * @param {object} optionsConfig
  * @param {object} optionsValues
  */
-export function validateOptions(optionsConfig, optionsValues) {
+export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes, data) {
   let validated = {};
   let errors = {};
 
@@ -210,7 +234,7 @@ export function validateOptions(optionsConfig, optionsValues) {
       const validator = get(validators, optionConfig.type);
       if (validator) {
         try {
-          validated[name] = validator(optionConfig, optionsValues[name]);
+          validated[name] = validator(optionConfig, optionsValues[name], mapping, dataTypes, data);
         } catch (err) {
           errors[name] = err.message;
         }
@@ -227,11 +251,11 @@ export function validateOptions(optionsConfig, optionsValues) {
   return validated;
 }
 
-export function getOptionsValues(definition, values) {
+export function getOptionsValues(definition, values, mapping, dataTypes, data) {
   const opts = getDefaultOptionsValues(definition);
   const allValues = {
     ...opts,
     ...values,
   };
-  return validateOptions(definition, allValues);
+  return validateOptions(definition, allValues, mapping, dataTypes, data);
 }
