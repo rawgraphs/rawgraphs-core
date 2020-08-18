@@ -56,7 +56,7 @@ export const colorPresets = {
   ordinal,
 };
 
-function getPresetScale(scaleType, domain, interpolator) {
+export function getPresetScale(scaleType, domain, interpolator) {
   if (scaleType === "sequential") {
     return scaleSequential(colorPresets.sequential[interpolator].value)
       .domain(domain)
