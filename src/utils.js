@@ -41,3 +41,9 @@ export function getType(dataType) {
 
   return dataType;
 }
+
+export function getTypeName(dataType) {
+  const type = getType(dataType) 
+  return type.name ? type.name.toLowerCase() : undefined
+  
+}

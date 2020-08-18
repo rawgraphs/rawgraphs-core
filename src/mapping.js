@@ -3,7 +3,7 @@
  * @module mapping
  */
 
-import { RAWError } from "./utils";
+import { RAWError, getTypeName } from "./utils";
 import { getAggregator, getAggregatorArray } from "./expressionRegister";
 import difference from "lodash/difference";
 import get from "lodash/get";
@@ -129,8 +129,7 @@ export function validateMapping(dimensions, _mapping, types) {
       validTypes = validTypes.map((item) => item.toLowerCase());
 
       values.forEach((v) => {
-        const type = types[v];
-        console.log("type", type)
+        const type = getTypeName(types[v]);
         if (validTypes && validTypes.indexOf(type.toLowerCase()) === -1) {
           errors.push(
             `Invalid type: column ${v} of type ${type} cannot be used on dimension with id ${d}, accepting ${validTypes.join(
