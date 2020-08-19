@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
 import { RAWError, getType } from './utils'
+import { timeParse } from 'd3-time-format'
 
 dayjs.extend(customParseFormat);
 
@@ -51,18 +52,28 @@ function getValueType(value, strict) {
   }
 
   if (isNumber(jsonValue)) {
-    return Number;
+    return "number";
   }
 
   if (isBoolean(jsonValue)) {
-    return Boolean;
+    return "boolean";
   }
 
-  if (isDate(value)) {
-    return Date;
+  if(isDate(value)) {
+    return "date";
   }
 
-  return String;
+  //#todo: generalize somewhere 
+  const dateFormatTest = 'YYYY-MM-DD'
+  const testDateWithFormat = dayjs(value, dateFormatTest).utc()
+  if(testDateWithFormat.isValid()){
+    return {
+      type: "date",
+      dateFormat: dateFormatTest
+    }
+  }
+
+  return "string";
 }
 
 function castTypeToString(type) {
