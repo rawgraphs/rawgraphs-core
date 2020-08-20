@@ -8,19 +8,19 @@ import isBoolean from "lodash/isBoolean";
 import isDate from "lodash/isDate";
 import isPlainObject from "lodash/isPlainObject";
 import isString from "lodash/isString";
+import isNaN from "lodash/isNaN";
 import get from "lodash/get";
 import isFunction from "lodash/isFunction";
 import maxBy from "lodash/maxBy";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
-import { RAWError, getType, NumberParser } from './utils'
-import { timeParse } from 'd3-time-format'
+import { RAWError, getType, NumberParser } from "./utils";
+import { timeParse } from "d3-time-format";
 
 dayjs.extend(customParseFormat);
 
 dayjs.extend(utc);
-
 
 function getFormatter(dataType) {
   if (!isPlainObject(dataType)) {
@@ -36,12 +36,17 @@ function getFormatter(dataType) {
       return (value) => dayjs(value, dataType.dateFormat).utc().toDate();
     }
   }
-  
+
   if (getType(dataType) === Number && isPlainObject(dataType)) {
-    const { locale, decimal, group, numerals } = dataType
+    const { locale, decimal, group, numerals } = dataType;
     if (locale || decimal || group || numerals) {
-      const numberParser = new NumberParser({locale, decimal, group, numerals})
-      return (value) => numberParser.parse(value)
+      const numberParser = new NumberParser({
+        locale,
+        decimal,
+        group,
+        numerals,
+      });
+      return (value) => numberParser.parse(value);
     }
   }
 
@@ -51,9 +56,9 @@ function getFormatter(dataType) {
   return undefined;
 }
 
-function getValueType(value, parsingOptions={}) {
-  const { strict, locale, decimal, group, numerals } = parsingOptions
-  
+function getValueType(value, parsingOptions = {}) {
+  const { strict, locale, decimal, group, numerals } = parsingOptions;
+
   let jsonValue = value;
   if (!strict) {
     try {
@@ -61,18 +66,17 @@ function getValueType(value, parsingOptions={}) {
     } catch (err) {}
   }
 
-  if(true || locale || decimal ||  group || numerals){
-    const numberParser = new NumberParser({locale, decimal, group, numerals})
-    const numberFromParser = numberParser.parse(jsonValue)
-    console.log("xxx", jsonValue, numberFromParser,numberParser)
-    if (isNumber(numberFromParser)) {
+  if (true || locale || decimal || group || numerals) {
+    const numberParser = new NumberParser({ locale, decimal, group, numerals });
+    const numberFromParser = numberParser.parse(jsonValue);
+    if (isNumber(numberFromParser) && !isNaN(numberFromParser)) {
       return {
         type: "number",
         locale,
         decimal,
-        group, 
+        group,
         numerals,
-      }
+      };
     }
   }
 
@@ -84,18 +88,18 @@ function getValueType(value, parsingOptions={}) {
     return "boolean";
   }
 
-  if(isDate(value)) {
+  if (isDate(value)) {
     return "date";
   }
 
-  //#todo: generalize somewhere 
-  const dateFormatTest = 'YYYY-MM-DD'
-  const testDateWithFormat = dayjs(value, dateFormatTest).utc()
-  if(testDateWithFormat.isValid()){
+  //#todo: generalize somewhere
+  const dateFormatTest = "YYYY-MM-DD";
+  const testDateWithFormat = dayjs(value, dateFormatTest).utc();
+  if (testDateWithFormat.isValid()) {
     return {
       type: "date",
-      dateFormat: dateFormatTest
-    }
+      dateFormat: dateFormatTest,
+    };
   }
 
   return "string";
@@ -120,8 +124,6 @@ function castTypesToString(types) {
  * @return {object} the types guessed (object with column names as keys and value type as value)
  */
 export function inferTypes(data, parsingOptions) {
-  console.log("inferTypes", parsingOptions)
-  
   let candidateTypes = {};
   if (!Array.isArray(data)) {
     return candidateTypes;
@@ -135,7 +137,6 @@ export function inferTypes(data, parsingOptions) {
       const inferredType = getValueType(datum[key], parsingOptions);
       candidateTypes[key].push(castTypeToString(inferredType));
     });
-    console.log(123, datum , candidateTypes)
   });
 
   let inferredTypes = {};
@@ -164,22 +165,20 @@ function basicGetter(rowValue, dataType) {
   return dataType(rowValue);
 }
 
-
-function checkType(value, type){
-  if(type === Number && isNaN(value )){
-    throw new RAWError(`invalid type number for value ${value}`)
+function checkType(value, type) {
+  if (type === Number && isNaN(value)) {
+    throw new RAWError(`invalid type number for value ${value}`);
   }
 
-  if(type === Date && (!(value instanceof Date) || !dayjs(value).isValid())){
-    throw new RAWError(`invalid type date for value ${value}`)
+  if (type === Date && (!(value instanceof Date) || !dayjs(value).isValid())) {
+    throw new RAWError(`invalid type date for value ${value}`);
   }
-
 }
 
 // builds a parser function
-function rowParser(types, parsingOptions={}, onError) {
+function rowParser(types, parsingOptions = {}, onError) {
   let propGetters = {};
-  const { strict, locale, decimal, group, numerals } = parsingOptions
+  const { strict, locale, decimal, group, numerals } = parsingOptions;
 
   Object.keys(types).forEach((k) => {
     let dataType = types[k];
@@ -189,8 +188,8 @@ function rowParser(types, parsingOptions={}, onError) {
       const rowValue = get(row, k);
       const formattedValue = formatter ? formatter(rowValue) : rowValue;
       const out = basicGetter(formattedValue, formatter ? (x) => x : type);
-      checkType(out, type)
-      return out
+      checkType(out, type);
+      return out;
     };
   });
 
@@ -206,7 +205,7 @@ function rowParser(types, parsingOptions={}, onError) {
         error[k] = err;
       }
     });
-    
+
     if (Object.keys(error).length) {
       onError && onError(error, i);
     }
@@ -214,10 +213,11 @@ function rowParser(types, parsingOptions={}, onError) {
   };
 }
 
-
 function parseRows(data, dataTypes, parsingOptions) {
   let errors = [];
-  const parser = rowParser(dataTypes, parsingOptions, (error, i) => errors.push({row: i, error}));
+  const parser = rowParser(dataTypes, parsingOptions, (error, i) =>
+    errors.push({ row: i, error })
+  );
   const dataset = data.map(parser);
   return [dataset, errors];
 }
@@ -227,10 +227,9 @@ function parseRows(data, dataTypes, parsingOptions) {
  * @global
  * @type {object}
  * @property {Array} dataset parsed dataset (list of objects)
- * @property {Object} dataTypes dataTypes used for parsing dataset 
+ * @property {Object} dataTypes dataTypes used for parsing dataset
  * @property {Array} errors list of errors from parsing
  */
-
 
 /**
  * Dataset parser
@@ -240,9 +239,8 @@ function parseRows(data, dataTypes, parsingOptions) {
  * @return {ParserResult} dataset, dataTypes, errors
  */
 export function parseDataset(data, types, parsingOptions) {
-  
   const dataTypes = types || inferTypes(data, parsingOptions);
   const [dataset, errors] = parseRows(data, dataTypes, parsingOptions);
 
-  return {dataset, dataTypes, errors};
+  return { dataset, dataTypes, errors };
 }

@@ -16,4 +16,4 @@ export {
   getOptionsConfig,
 } from "./options";
 export { getInitialScaleValues, getColorScale, getPresetScale, colorPresets, getColorDomain } from "./colors";
-export { getTypeName } from './utils'
+export { getTypeName, NumberParser } from './utils'
