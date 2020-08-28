@@ -22,6 +22,10 @@ export function unregisterAggregation(name){
   
 }
 
+export function getAggregatorNames(){
+  return Object.keys(aggregationsRegister)
+}
+
 export function getAggregator(aggregatorExpression){
   if(isFunction(aggregatorExpression)){
     return aggregatorExpression
@@ -52,9 +56,9 @@ export function getAggregatorArray(aggregator, length){
 
 // Aggregators available in RAW
 // general purpose
+registerAggregation("count", items => items.length)
 registerAggregation("last", last)
 registerAggregation("first", first)
-registerAggregation("count", items => items.length)
 registerAggregation("countDistinct", items => uniq(items).length)
 
 // numbers

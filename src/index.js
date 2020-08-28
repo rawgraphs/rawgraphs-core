@@ -9,6 +9,8 @@ export {
 export {
   registerAggregation,
   unregisterAggregation,
+  getAggregator,
+  getAggregatorNames,
 } from "./expressionRegister";
 export {
   baseOptions,

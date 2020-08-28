@@ -179,9 +179,9 @@ export function annotateMapping(dimensions, _mapping, types) {
     mapping[id] = {..._mapping[id]}
 
     const dim = dimensionsById[id];
-    //dimension not mapped: set value to undefined
+    //dimension not mapped: set value to empty
     if (!mapping[id].value || mapping[id].value === undefined) {
-      mapping[id].value = undefined;
+      mapping[id].value = [];
     } else {
       //not-multiple values back to scalar
       if (!dim.multiple) {
@@ -189,6 +189,20 @@ export function annotateMapping(dimensions, _mapping, types) {
           ? mapping[id].value[0]
           : mapping[id].value;
         mapping[id].value = v
+
+        if(dim.aggregation){
+          const aggregationConfig = get(mapping[id], 'config.aggregation', [])
+          const aggregationForDimension = Array.isArray(aggregationConfig)
+          ? aggregationConfig[0]
+          : aggregationConfig;
+        
+          mapping[id].config = {
+            ...(mapping[id].config || {}),
+            aggregation: aggregationForDimension
+          }
+
+        }
+
         //setting data type
         mapping[id].dataType = get(types, v);
       } else {

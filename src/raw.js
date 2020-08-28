@@ -296,6 +296,7 @@ class DOMChart extends Chart {
  * @property {number} [minValues=undefined] min number of items required for the value of the dimension
  * @property {number} [maxValues=undefined]  max number of items required for the value of the dimension
  * @property {Array} validTypes valid data types for the dimension (one or more of 'number', 'string', 'date', 'boolean')
+ * @property {Boolean} [aggregation] true if a dimension will be aggregated
  */
 
 /**
