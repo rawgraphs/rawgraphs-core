@@ -92,7 +92,7 @@ export function getPresetScale(scaleType, domain, interpolator) {
 
 export function getColorDomain(colorDataset, colorDataType, scaleType) {
   if (colorDataType === "string" || scaleType === "ordinal") {
-    return uniq(colorDataset.sort());
+    return uniq([...colorDataset].sort());
   } else {
     if (scaleType === "diverging") {
       return [min(colorDataset), mean(colorDataset), max(colorDataset)];
