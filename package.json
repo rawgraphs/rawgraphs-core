@@ -1,6 +1,10 @@
 {
   "name": "@raw-temp/rawgraphs-core",
+<<<<<<< HEAD
   "version": "0.1.18",
+=======
+  "version": "0.1.19",
+>>>>>>> master
   "description": "",
   "jsdelivr": "lib/index.umd.js",
   "unpkg": "lib/index.umd.js",
@@ -47,9 +51,11 @@
     "d3-axis": "^1.0.12",
     "d3-color": "^1.4.1",
     "d3-dsv": "^1.2.0",
+    "d3-format": "^1.4.4",
     "d3-interpolate": "^1.4.0",
     "d3-scale": "^3.2.1",
     "d3-scale-chromatic": "^1.5.0",
+    "d3-time-format": "^2.2.3",
     "dayjs": "^1.8.22",
     "lodash": "^4.17.15"
   }
