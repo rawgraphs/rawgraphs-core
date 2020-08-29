@@ -66,16 +66,16 @@ function getValueType(value, parsingOptions = {}) {
     } catch (err) {}
   }
 
-  if (true || locale || decimal || group || numerals) {
+  if (locale || decimal || group || numerals) {
     const numberParser = new NumberParser({ locale, decimal, group, numerals });
     const numberFromParser = numberParser.parse(jsonValue);
     if (isNumber(numberFromParser) && !isNaN(numberFromParser)) {
       return {
         type: "number",
         locale,
-        decimal,
-        group,
-        numerals,
+        decimal: numberParser.decimal,
+        group: numberParser.group,
+        numerals: numberParser.numerals,
       };
     }
   }

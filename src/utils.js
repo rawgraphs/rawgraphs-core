@@ -46,7 +46,7 @@ export function getType(dataType) {
 
 export function getTypeName(dataType) {
   const type = getType(dataType);
-  return type.name ? type.name.toLowerCase() : undefined;
+  return type && type.name ? type.name.toLowerCase() : undefined;
 }
 
 // taken from: https://observablehq.com/@mbostock/localized-number-parsing
@@ -80,16 +80,18 @@ export class LocaleNumberParser {
 }
 
 export class NumberParser {
-  constructor({ locale, decimal, group, numerals }) {
+  constructor({ locale, decimal, group, numerals }, useLocale=false) {
     const parts = new Intl.NumberFormat(locale).formatToParts(12345.6);
+    const defaultGroup = ""
+    const defaultDecimal = "."
 
     this.numerals =
       numerals ||
       Array.from(
         new Intl.NumberFormat(locale, { useGrouping: false }).format(9876543210)
       ).reverse();
-    this.group = group || parts.find((d) => d.type === "group").value;
-    this.decimal = decimal || parts.find((d) => d.type === "decimal").value;
+    this.group = group || (useLocale ? parts.find((d) => d.type === "group").value : defaultGroup);
+    this.decimal = decimal || (useLocale ? parts.find((d) => d.type === "decimal").value : defaultDecimal);
 
     const index = new Map(this.numerals.map((d, i) => [d, i]));
     this._groupRegexp = new RegExp(`[${this.group}}]`, "g");
