@@ -1,6 +1,7 @@
 import isPlainObject from "lodash/isPlainObject";
 import isString from "lodash/isString";
 import isNumber from "lodash/isNumber";
+import get from "lodash/get";
 import { formatLocale } from "d3-format";
 
 export class RAWError extends Error {
@@ -80,18 +81,24 @@ export class LocaleNumberParser {
 }
 
 export class NumberParser {
-  constructor({ locale, decimal, group, numerals }, useLocale=false) {
+  constructor({ locale, decimal, group, numerals }, useLocale = false) {
     const parts = new Intl.NumberFormat(locale).formatToParts(12345.6);
-    const defaultGroup = ""
-    const defaultDecimal = "."
+    const defaultGroup = "";
+    const defaultDecimal = ".";
 
     this.numerals =
       numerals ||
       Array.from(
         new Intl.NumberFormat(locale, { useGrouping: false }).format(9876543210)
       ).reverse();
-    this.group = group || (useLocale ? parts.find((d) => d.type === "group").value : defaultGroup);
-    this.decimal = decimal || (useLocale ? parts.find((d) => d.type === "decimal").value : defaultDecimal);
+    this.group =
+      group ||
+      (useLocale ? parts.find((d) => d.type === "group").value : defaultGroup);
+    this.decimal =
+      decimal ||
+      (useLocale
+        ? parts.find((d) => d.type === "decimal").value
+        : defaultDecimal);
 
     const index = new Map(this.numerals.map((d, i) => [d, i]));
     this._groupRegexp = new RegExp(`[${this.group}}]`, "g");
@@ -127,3 +134,4 @@ export class NumberParser {
     return this.formatter(n);
   }
 }
+

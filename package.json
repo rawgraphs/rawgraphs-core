@@ -1,10 +1,6 @@
 {
   "name": "@raw-temp/rawgraphs-core",
-<<<<<<< HEAD
-  "version": "0.1.18",
-=======
   "version": "0.1.19",
->>>>>>> master
   "description": "",
   "jsdelivr": "lib/index.umd.js",
   "unpkg": "lib/index.umd.js",

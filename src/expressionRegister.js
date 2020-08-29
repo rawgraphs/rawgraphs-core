@@ -1,4 +1,4 @@
-import { RAWError } from "./utils";
+import { RAWError, getTypeName } from "./utils";
 import mean from 'lodash/mean'
 import max from 'lodash/max'
 import min from 'lodash/min'
@@ -10,6 +10,7 @@ import isString from 'lodash/isString'
 import uniq from 'lodash/uniq'
 import range from "lodash/range";
 import get from "lodash/get";
+import isPlainObject from "lodash/isPlainObject";
 
 const aggregationsRegister = {}
 
@@ -83,3 +84,46 @@ registerAggregation("tabSeparated", tabSeparated)
 registerAggregation("newLineSeparated", newLineSeparated)
 registerAggregation("list", itemsList)
 registerAggregation("distinct", itemsUniq)
+
+
+export function getDefaultDimensionAggregation(dimension, dataType) {
+  if (!dimension.aggregation) {
+    throw new RAWError(`Dimension ${dimension.id} is not aggregable`);
+  }
+  const names = getAggregatorNames()
+
+  const typeName = getTypeName(dataType);
+  const defaultAggregation = get(dimension, 'aggregationDefault')
+  
+  //#TODO check that default aggregation exists in registered ones
+  if(defaultAggregation){
+    if(isPlainObject(defaultAggregation)){
+      return get(defaultAggregation, typeName, names[0])
+    } else {
+      return defaultAggregation
+    }
+  }
+  return names[0]
+  
+}
+
+
+export function getDimensionAggregator(dimensionId, mapping, dataTypes, dimensions){
+  
+  const dimension = find(dimensions, x => x.id === dimensionId)
+  const mappingValue = get(mapping[dimension.id], 'value', [])
+  
+  function getSingleDim(dimension, columnName){
+    const dataType = dataTypes.get(columnName)
+    const defaultAggregation = getDefaultDimensionAggregation(dimension, dataType)
+    const aggregation = get(mapping[dimension.id], 'config.aggregation', defaultAggregation)
+    const aggregator = getAggregator(aggregation)  
+    return aggregator
+  }
+
+  if(Array.isArray(mappingValue)){
+    return mappingValue.map(columnName =>  getSingleDim(dimension, columnName))
+  } else {
+    return getSingleDim(dimension, mappingValue)
+  }
+}

@@ -11,6 +11,8 @@ export {
   unregisterAggregation,
   getAggregator,
   getAggregatorNames,
+  getDefaultDimensionAggregation,
+  getDimensionAggregator,
 } from "./expressionRegister";
 export {
   baseOptions,

@@ -244,3 +244,4 @@ export function parseDataset(data, types, parsingOptions) {
 
   return { dataset, dataTypes, errors };
 }
+
