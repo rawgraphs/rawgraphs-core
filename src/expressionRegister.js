@@ -9,8 +9,10 @@ import isFunction from 'lodash/isFunction'
 import isString from 'lodash/isString'
 import uniq from 'lodash/uniq'
 import range from "lodash/range";
+import find from 'lodash/find'
 import get from "lodash/get";
 import isPlainObject from "lodash/isPlainObject";
+
 
 const aggregationsRegister = {}
 
@@ -91,7 +93,7 @@ export function getDefaultDimensionAggregation(dimension, dataType) {
     throw new RAWError(`Dimension ${dimension.id} is not aggregable`);
   }
   const names = getAggregatorNames()
-
+  
   const typeName = getTypeName(dataType);
   const defaultAggregation = get(dimension, 'aggregationDefault')
   
@@ -110,19 +112,24 @@ export function getDefaultDimensionAggregation(dimension, dataType) {
 
 export function getDimensionAggregator(dimensionId, mapping, dataTypes, dimensions){
   
+
   const dimension = find(dimensions, x => x.id === dimensionId)
-  const mappingValue = get(mapping[dimension.id], 'value', [])
+  const mappingValue = get(mapping[dimensionId], 'value', [])
   
-  function getSingleDim(dimension, columnName){
-    const dataType = dataTypes.get(columnName)
+  function getSingleDim(dimension, columnName, index){
+    const dataType = get(dataTypes, columnName)
     const defaultAggregation = getDefaultDimensionAggregation(dimension, dataType)
-    const aggregation = get(mapping[dimension.id], 'config.aggregation', defaultAggregation)
+    let aggregation = get(mapping[dimension.id], 'config.aggregation', defaultAggregation)
+    if(index !== undefined){
+      aggregation = aggregation[index]
+    }
     const aggregator = getAggregator(aggregation)  
     return aggregator
   }
 
   if(Array.isArray(mappingValue)){
-    return mappingValue.map(columnName =>  getSingleDim(dimension, columnName))
+    const out = mappingValue.map((columnName, i) =>  getSingleDim(dimension, columnName, i))
+    return out
   } else {
     return getSingleDim(dimension, mappingValue)
   }

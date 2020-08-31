@@ -104,7 +104,7 @@ export function getColorDomain(colorDataset, colorDataType, scaleType) {
 
 function finalizeScale(inputScale, userScaleValuesMapped, scaleType) {
   if (
-    isEqual(
+    inputScale.range && isEqual(
       inputScale.range().map((d) => d3Color.color(d).hex()),
       userScaleValuesMapped.range
     )
