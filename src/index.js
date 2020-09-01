@@ -21,3 +21,4 @@ export {
 } from "./options";
 export { getInitialScaleValues, getColorScale, getPresetScale, colorPresets, getColorDomain } from "./colors";
 export { getTypeName, NumberParser } from './utils'
+export { rawgraphsLegend} from './legend'
