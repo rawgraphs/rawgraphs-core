@@ -56,8 +56,8 @@ function getFormatter(dataType) {
   return undefined;
 }
 
-function getValueType(value, parsingOptions = {}) {
-  const { strict, locale, decimal, group, numerals } = parsingOptions;
+function getValueType(value, options = {}) {
+  const { strict, locale, numberParser } = options;
 
   let jsonValue = value;
   if (!strict) {
@@ -66,8 +66,7 @@ function getValueType(value, parsingOptions = {}) {
     } catch (err) {}
   }
 
-  if (locale || decimal || group || numerals) {
-    const numberParser = new NumberParser({ locale, decimal, group, numerals });
+  if (numberParser) {
     const numberFromParser = numberParser.parse(jsonValue);
     if (isNumber(numberFromParser) && !isNaN(numberFromParser)) {
       return {
@@ -129,12 +128,19 @@ export function inferTypes(data, parsingOptions) {
     return candidateTypes;
   }
 
+  const { strict, locale, decimal, group, numerals } = parsingOptions;
+  let numberParser
+  if (locale || decimal || group || numerals) {
+    numberParser = new NumberParser({ locale, decimal, group, numerals });
+  }
+
+
   data.forEach((datum) => {
     Object.keys(datum).forEach((key) => {
       if (candidateTypes[key] === undefined) {
         candidateTypes[key] = [];
       }
-      const inferredType = getValueType(datum[key], parsingOptions);
+      const inferredType = getValueType(datum[key], {strict, numberParser, locale});
       candidateTypes[key].push(castTypeToString(inferredType));
     });
   });
