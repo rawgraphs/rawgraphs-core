@@ -174,6 +174,7 @@ export function validateMapping(dimensions, _mapping, types) {
 export function annotateMapping(dimensions, _mapping, types) {
   const dimensionsById = keyBy(dimensions, "id");
   let mapping = {}
+  const dimensionsIds = Object.keys(dimensionsById)
   
   Object.keys(_mapping).forEach((id) => {
     mapping[id] = {..._mapping[id]}
@@ -211,6 +212,15 @@ export function annotateMapping(dimensions, _mapping, types) {
       }
     }
   });
+
+  dimensionsIds.forEach(dimId => {
+    if(!mapping[dimId]){
+      mapping[dimId] = {
+        value:  dimensionsById[dimId].multiple ? [] : undefined,
+      }
+    }
+  })
+
   return mapping;
 }
 

@@ -112,9 +112,16 @@ export function getDefaultDimensionAggregation(dimension, dataType) {
 
 export function getDimensionAggregator(dimensionId, mapping, dataTypes, dimensions){
   
-
   const dimension = find(dimensions, x => x.id === dimensionId)
-  const mappingValue = get(mapping[dimensionId], 'value', [])
+  
+  const mappingValue = get(mapping[dimensionId], 'value', dimension.multiple ? [] : undefined)
+  
+  //#TODO: this is done to return function returning a scalar in any case
+  // works well with undefined "size" dimensions (See matrix plot at rawgraphs-charts at commit 04013f633e32f4c630a5db2b855c6cf270b3af03), 
+  // but this needs investigation
+  if(!dimension.multiple && !mappingValue){
+    return () => 1
+  }
   
   function getSingleDim(dimension, columnName, index){
     const dataType = get(dataTypes, columnName)
