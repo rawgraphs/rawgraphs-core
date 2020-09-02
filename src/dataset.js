@@ -50,9 +50,6 @@ function getFormatter(dataType) {
     }
   }
 
-  if (dataType.type === Boolean) {
-  }
-
   return undefined;
 }
 
@@ -83,9 +80,13 @@ function getValueType(value, options = {}) {
     return "number";
   }
 
-  if (isBoolean(jsonValue)) {
-    return "boolean";
-  }
+  // #TODO: understand if we should handle boolean type
+  // if (isBoolean(jsonValue)) {
+  //   return {
+  //     type: 'string',
+  //     formatBooleean: true,
+  //   }
+  // }
 
   if (isDate(value)) {
     return "date";
@@ -122,7 +123,7 @@ function castTypesToString(types) {
  * @param {boolean} strict if strict is false, a JSON parsing of the values is tried. (if strict=false: "true" -> true)
  * @return {object} the types guessed (object with column names as keys and value type as value)
  */
-export function inferTypes(data, parsingOptions, sentinelFunction) {
+export function inferTypes(data, parsingOptions) {
   let candidateTypes = {};
   if (!Array.isArray(data)) {
     return candidateTypes;
@@ -135,14 +136,6 @@ export function inferTypes(data, parsingOptions, sentinelFunction) {
   }
 
   data.forEach((datum, rowIndex) => {
-    // if (rowIndex % 100 === 0) {
-    //   console.log("sentinel called row " + rowIndex);
-    //   // console.log("s", sentinelFunction())
-    //   if (sentinelFunction && sentinelFunction()) {
-    //     console.log("sentinel true");
-    //     throw new RAWError("PARSER STOPPED!");
-    //   }
-    // }
     Object.keys(datum).forEach((key) => {
       if (candidateTypes[key] === undefined) {
         candidateTypes[key] = [];
@@ -179,7 +172,6 @@ function basicGetter(rowValue, dataType) {
   if (rowValue === null || rowValue === undefined) {
     return null;
   }
-  console.log("dataTyped", dataType, rowValue)
   return dataType(rowValue);
 }
 
@@ -196,8 +188,7 @@ function checkType(value, type) {
 // builds a parser function
 function rowParser(types, parsingOptions = {}, onError) {
   let propGetters = {};
-  const { strict, locale, decimal, group, numerals } = parsingOptions;
-
+  
   Object.keys(types).forEach((k) => {
     let dataType = types[k];
     const type = getType(dataType);
@@ -231,7 +222,7 @@ function rowParser(types, parsingOptions = {}, onError) {
   };
 }
 
-function parseRows(data, dataTypes, parsingOptions, sentinelFunction) {
+function parseRows(data, dataTypes, parsingOptions) {
   //#TODO: ADD SENTINEL
   let errors = [];
   const parser = rowParser(dataTypes, parsingOptions, (error, i) =>
@@ -257,13 +248,12 @@ function parseRows(data, dataTypes, parsingOptions, sentinelFunction) {
  * @param {object} types optional column types
  * @return {ParserResult} dataset, dataTypes, errors
  */
-export function parseDataset(data, types, parsingOptions, sentinelFunction) {
-  const dataTypes = types || inferTypes(data, parsingOptions, sentinelFunction);
+export function parseDataset(data, types, parsingOptions) {
+  const dataTypes = types || inferTypes(data, parsingOptions);
   const [dataset, errors] = parseRows(
     data,
     dataTypes,
-    parsingOptions,
-    sentinelFunction
+    parsingOptions
   );
 
   return { dataset, dataTypes, errors };
