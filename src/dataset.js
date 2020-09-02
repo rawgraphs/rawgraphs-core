@@ -129,27 +129,29 @@ export function inferTypes(data, parsingOptions, sentinelFunction) {
   }
 
   const { strict, locale, decimal, group, numerals } = parsingOptions;
-  let numberParser
+  let numberParser;
   if (locale || decimal || group || numerals) {
     numberParser = new NumberParser({ locale, decimal, group, numerals });
   }
 
-
   data.forEach((datum, rowIndex) => {
-    if(sentinelFunction && rowIndex % 100 === 0){
-      console.log("sentinel called!")
-      if(sentinelFunction()){
-        console.log("sentinel true")
-        throw new RAWError("PARSER STOPPED!")
-      }
-      
-
-    }
+    // if (rowIndex % 100 === 0) {
+    //   console.log("sentinel called row " + rowIndex);
+    //   // console.log("s", sentinelFunction())
+    //   if (sentinelFunction && sentinelFunction()) {
+    //     console.log("sentinel true");
+    //     throw new RAWError("PARSER STOPPED!");
+    //   }
+    // }
     Object.keys(datum).forEach((key) => {
       if (candidateTypes[key] === undefined) {
         candidateTypes[key] = [];
       }
-      const inferredType = getValueType(datum[key], {strict, numberParser, locale});
+      const inferredType = getValueType(datum[key], {
+        strict,
+        numberParser,
+        locale,
+      });
       candidateTypes[key].push(castTypeToString(inferredType));
     });
   });
@@ -177,6 +179,7 @@ function basicGetter(rowValue, dataType) {
   if (rowValue === null || rowValue === undefined) {
     return null;
   }
+  console.log("dataTyped", dataType, rowValue)
   return dataType(rowValue);
 }
 
@@ -256,8 +259,12 @@ function parseRows(data, dataTypes, parsingOptions, sentinelFunction) {
  */
 export function parseDataset(data, types, parsingOptions, sentinelFunction) {
   const dataTypes = types || inferTypes(data, parsingOptions, sentinelFunction);
-  const [dataset, errors] = parseRows(data, dataTypes, parsingOptions, sentinelFunction);
+  const [dataset, errors] = parseRows(
+    data,
+    dataTypes,
+    parsingOptions,
+    sentinelFunction
+  );
 
   return { dataset, dataTypes, errors };
 }
-
