@@ -122,7 +122,7 @@ function castTypesToString(types) {
  * @param {boolean} strict if strict is false, a JSON parsing of the values is tried. (if strict=false: "true" -> true)
  * @return {object} the types guessed (object with column names as keys and value type as value)
  */
-export function inferTypes(data, parsingOptions) {
+export function inferTypes(data, parsingOptions, sentinelFunction) {
   let candidateTypes = {};
   if (!Array.isArray(data)) {
     return candidateTypes;
@@ -135,7 +135,16 @@ export function inferTypes(data, parsingOptions) {
   }
 
 
-  data.forEach((datum) => {
+  data.forEach((datum, rowIndex) => {
+    if(sentinelFunction && rowIndex % 100 === 0){
+      console.log("sentinel called!")
+      if(sentinelFunction()){
+        console.log("sentinel true")
+        throw new RAWError("PARSER STOPPED!")
+      }
+      
+
+    }
     Object.keys(datum).forEach((key) => {
       if (candidateTypes[key] === undefined) {
         candidateTypes[key] = [];
@@ -219,7 +228,8 @@ function rowParser(types, parsingOptions = {}, onError) {
   };
 }
 
-function parseRows(data, dataTypes, parsingOptions) {
+function parseRows(data, dataTypes, parsingOptions, sentinelFunction) {
+  //#TODO: ADD SENTINEL
   let errors = [];
   const parser = rowParser(dataTypes, parsingOptions, (error, i) =>
     errors.push({ row: i, error })
@@ -244,9 +254,9 @@ function parseRows(data, dataTypes, parsingOptions) {
  * @param {object} types optional column types
  * @return {ParserResult} dataset, dataTypes, errors
  */
-export function parseDataset(data, types, parsingOptions) {
-  const dataTypes = types || inferTypes(data, parsingOptions);
-  const [dataset, errors] = parseRows(data, dataTypes, parsingOptions);
+export function parseDataset(data, types, parsingOptions, sentinelFunction) {
+  const dataTypes = types || inferTypes(data, parsingOptions, sentinelFunction);
+  const [dataset, errors] = parseRows(data, dataTypes, parsingOptions, sentinelFunction);
 
   return { dataset, dataTypes, errors };
 }
