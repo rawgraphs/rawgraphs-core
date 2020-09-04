@@ -194,19 +194,22 @@ class Chart {
     return { optionsConfig, optionsValues }
   }
 
+  _getVizData(){
+    return this._visualModel.skipMapping ? this._data : this.mapData();
+  }
 
 
   /**
    * @param {Node} node
    * @returns {DOMChart}
    */
-  renderToDOM(node) {
+  renderToDOM(node, data) {
     if (!this._visualModel) {
       throw new RAWError("cannot render: visualModel is not set");
     }
 
     const container = this.getContainer(node.ownerDocument);
-    const vizData = this._visualModel.skipMapping ? this._data : this.mapData();
+    const vizData = data || this._getVizData()
     const dimensions = this._visualModel.dimensions;
     const annotatedMapping = annotateMapping(
       dimensions,
@@ -240,7 +243,7 @@ class Chart {
    * @param {document} document HTML document context (optional if window is available)
    * @returns {string}
    */
-  renderToString(document) {
+  renderToString(document, data) {
     if (!this._visualModel) {
       throw new RAWError("cannot render: visualModel is not set");
     }
@@ -249,7 +252,7 @@ class Chart {
       throw new RAWError("Document must be passed or window available");
     }
     const container = this.getContainer(document || window.document);
-    const vizData = this._visualModel.skipMapping ? this._data : this.mapData();
+    const vizData = data || this._getVizData()
     const dimensions = this._visualModel.dimensions;
     const annotatedMapping = annotateMapping(
       dimensions,
