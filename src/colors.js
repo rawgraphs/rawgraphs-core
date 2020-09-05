@@ -148,6 +148,10 @@ export function getColorScale(
   interpolator,
   userScaleValues
 ) {
+
+  if(!colorDataset || !colorDataType || !userScaleValues){
+    return getDefaultColorScale()
+  }
   const domain = getColorDomain(colorDataset, colorDataType, scaleType);
   const presetScale = getPresetScale(scaleType, domain, interpolator);
   const scaleValues =
@@ -155,4 +159,9 @@ export function getColorScale(
   const scaleValuesMapped = getUserScaleValuesMapped(scaleValues);
   const finalScale = finalizeScale(presetScale, scaleValuesMapped, scaleType);
   return finalScale;
+}
+
+
+export function getDefaultColorScale(){
+  return scaleOrdinal().unknown("#ccc")
 }

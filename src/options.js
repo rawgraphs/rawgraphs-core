@@ -177,10 +177,6 @@ function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
   ? getTypeName(dataTypes[mappingValue])
   : undefined;
 
-  if(!mappingValue || !colorDataset || !colorDataset.length || !colorDataType){
-    throw new RAWError("Cannot instantiate color scale");
-  }
-
   const {
     scaleType,
     interpolator,
@@ -192,6 +188,7 @@ function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
     scaleType,
     interpolator,
     userScaleValues)
+
   return scale;
 }
 
