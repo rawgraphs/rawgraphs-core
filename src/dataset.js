@@ -50,14 +50,11 @@ function getFormatter(dataType) {
     }
   }
 
-  if (dataType.type === Boolean) {
-  }
-
   return undefined;
 }
 
-function getValueType(value, parsingOptions = {}) {
-  const { strict, locale, decimal, group, numerals } = parsingOptions;
+function getValueType(value, options = {}) {
+  const { strict, locale, numberParser } = options;
 
   let jsonValue = value;
   if (!strict) {
@@ -66,8 +63,7 @@ function getValueType(value, parsingOptions = {}) {
     } catch (err) {}
   }
 
-  if (locale || decimal || group || numerals) {
-    const numberParser = new NumberParser({ locale, decimal, group, numerals });
+  if (numberParser) {
     const numberFromParser = numberParser.parse(jsonValue);
     if (isNumber(numberFromParser) && !isNaN(numberFromParser)) {
       return {
@@ -84,9 +80,13 @@ function getValueType(value, parsingOptions = {}) {
     return "number";
   }
 
-  if (isBoolean(jsonValue)) {
-    return "boolean";
-  }
+  // #TODO: understand if we should handle boolean type
+  // if (isBoolean(jsonValue)) {
+  //   return {
+  //     type: 'string',
+  //     formatBooleean: true,
+  //   }
+  // }
 
   if (isDate(value)) {
     return "date";
@@ -129,12 +129,22 @@ export function inferTypes(data, parsingOptions) {
     return candidateTypes;
   }
 
-  data.forEach((datum) => {
+  const { strict, locale, decimal, group, numerals } = parsingOptions;
+  let numberParser;
+  if (locale || decimal || group || numerals) {
+    numberParser = new NumberParser({ locale, decimal, group, numerals });
+  }
+
+  data.forEach((datum, rowIndex) => {
     Object.keys(datum).forEach((key) => {
       if (candidateTypes[key] === undefined) {
         candidateTypes[key] = [];
       }
-      const inferredType = getValueType(datum[key], parsingOptions);
+      const inferredType = getValueType(datum[key], {
+        strict,
+        numberParser,
+        locale,
+      });
       candidateTypes[key].push(castTypeToString(inferredType));
     });
   });
@@ -178,8 +188,7 @@ function checkType(value, type) {
 // builds a parser function
 function rowParser(types, parsingOptions = {}, onError) {
   let propGetters = {};
-  const { strict, locale, decimal, group, numerals } = parsingOptions;
-
+  
   Object.keys(types).forEach((k) => {
     let dataType = types[k];
     const type = getType(dataType);
@@ -214,6 +223,7 @@ function rowParser(types, parsingOptions = {}, onError) {
 }
 
 function parseRows(data, dataTypes, parsingOptions) {
+  //#TODO: ADD SENTINEL
   let errors = [];
   const parser = rowParser(dataTypes, parsingOptions, (error, i) =>
     errors.push({ row: i, error })
@@ -240,8 +250,11 @@ function parseRows(data, dataTypes, parsingOptions) {
  */
 export function parseDataset(data, types, parsingOptions) {
   const dataTypes = types || inferTypes(data, parsingOptions);
-  const [dataset, errors] = parseRows(data, dataTypes, parsingOptions);
+  const [dataset, errors] = parseRows(
+    data,
+    dataTypes,
+    parsingOptions
+  );
 
   return { dataset, dataTypes, errors };
 }
-

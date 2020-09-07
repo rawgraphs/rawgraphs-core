@@ -118,14 +118,14 @@ class Chart {
    * @param {Node} node
    * @returns {Node}
    */
-  getContainer(document) {
+  getContainer(document, dataReady) {
     //#TODO: this could, in future, depend on visual model
     const container = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "svg"
     );
 
-    const { optionsConfig, optionsValues } = this._getOptions()
+    const { optionsConfig, optionsValues } = this._getOptions(dataReady)
 
     const { width, height, style } = getContainerOptions(
       optionsConfig,
@@ -187,26 +187,29 @@ class Chart {
   }
 
 
-  _getOptions(){
+  _getOptions(dataReady){
     const optionsConfig = getOptionsConfig(this._visualModel.visualOptions);
-    const vizData = this._visualModel.skipMapping ? this._data : this.mapData();
+    const vizData = dataReady || this._getVizData()
     const optionsValues = getOptionsValues(optionsConfig, this._visualOptions, this._mapping, this._dataTypes, this._data, vizData);
     return { optionsConfig, optionsValues }
   }
 
+  _getVizData(){
+    return this._visualModel.skipMapping ? this._data : this.mapData();
+  }
 
 
   /**
    * @param {Node} node
    * @returns {DOMChart}
    */
-  renderToDOM(node) {
+  renderToDOM(node, dataReady) {
     if (!this._visualModel) {
       throw new RAWError("cannot render: visualModel is not set");
     }
 
-    const container = this.getContainer(node.ownerDocument);
-    const vizData = this._visualModel.skipMapping ? this._data : this.mapData();
+    const container = this.getContainer(node.ownerDocument, dataReady);
+    const vizData = dataReady || this._getVizData()
     const dimensions = this._visualModel.dimensions;
     const annotatedMapping = annotateMapping(
       dimensions,
@@ -214,7 +217,7 @@ class Chart {
       this._dataTypes
     );
 
-    const { optionsConfig, optionsValues } = this._getOptions()
+    const { optionsConfig, optionsValues } = this._getOptions(vizData)
 
     this._visualModel.render(
       container,
@@ -240,7 +243,7 @@ class Chart {
    * @param {document} document HTML document context (optional if window is available)
    * @returns {string}
    */
-  renderToString(document) {
+  renderToString(document, dataReady) {
     if (!this._visualModel) {
       throw new RAWError("cannot render: visualModel is not set");
     }
@@ -248,8 +251,8 @@ class Chart {
     if (!document && window === undefined) {
       throw new RAWError("Document must be passed or window available");
     }
-    const container = this.getContainer(document || window.document);
-    const vizData = this._visualModel.skipMapping ? this._data : this.mapData();
+    const container = this.getContainer(document || window.document, dataReady);
+    const vizData = dataReady || this._getVizData()
     const dimensions = this._visualModel.dimensions;
     const annotatedMapping = annotateMapping(
       dimensions,
@@ -257,7 +260,7 @@ class Chart {
       this._dataTypes
     );
 
-    const { optionsConfig, optionsValues } = this._getOptions()
+    const { optionsConfig, optionsValues } = this._getOptions(vizData)
 
     this._visualModel.render(
       container,
