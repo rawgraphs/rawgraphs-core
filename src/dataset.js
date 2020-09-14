@@ -16,13 +16,17 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
 import { RAWError, getType, NumberParser } from "./utils";
-import { timeParse } from "d3-time-format";
+import { timeParse, timeFormatLocale } from "d3-time-format";
+import { dateFormats } from './constants'
+
 
 dayjs.extend(customParseFormat);
 
 dayjs.extend(utc);
 
-function getFormatter(dataType) {
+function getFormatter(dataType, parsingOptions) {
+  
+  
   if (!isPlainObject(dataType)) {
     return undefined;
   }
@@ -32,8 +36,11 @@ function getFormatter(dataType) {
   }
 
   if (getType(dataType) === Date) {
-    if (isString(dataType.dateFormat)) {
-      return (value) => dayjs(value, dataType.dateFormat).utc().toDate();
+    if (isString(dataType.dateFormat) && !!dateFormats[dataType.dateFormat]) {
+      const mappedFormat = dateFormats[dataType.dateFormat]
+      const parser = parsingOptions.dateLocale ? timeFormatLocale(parsingOptions.dateLocale).parse(mappedFormat) : timeParse(mappedFormat)
+      // return (value) => dayjs(value, dataType.dateFormat).utc().toDate();
+      return value => parser(value)
     }
   }
 
@@ -54,7 +61,7 @@ function getFormatter(dataType) {
 }
 
 function getValueType(value, options = {}) {
-  const { strict, locale, numberParser } = options;
+  const { strict, locale, numberParser, dateParser } = options;
 
   let jsonValue = value;
   if (!strict) {
@@ -93,14 +100,28 @@ function getValueType(value, options = {}) {
   }
 
   //#todo: generalize somewhere
-  const dateFormatTest = "YYYY-MM-DD";
-  const testDateWithFormat = dayjs(value, dateFormatTest).utc();
-  if (testDateWithFormat.isValid()) {
-    return {
-      type: "date",
-      dateFormat: dateFormatTest,
-    };
+  // const dateFormatTest = "YYYY-MM-DD";
+  // const testDateWithFormat = dayjs(value, dateFormatTest).utc();
+  // if (testDateWithFormat.isValid()) {
+  //   return {
+  //     type: "date",
+  //     dateFormat: dateFormatTest,
+  //   };
+  // }
+
+  if(dateParser){
+    const dateFormatTest = "YYYY-MM-DD";
+    const testDateWithFormat = dateParser(dateFormatTest)(value)
+    if(testDateWithFormat !== null){
+      return {
+        type: "date",
+        dateFormat: dateFormatTest,
+      };
+    }
   }
+
+
+
 
   return "string";
 }
@@ -129,10 +150,17 @@ export function inferTypes(data, parsingOptions) {
     return candidateTypes;
   }
 
-  const { strict, locale, decimal, group, numerals } = parsingOptions;
+  const { strict, locale, decimal, group, numerals, dateLocale } = parsingOptions;
   let numberParser;
   if (locale || decimal || group || numerals) {
     numberParser = new NumberParser({ locale, decimal, group, numerals });
+  }
+
+  let dateParser
+  if(dateLocale){
+    dateParser = timeFormatLocale(dateLocale).parse
+  } else {
+    dateParser = timeParse
   }
 
   data.forEach((datum, rowIndex) => {
@@ -144,6 +172,7 @@ export function inferTypes(data, parsingOptions) {
         strict,
         numberParser,
         locale,
+        dateParser,
       });
       candidateTypes[key].push(castTypeToString(inferredType));
     });
@@ -179,7 +208,7 @@ function checkType(value, type) {
   if (type === Number && isNaN(value)) {
     throw new RAWError(`invalid type number for value ${value}`);
   }
-
+  //#TODO: SHOULD BE DATE? REMOVE dayjs?
   if (type === Date && (!(value instanceof Date) || !dayjs(value).isValid())) {
     throw new RAWError(`invalid type date for value ${value}`);
   }
@@ -192,7 +221,7 @@ function rowParser(types, parsingOptions = {}, onError) {
   Object.keys(types).forEach((k) => {
     let dataType = types[k];
     const type = getType(dataType);
-    const formatter = getFormatter(dataType);
+    const formatter = getFormatter(dataType, parsingOptions);
     propGetters[k] = (row) => {
       const rowValue = get(row, k);
       const formattedValue = formatter ? formatter(rowValue) : rowValue;
