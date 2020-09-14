@@ -219,6 +219,9 @@ class Chart {
 
     const { optionsConfig, optionsValues } = this._getOptions(vizData)
 
+    node.innerHTML = "";
+    node.appendChild(container);
+
     this._visualModel.render(
       container,
       vizData,
@@ -226,8 +229,7 @@ class Chart {
       annotatedMapping,
       this._data
     );
-    node.innerHTML = "";
-    node.appendChild(container);
+    
 
     return new DOMChart(
       node,
@@ -261,7 +263,8 @@ class Chart {
     );
 
     const { optionsConfig, optionsValues } = this._getOptions(vizData)
-
+    // #TODO: TEST THIS FOR HAVING LEGENDS IN renderToString
+    //window.document.body.appendChild(container)  
     this._visualModel.render(
       container,
       vizData,
