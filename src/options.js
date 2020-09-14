@@ -28,13 +28,6 @@ export const baseOptions = {
     group: "artboard",
   },
 
-  margins: {
-    type: "number",
-    label: "Margins (px)",
-    default: 10,
-    group: "artboard",
-  },
-
   background: {
     type: "color",
     label: "Background",
