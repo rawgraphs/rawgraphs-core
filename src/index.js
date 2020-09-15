@@ -29,4 +29,4 @@ export {
 } from "./colors";
 export { getTypeName, NumberParser } from "./utils";
 export { rawgraphsLegend} from './legend'
-export { dateFormats } from './constants'
+export { dateFormats, translateDateFormat } from './dateFormats'

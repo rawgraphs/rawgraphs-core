@@ -4,7 +4,6 @@
  */
 
 import isNumber from "lodash/isNumber";
-import isBoolean from "lodash/isBoolean";
 import isDate from "lodash/isDate";
 import isPlainObject from "lodash/isPlainObject";
 import isString from "lodash/isString";
@@ -12,21 +11,11 @@ import isNaN from "lodash/isNaN";
 import get from "lodash/get";
 import isFunction from "lodash/isFunction";
 import maxBy from "lodash/maxBy";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import utc from "dayjs/plugin/utc";
 import { RAWError, getType, NumberParser } from "./utils";
 import { timeParse, timeFormatLocale } from "d3-time-format";
-import { dateFormats } from './constants'
-
-
-dayjs.extend(customParseFormat);
-
-dayjs.extend(utc);
+import { dateFormats } from "./dateFormats";
 
 function getFormatter(dataType, parsingOptions) {
-  
-  
   if (!isPlainObject(dataType)) {
     return undefined;
   }
@@ -37,10 +26,11 @@ function getFormatter(dataType, parsingOptions) {
 
   if (getType(dataType) === Date) {
     if (isString(dataType.dateFormat) && !!dateFormats[dataType.dateFormat]) {
-      const mappedFormat = dateFormats[dataType.dateFormat]
-      const parser = parsingOptions.dateLocale ? timeFormatLocale(parsingOptions.dateLocale).parse(mappedFormat) : timeParse(mappedFormat)
-      // return (value) => dayjs(value, dataType.dateFormat).utc().toDate();
-      return value => parser(value)
+      const mappedFormat = dateFormats[dataType.dateFormat];
+      const parser = parsingOptions.dateLocale
+        ? timeFormatLocale(parsingOptions.dateLocale).parse(mappedFormat)
+        : timeParse(mappedFormat);
+      return (value) => parser(value);
     }
   }
 
@@ -99,29 +89,16 @@ function getValueType(value, options = {}) {
     return "date";
   }
 
-  //#todo: generalize somewhere
-  // const dateFormatTest = "YYYY-MM-DD";
-  // const testDateWithFormat = dayjs(value, dateFormatTest).utc();
-  // if (testDateWithFormat.isValid()) {
-  //   return {
-  //     type: "date",
-  //     dateFormat: dateFormatTest,
-  //   };
-  // }
-
-  if(dateParser){
-    const dateFormatTest = "YYYY-MM-DD";
-    const testDateWithFormat = dateParser(dateFormatTest)(value)
-    if(testDateWithFormat !== null){
+  if (dateParser) {
+    const dateFormatTest = dateFormats["YYYY-MM-DD"];
+    const testDateWithFormat = dateParser(dateFormatTest)(value);
+    if (testDateWithFormat !== null) {
       return {
         type: "date",
-        dateFormat: dateFormatTest,
+        dateFormat: "YYYY-MM-DD",
       };
     }
   }
-
-
-
 
   return "string";
 }
@@ -150,17 +127,24 @@ export function inferTypes(data, parsingOptions) {
     return candidateTypes;
   }
 
-  const { strict, locale, decimal, group, numerals, dateLocale } = parsingOptions;
+  const {
+    strict,
+    locale,
+    decimal,
+    group,
+    numerals,
+    dateLocale,
+  } = parsingOptions;
   let numberParser;
   if (locale || decimal || group || numerals) {
     numberParser = new NumberParser({ locale, decimal, group, numerals });
   }
 
-  let dateParser
-  if(dateLocale){
-    dateParser = timeFormatLocale(dateLocale).parse
+  let dateParser;
+  if (dateLocale) {
+    dateParser = timeFormatLocale(dateLocale).parse;
   } else {
-    dateParser = timeParse
+    dateParser = timeParse;
   }
 
   data.forEach((datum, rowIndex) => {
@@ -208,8 +192,7 @@ function checkType(value, type) {
   if (type === Number && isNaN(value)) {
     throw new RAWError(`invalid type number for value ${value}`);
   }
-  //#TODO: SHOULD BE DATE? REMOVE dayjs?
-  if (type === Date && (!(value instanceof Date) || !dayjs(value).isValid())) {
+  if (type === Date && !(value instanceof Date)) {
     throw new RAWError(`invalid type date for value ${value}`);
   }
 }
@@ -217,7 +200,7 @@ function checkType(value, type) {
 // builds a parser function
 function rowParser(types, parsingOptions = {}, onError) {
   let propGetters = {};
-  
+
   Object.keys(types).forEach((k) => {
     let dataType = types[k];
     const type = getType(dataType);
@@ -279,11 +262,7 @@ function parseRows(data, dataTypes, parsingOptions) {
  */
 export function parseDataset(data, types, parsingOptions) {
   const dataTypes = types || inferTypes(data, parsingOptions);
-  const [dataset, errors] = parseRows(
-    data,
-    dataTypes,
-    parsingOptions
-  );
+  const [dataset, errors] = parseRows(data, dataTypes, parsingOptions);
 
   return { dataset, dataTypes, errors };
 }
