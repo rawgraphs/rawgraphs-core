@@ -80,7 +80,7 @@ const dateTokensMap = {
 export const translateDateFormat = function (df) {
   let out = new String(df);
   Object.keys(dateTokensMap).forEach((token) => {
-    reg = new RegExp(token, 'g')
+    const reg = new RegExp(token, 'g')
     out = out.replace(reg, dateTokensMap[token]);
   });
   return out;
