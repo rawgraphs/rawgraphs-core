@@ -18,6 +18,7 @@ export {
   baseOptions,
   getDefaultOptionsValues,
   getOptionsConfig,
+  getContainerOptions,
 } from "./options";
 export {
   getInitialScaleValues,
