@@ -7,6 +7,7 @@ import get from "lodash/get";
 import isString from "lodash/isString";
 import isNumber from "lodash/isNumber";
 import isArray from "lodash/isArray";
+import isPlainObject from "lodash/isPlainObject"
 import { ValidationError, RAWError, getTypeName } from "./utils";
 import mapValues from "lodash/mapValues";
 import { getColorScale } from './colors'
@@ -88,6 +89,23 @@ export function validateValues(definition, values) {}
 export function getEnabledOptions(definition, values) {}
 
 ///
+
+function getContainerOptionValue(item, optionsConfig, optionsValues){
+  const currentConfig = optionsConfig[item]
+  const modifier = optionsValues[item] || 0
+  if(isPlainObject(currentConfig.containerCondition)){
+    const tests = Object.keys(currentConfig.containerCondition).map(
+      key => optionsValues[key] === currentConfig.containerCondition[key]
+    )
+    if(tests.filter(x => !!x).length){
+      return modifier
+    }
+    return 0
+  } else {
+    return modifier
+  }
+}
+
 export function getContainerOptions(optionsConfig, optionsValues) {
   const widthOptions = Object.keys(optionsConfig).filter(
     (name) => get(optionsConfig[name], "container") === "width"
@@ -101,10 +119,13 @@ export function getContainerOptions(optionsConfig, optionsValues) {
   });
 
   const width = widthOptions.reduce((acc, item) => {
-    return acc + optionsValues[item] || 0;
+    const modifier = getContainerOptionValue(item, optionsConfig, optionsValues)
+    return acc + modifier;
   }, 0);
+ 
   const height = heightOptions.reduce((acc, item) => {
-    return acc + optionsValues[item] || 0;
+    const modifier = getContainerOptionValue(item, optionsConfig, optionsValues)
+    return acc + modifier
   }, 0);
 
   let style = {};
