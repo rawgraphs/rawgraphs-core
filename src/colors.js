@@ -95,7 +95,10 @@ export function getColorDomain(colorDataset, colorDataType, scaleType) {
     return uniq([...colorDataset].sort());
   } else {
     if (scaleType === "diverging") {
-      return [min(colorDataset), mean(colorDataset), max(colorDataset)];
+      const minValue = min(colorDataset) || 0
+      const maxValue = max(colorDataset) || 0
+
+      return [minValue, (minValue+maxValue)/2, maxValue];
     } else {
       return extent(colorDataset);
     }
