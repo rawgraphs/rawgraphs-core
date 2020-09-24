@@ -152,7 +152,7 @@ export function getColorScale(
   userScaleValues
 ) {
 
-  if(!colorDataset || !colorDataType || !userScaleValues){
+  if(!colorDataset || !colorDataset.length || !colorDataType || !userScaleValues){
     return getDefaultColorScale()
   }
   const domain = getColorDomain(colorDataset, colorDataType, scaleType);
