@@ -16,7 +16,7 @@ export const baseOptions = {
   width: {
     type: "number",
     label: "Width (px)",
-    default: 500,
+    default: 1035,
     container: "width",
     group: "artboard",
   },
@@ -24,7 +24,7 @@ export const baseOptions = {
   height: {
     type: "number",
     label: "Height (px)",
-    default: 500,
+    default: 800,
     container: "height",
     group: "artboard",
   },
