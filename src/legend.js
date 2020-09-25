@@ -87,7 +87,7 @@ export function rawgraphsLegend(
               return generatedLabels[i];
             }
             if (domain.length === 3 && i === genLength / 2 - 1) {
-              return domain[1];
+              return generatedLabels[i];
             }
           });
       }
@@ -110,6 +110,11 @@ export function rawgraphsLegend(
       .selectAll(".horizontal-legendTitle")
       .attr("font-size", "12px")
       .attr("font-weight", "bold");
+
+    legendContainer
+      .selectAll(".horizontal-cell text")
+      .style("text-anchor", "middle")
+      .attr("text-anchor", "middle");
 
     legendContainer
       .selectAll(".horizontal-cell:first-of-type text")
