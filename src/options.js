@@ -11,12 +11,13 @@ import isPlainObject from "lodash/isPlainObject"
 import { ValidationError, RAWError, getTypeName } from "./utils";
 import mapValues from "lodash/mapValues";
 import { getColorScale } from './colors'
+import omitBy from "lodash/omitBy";
 
 export const baseOptions = {
   width: {
     type: "number",
     label: "Width (px)",
-    default: 835,
+    default: 805,
     container: "width",
     group: "artboard",
   },
@@ -264,9 +265,10 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
 
 export function getOptionsValues(definition, values, mapping, dataTypes, data, vizData) {
   const opts = getDefaultOptionsValues(definition);
+  const valuesClean = omitBy(values, (v, k) => v == undefined)
   const allValues = {
     ...opts,
-    ...values,
+    ...valuesClean,
   };
   return validateOptions(definition, allValues, mapping, dataTypes, data, vizData);
 }
