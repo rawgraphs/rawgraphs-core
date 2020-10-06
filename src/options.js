@@ -87,7 +87,39 @@ export function getOptionsConfig(visualModelOptions) {
 
 export function validateValues(definition, values) {}
 
-export function getEnabledOptions(definition, values) {}
+
+/**
+ * Helper function for checking predicates, used in getEnabledOptions
+ * 
+ * @param {*} conditionObject 
+ * @param {*} values 
+ */
+function checkPredicates(conditionObject, values){
+  const tests = Object.keys(conditionObject).map(
+    key => values[key] === conditionObject[key]
+  )
+  if(tests.filter(x => !!x).length){
+    return true
+  } else {
+    return false
+  }
+}
+
+
+export function getEnabledOptions(definition, values) {
+  
+  let out = {}
+  Object.keys(definition).forEach(optionName => {
+      if(isPlainObject(definition[optionName].disabled)){
+        out[optionName] = !checkPredicates(definition[optionName].disabled, values)
+      } else {
+        //no disabled condition given, option is always enabled
+        out[optionName] = true
+      }
+  })
+  return out
+  
+}
 
 ///
 
@@ -266,9 +298,21 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
 export function getOptionsValues(definition, values, mapping, dataTypes, data, vizData) {
   const opts = getDefaultOptionsValues(definition);
   const valuesClean = omitBy(values, (v, k) => v == undefined)
+  
   const allValues = {
     ...opts,
     ...valuesClean,
   };
-  return validateOptions(definition, allValues, mapping, dataTypes, data, vizData);
+  
+  //removing disabled options
+  const enabledOptions = getEnabledOptions(definition, allValues)
+  const valuesCleanNoDisabled = omitBy(values, (v, k) => !enabledOptions[k])
+
+  const finalValues = {
+    ...opts,
+    ...valuesCleanNoDisabled,
+  };
+  
+  
+  return validateOptions(definition, finalValues, mapping, dataTypes, data, vizData);
 }
