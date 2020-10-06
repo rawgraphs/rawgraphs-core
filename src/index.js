@@ -18,6 +18,7 @@ export {
   baseOptions,
   getDefaultOptionsValues,
   getOptionsConfig,
+  getEnabledOptions,
   getContainerOptions,
 } from "./options";
 export {
