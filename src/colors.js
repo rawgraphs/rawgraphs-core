@@ -5,6 +5,9 @@ import { min, mean, max, extent } from "d3-array";
 import isEqual from "lodash/isEqual";
 import { quantize, interpolateRgbBasis } from "d3-interpolate";
 import uniq from "lodash/uniq";
+import uniqBy from "lodash/uniqBy";
+import sortBy from "lodash/sortBy";
+
 
 const sequential = {
   interpolateBlues: {
@@ -92,15 +95,16 @@ export function getPresetScale(scaleType, domain, interpolator) {
 
 export function getColorDomain(colorDataset, colorDataType, scaleType) {
   if (colorDataType === "string" || scaleType === "ordinal") {
-    return uniq([...colorDataset].sort());
+    return uniqBy([...colorDataset], item => item && item.toString()).sort();
   } else {
+    const typedDataset = colorDataset !== 'date' ? colorDataset : colorDataset.map(x => new Date(x))
     if (scaleType === "diverging") {
-      const minValue = min(colorDataset) || 0
-      const maxValue = max(colorDataset) || 0
+      const minValue = min(typedDataset) || 0
+      const maxValue = max(typedDataset) || 0
 
       return [minValue, (minValue+maxValue)/2, maxValue];
     } else {
-      return extent(colorDataset);
+      return extent(typedDataset);
     }
   }
 }
