@@ -1,4 +1,5 @@
 import * as d3Legend from "d3-svg-legend";
+import { format } from "d3-format";
 
 function scaleType(scale) {
   if (scale.interpolate) {
@@ -87,7 +88,7 @@ export function rawgraphsLegend(
               return generatedLabels[i];
             }
             if (domain.length === 3 && i === genLength / 2 - 1) {
-              return generatedLabels[i];
+              return format(".01f")((domain[0] + domain[2]) / 2);
             }
           });
       }
