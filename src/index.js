@@ -29,6 +29,6 @@ export {
   colorPresets,
   getColorDomain,
 } from "./colors";
-export { getTypeName, NumberParser } from "./utils";
-export { rawgraphsLegend} from './legend'
-export { dateFormats, translateDateFormat } from './dateFormats'
+export { getTypeName, NumberParser, labelsOcclusion } from "./utils";
+export { rawgraphsLegend } from "./legend";
+export { dateFormats, translateDateFormat } from "./dateFormats";
