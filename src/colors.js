@@ -3,11 +3,10 @@ import * as d3ScaleChromatic from "d3-scale-chromatic";
 import { scaleDiverging, scaleSequential, scaleOrdinal } from "d3-scale";
 import { min, mean, max, extent } from "d3-array";
 import isEqual from "lodash/isEqual";
+import get from 'lodash/get'
 import { quantize, interpolateRgbBasis } from "d3-interpolate";
-import uniq from "lodash/uniq";
 import uniqBy from "lodash/uniqBy";
-import sortBy from "lodash/sortBy";
-
+import { getValueType } from './dataset'
 
 const sequential = {
   interpolateBlues: {
@@ -94,15 +93,27 @@ export function getPresetScale(scaleType, domain, interpolator) {
 }
 
 export function getColorDomain(colorDataset, colorDataType, scaleType) {
-  if (colorDataType === "string" || scaleType === "ordinal") {
+  //
+  
+  const sample = get(colorDataset, '[0]')
+  const sampleDataType = sample !== undefined ? getValueType(sample) : colorDataType
+  if (sampleDataType === "string" || scaleType === "ordinal") {
     return uniqBy([...colorDataset], item => item && item.toString()).sort();
   } else {
-    const typedDataset = colorDataset !== 'date' ? colorDataset : colorDataset.map(x => new Date(x))
+    //const typedDataset = colorDataType !== 'date' ? colorDataset : colorDataset.map(x => new Date(x))
+    //
+    const typedDataset = colorDataset
     if (scaleType === "diverging") {
-      const minValue = min(typedDataset) || 0
-      const maxValue = max(typedDataset) || 0
+      const minValue = min(typedDataset)
+      const maxValue = max(typedDataset)
+      let midValue = 0
+      if(sampleDataType === 'date'){
+        midValue = new Date((minValue.getTime() + maxValue.getTime()) / 2)
+      } else {
+        midValue = (minValue+maxValue)/2
+      }
 
-      return [minValue, (minValue+maxValue)/2, maxValue];
+      return [minValue, midValue, maxValue];
     } else {
       return extent(typedDataset);
     }
@@ -171,4 +182,25 @@ export function getColorScale(
 
 export function getDefaultColorScale(){
   return scaleOrdinal().unknown("#ccc")
+}
+
+export const scaleTypes = Object.keys(colorPresets)
+
+export function getAvailableScaleTypes(colorDataType, colorDataset){
+  if(!colorDataset || !Array.isArray(colorDataset) || !colorDataset.length){
+    return ['ordinal']
+  }
+  
+  if (colorDataType === 'number' || colorDataType === 'date') {
+    
+
+    const sample = colorDataset[0]
+    const valueType = getValueType(sample)
+    if(valueType === 'number' || valueType === 'date'){
+      return scaleTypes
+    }
+  }
+  
+  return ['ordinal']
+
 }
