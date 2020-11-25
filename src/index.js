@@ -29,6 +29,7 @@ export {
   colorPresets,
   getColorDomain,
 } from "./colors";
-export { getTypeName, NumberParser, labelsOcclusion } from "./utils";
+export { getTypeName, NumberParser } from "./utils";
 export { rawgraphsLegend } from "./legend";
+export {labelsOcclusion} from './labels'
 export { dateFormats, translateDateFormat } from "./dateFormats";
