@@ -50,7 +50,7 @@ function getFormatter(dataType, parsingOptions) {
   return undefined;
 }
 
-function getValueType(value, options = {}) {
+export function getValueType(value, options = {}) {
   const { strict, locale, numberParser, dateParser } = options;
 
   let jsonValue = value;

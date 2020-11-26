@@ -229,12 +229,18 @@ function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
     interpolator,
     userScaleValues,
   } = value
+
+  const typedUserScaleValues = colorDataType === 'date' ? userScaleValues.map(x => ({
+    domain: new Date(x.domain),
+    range: x.range
+  })) : userScaleValues
+
   const scale = getColorScale(
     colorDataset,
     colorDataType,
     scaleType,
     interpolator,
-    userScaleValues)
+    typedUserScaleValues)
 
   return scale;
 }

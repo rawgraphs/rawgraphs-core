@@ -1,5 +1,5 @@
 export { default as chart } from "./raw";
-export { parseDataset, inferTypes } from "./dataset";
+export { parseDataset, inferTypes, getValueType } from "./dataset";
 export {
   default as makeMapper,
   validateMapping,
@@ -28,6 +28,7 @@ export {
   getPresetScale,
   colorPresets,
   getColorDomain,
+  getAvailableScaleTypes,
 } from "./colors";
 export { getTypeName, NumberParser } from "./utils";
 export { rawgraphsLegend} from './legend'
