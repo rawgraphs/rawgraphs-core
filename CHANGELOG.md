@@ -3,3 +3,4 @@
 
 Features:
 - Better support for color scales based on dates
+- Integration for github actions (still publishing on inmagik registry)
