@@ -77,8 +77,16 @@ const inputTypeToOptions = {
 
 export function validateOptionsDefinition(definition) {}
 
-export function getDefaultOptionsValues(definition) {
-  return mapValues(definition, (field) => field.default);
+export function getDefaultOptionsValues(definition, mapping) {
+  //repeated options are empy at beginning
+  return mapValues(definition, (field) => {
+    if(!field.repeatFor){
+      return field.default
+    }
+    const mappingItem = get(mapping, field.repeatFor)
+    const mappingValue = get(mappingItem, 'value', [])
+    return mappingValue.map(() => field.default)
+  });
 }
 
 export function getOptionsConfig(visualModelOptions) {
@@ -282,12 +290,32 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
       }
 
       const validator = get(validators, optionConfig.type);
+      const repeatFor = get(optionConfig, 'repeatFor')
+
       if (validator) {
-        try {
-          validated[name] = validator(optionConfig, optionsValues[name], mapping, dataTypes, data, vizData);
-        } catch (err) {
-          errors[name] = err.message;
+        if(!repeatFor){
+          try {
+            validated[name] = validator(optionConfig, optionsValues[name], mapping, dataTypes, data, vizData);
+          } catch (err) {
+            errors[name] = err.message;
+          }
+        } else {
+          const repeatValuesMapping = get(mapping, repeatFor)
+          const repeatValues = get(repeatValuesMapping, 'value', [])
+          
+          validated[name] = repeatValues.map((value, idx) => {
+            try {
+              const partialMapping = { ...mapping, [repeatFor]: {...mapping[repeatFor], value: [value]}}
+              return validator(optionConfig, optionsValues[name][idx], partialMapping, dataTypes, data, vizData)
+            } catch(err){
+              errors[name+idx] = err.message;
+              return optionsValues[name][idx]
+            }
+            
+          })
+
         }
+        
       } else {
         validated[name] = optionsValues[name];
       }
@@ -302,7 +330,7 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
 }
 
 export function getOptionsValues(definition, values, mapping, dataTypes, data, vizData) {
-  const opts = getDefaultOptionsValues(definition);
+  const opts = getDefaultOptionsValues(definition, mapping);
   const valuesClean = omitBy(values, (v, k) => v == undefined)
   
   const allValues = {
