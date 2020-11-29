@@ -31,5 +31,6 @@ export {
   getAvailableScaleTypes,
 } from "./colors";
 export { getTypeName, NumberParser } from "./utils";
-export { rawgraphsLegend} from './legend'
-export { dateFormats, translateDateFormat } from './dateFormats'
+export { rawgraphsLegend } from "./legend";
+export {labelsOcclusion} from './labels'
+export { dateFormats, translateDateFormat } from "./dateFormats";
