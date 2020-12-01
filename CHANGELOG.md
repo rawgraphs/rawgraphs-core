@@ -1,5 +1,5 @@
 ## v1.0.0-beta.3
-#### 01 Dic 2020
+#### 01 Dec 2020
 
 Features:
 - Support for repeated options
