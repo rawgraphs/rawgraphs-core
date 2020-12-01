@@ -119,12 +119,14 @@ export class NumberParser {
     if (isNumber(string)) {
       return string;
     }
-    let out = (string = string.trim 
+    let out = (string = string.trim
       ? string.trim()
-      : string.toString().trim()
-      .replace(this._groupRegexp, "")
-      .replace(this._decimalRegexp, ".")
-      .replace(this._numeralRegexp, this._index))
+      : string
+          .toString()
+          .trim()
+          .replace(this._groupRegexp, "")
+          .replace(this._decimalRegexp, ".")
+          .replace(this._numeralRegexp, this._index))
       ? +string
       : NaN;
 
@@ -135,4 +137,3 @@ export class NumberParser {
     return this.formatter(n);
   }
 }
-
