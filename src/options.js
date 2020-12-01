@@ -39,42 +39,6 @@ export const baseOptions = {
   },
 };
 
-const inputTypeToOptions = {
-  text: {
-    minLength: null,
-    maxLength: null,
-    options: null,
-  },
-
-  number: {
-    step: "any",
-    min: null,
-    max: null,
-    options: null,
-  },
-
-  range: {
-    step: "any",
-    min: 0,
-    max: 1,
-  },
-
-  color: {
-    options: null,
-  },
-
-  colorScale: {
-    dimension: null,
-  },
-
-  boolean: {},
-
-  //#TODO: makes sense?
-  // margins: {
-
-  // },
-};
-
 export function validateOptionsDefinition(definition) {}
 
 export function getDefaultOptionsValues(definition, mapping) {
@@ -85,16 +49,18 @@ export function getDefaultOptionsValues(definition, mapping) {
     }
     const mappingItem = get(mapping, field.repeatFor)
     const mappingValue = get(mappingItem, 'value', [])
-    return mappingValue.map(() => field.default)
+    const repeatDefault = get(field, repeatDefault)
+    let getDefaultValue = (field, idx) => field.default
+    if(Array.isArray(repeatDefault)){
+      getDefaultValue = (field, idx) => get(repeatDefault, `[${idx}]`, field.default)
+    } 
+    return mappingValue.map((v, i) => getDefaultValue(field, i))
   });
 }
 
 export function getOptionsConfig(visualModelOptions) {
   return { ...baseOptions, ...(visualModelOptions || {}) };
 }
-
-export function validateValues(definition, values) {}
-
 
 /**
  * Helper function for checking predicates, used in getEnabledOptions
@@ -113,7 +79,6 @@ function checkPredicates(conditionObject, values){
   }
 }
 
-
 export function getEnabledOptions(definition, values) {
   
   let out = {}
@@ -125,11 +90,8 @@ export function getEnabledOptions(definition, values) {
         out[optionName] = true
       }
   })
-  return out
-  
+  return out 
 }
-
-///
 
 function getContainerOptionValue(item, optionsConfig, optionsValues){
   const currentConfig = optionsConfig[item]
@@ -294,19 +256,36 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
 
       if (validator) {
         if(!repeatFor){
+          //simple case: options is not repeated
           try {
             validated[name] = validator(optionConfig, optionsValues[name], mapping, dataTypes, data, vizData);
           } catch (err) {
             errors[name] = err.message;
           }
         } else {
+          // repeated option case
+          // to ease work of rawgraphs frontend, the validation step takes care of integrating missing repeated
+          // values with defaults, taking in account `repeatDefault` property if available, `default` otherwise
+
           const repeatValuesMapping = get(mapping, repeatFor)
           const repeatValues = get(repeatValuesMapping, 'value', [])
           
           validated[name] = repeatValues.map((value, idx) => {
             try {
               const partialMapping = { ...mapping, [repeatFor]: {...mapping[repeatFor], value: [value]}}
-              return validator(optionConfig, optionsValues[name][idx], partialMapping, dataTypes, data, vizData)
+
+              const hasValue = Array.isArray(optionsValues[name]) && optionsValues[name][idx] !== undefined
+              let partialValue
+              if(hasValue){
+                partialValue = optionsValues[name][idx]
+              } else {
+                if(Array.isArray(optionConfig.repeatDefault)){
+                  partialValue = get(optionConfig.repeatDefault, `[${idx}]`, optionConfig.default)
+                } else {
+                  partialValue = optionConfig.default
+                }
+              }
+              return validator(optionConfig, partialValue, partialMapping, dataTypes, data, vizData)
             } catch(err){
               errors[name+idx] = err.message;
               return optionsValues[name][idx]
@@ -323,6 +302,7 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
 
   const errorNames = Object.keys(errors);
   if (errorNames.length) {
+    // console.error("error in validation", errors)
     throw new ValidationError(errors);
   }
 
