@@ -1,3 +1,10 @@
+## v1.0.0-beta.3
+#### 01 Dic 2020
+
+Features:
+- Support for repeated options
+- Added labels occlusion utility
+
 ## v1.0.0beta2
 #### 26 Nov 2020
 
