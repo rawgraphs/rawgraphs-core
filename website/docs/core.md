@@ -5,8 +5,6 @@ sidebar_label: rawgraphs-core
 slug: /
 ---
 
-## Context and motivation
-
 Welcome to the rawgraphs-core documentation!
 
 This library was born simplify and modularize development of the RawGraphs web app, but it can be used to implement the RawGraphs workflow and charts from javascript code.
