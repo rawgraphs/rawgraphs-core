@@ -14,6 +14,7 @@ import {
 import isObject from "lodash/isObject";
 import isFunction from "lodash/isFunction";
 import mapValues from "lodash/mapValues";
+import get from "lodash/get"
 
 /**
  * @class
@@ -137,19 +138,43 @@ class Chart {
   }
 
   /**
-   * @param {Node} node
+   * @param {document} document
+   * @param {containerType} string
+   * @param {dataReady} array
    * @returns {Node}
    * @private
    * @description Creates the container node that will be passed to the actual chart implementation. In the current implementation, an svg node is always created.
    */
-  getContainer(document, dataReady) {
+  getContainer(document, containerType, dataReady) {
     //#TODO: this could, in future, depend on visual model
-    const container = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg"
-    );
 
-    const { optionsConfig, optionsValues } = this._getOptions(dataReady)
+    let container;
+    switch (containerType.toLowerCase()) {
+      case "canvas":
+        container = document.createElement(
+          "canvas"
+        );
+        break;
+
+      case "div":
+        container = document.createElement(
+          "div"
+        );
+        break;
+
+      case "svg":
+        container = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg"
+        );
+        break;
+
+      default:
+        throw new RawGraphsError(`Container of type ${containerType} is not supported.`);
+
+    }
+
+    const { optionsConfig, optionsValues } = this._getOptions(dataReady)
 
     const { width, height, style } = getContainerOptions(
       optionsConfig,
@@ -211,18 +236,18 @@ class Chart {
   }
 
 
-  _getOptions(dataReady){
+  _getOptions(dataReady) {
     const optionsConfig = getOptionsConfig(this._visualModel.visualOptions);
     const vizData = dataReady || this._getVizData()
     const optionsValues = getOptionsValues(optionsConfig, this._visualOptions, this._mapping, this._dataTypes, this._data, vizData);
-    return { optionsConfig, optionsValues }
+    return { optionsConfig, optionsValues }
   }
 
-  _getVizData(){
+  _getVizData() {
     return this._visualModel.skipMapping ? this._data : this.mapData();
   }
 
-  _getVizStyles(){
+  _getVizStyles() {
     const styles = this._visualModel.styles || {}
     const localStyles = this._styles || {}
     let mergedStyles = mergeStyles(styles, localStyles)
@@ -237,8 +262,9 @@ class Chart {
     if (!this._visualModel) {
       throw new RawGraphsError("cannot render: visualModel is not set");
     }
-    
-    const container = this.getContainer(node.ownerDocument, dataReady);
+
+    const containerType = get(this._visualModel, 'type', 'svg');
+    const container = this.getContainer(node.ownerDocument, containerType, dataReady);
     const vizData = dataReady || this._getVizData()
     const dimensions = this._visualModel.dimensions;
     const annotatedMapping = annotateMapping(
@@ -248,7 +274,7 @@ class Chart {
     );
     const styles = this._getVizStyles()
 
-    const { optionsConfig, optionsValues } = this._getOptions(vizData)
+    const { optionsConfig, optionsValues } = this._getOptions(vizData)
 
     node.innerHTML = "";
     node.appendChild(container);
@@ -286,7 +312,8 @@ class Chart {
     if (!document && window === undefined) {
       throw new RawGraphsError("Document must be passed or window available");
     }
-    const container = this.getContainer(document || window.document, dataReady);
+    const containerType = get(this._visualModel, 'type', 'svg');
+    const container = this.getContainer(document || window.document, containerType, dataReady);
     const vizData = dataReady || this._getVizData()
     const dimensions = this._visualModel.dimensions;
     const annotatedMapping = annotateMapping(
@@ -296,7 +323,7 @@ class Chart {
     );
     const styles = this._getVizStyles()
 
-    const { optionsConfig, optionsValues } = this._getOptions(vizData)
+    const { optionsConfig, optionsValues } = this._getOptions(vizData)
     // #TODO: TEST THIS FOR HAVING LEGENDS IN renderToString
     //window.document.body.appendChild(container)
     this._visualModel.render(
@@ -419,7 +446,7 @@ class DOMChart extends Chart {
  * @returns {Chart}
  */
 function chart(visualModel, config = {}) {
-  const { data, dataTypes, mapping, visualOptions = {}, styles={} } = config;
+  const { data, dataTypes, mapping, visualOptions = {}, styles = {} } = config;
   return new Chart(visualModel, data, dataTypes, mapping, visualOptions, styles);
 }
 
