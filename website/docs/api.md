@@ -1,9 +1,78 @@
----
-id: api
-title: API
-sidebar_label: API
-slug: /api
----
+## Classes
+
+<dl>
+<dt><a href="#Chart">Chart</a></dt>
+<dd></dd>
+<dt><a href="#DOMChart">DOMChart</a></dt>
+<dd></dd>
+</dl>
+
+## Constants
+
+<dl>
+<dt><a href="#validators">validators</a></dt>
+<dd><p>default validators.
+#TODO: registration approach?</p>
+</dd>
+</dl>
+
+## Functions
+
+<dl>
+<dt><a href="#inferTypes">inferTypes(data, strict)</a> ⇒ <code>object</code></dt>
+<dd><p>Types guessing</p>
+</dd>
+<dt><a href="#parseDataset">parseDataset(data, types)</a> ⇒ <code><a href="#ParserResult">ParserResult</a></code></dt>
+<dd><p>Dataset parser</p>
+</dd>
+<dt><a href="#validateMapperDefinition">validateMapperDefinition(dimensions)</a></dt>
+<dd><p>dimensions validator</p>
+</dd>
+<dt><a href="#validateMapping">validateMapping(mapper, mapping, types)</a></dt>
+<dd><p>mapping validator</p>
+</dd>
+<dt><a href="#makeMapper">makeMapper(dimensions, mapping, types)</a> ⇒ <code>function</code></dt>
+<dd><p>mapper generator</p>
+</dd>
+<dt><a href="#checkPredicates">checkPredicates(conditionObject, values)</a></dt>
+<dd><p>Helper function for checking predicates, used in getEnabledOptions</p>
+</dd>
+<dt><a href="#validateOptions">validateOptions(optionsConfig, optionsValues)</a></dt>
+<dd><p>options validation and deserialization</p>
+</dd>
+<dt><a href="#chart">chart(visualModel, config)</a> ⇒ <code><a href="#Chart">Chart</a></code></dt>
+<dd><p>This is the entry point for creating a chart with raw. It will return an instance of the RAWChart class</p>
+</dd>
+</dl>
+
+## Typedefs
+
+<dl>
+<dt><a href="#ParserResult">ParserResult</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#DataTypes">DataTypes</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#Dimension">Dimension</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#MappingDefinition">MappingDefinition</a> : <code><a href="#Dimension">Array.&lt;Dimension&gt;</a></code></dt>
+<dd></dd>
+<dt><a href="#MappedDimension">MappedDimension</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#Mapping">Mapping</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#VisualOption">VisualOption</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#VisualOptionsDefinition">VisualOptionsDefinition</a> : <code><a href="#VisualOption">Array.&lt;VisualOption&gt;</a></code></dt>
+<dd></dd>
+<dt><a href="#VisualOptions">VisualOptions</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#RenderFunction">RenderFunction</a> : <code>function</code></dt>
+<dd></dd>
+<dt><a href="#VisualModel">VisualModel</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#RawConfig">RawConfig</a> : <code>object</code></dt>
+<dd></dd>
+</dl>
 
 <a name="Chart"></a>
 
@@ -11,17 +80,19 @@ slug: /api
 **Kind**: global class  
 
 * [Chart](#Chart)
-    * [new Chart(visualModel, data, dataTypes, mapping, visualOptions)](#new_Chart_new)
-    * [.data(_data)](#Chart+data) ⇒ [<code>Chart</code>](#Chart)
-    * [.dataTypes(_dataTypes)](#Chart+dataTypes) ⇒ [<code>Chart</code>](#Chart)
-    * [.visualOptions(_visualOptions)](#Chart+visualOptions) ⇒ [<code>Chart</code>](#Chart)
-    * [.getContainer(node)](#Chart+getContainer) ⇒ <code>Node</code>
-    * [.renderToDOM(node)](#Chart+renderToDOM) ⇒ <code>DOMChart</code>
+    * [new Chart(visualModel, data, dataTypes, mapping, visualOptions, styles)](#new_Chart_new)
+    * [.data(nextData)](#Chart+data) ⇒ [<code>Chart</code>](#Chart)
+    * [.dataTypes(nextDataTypes)](#Chart+dataTypes) ⇒ [<code>Chart</code>](#Chart)
+    * [.visualOptions(nextVisualOptions)](#Chart+visualOptions) ⇒ [<code>Chart</code>](#Chart)
+    * [.styles(Object)](#Chart+styles) ⇒ [<code>Chart</code>](#Chart)
+    * [.renderToDOM(node)](#Chart+renderToDOM) ⇒ [<code>DOMChart</code>](#DOMChart)
     * [.renderToString(document)](#Chart+renderToString) ⇒ <code>string</code>
 
 <a name="new_Chart_new"></a>
 
-### new Chart(visualModel, data, dataTypes, mapping, visualOptions)
+### new Chart(visualModel, data, dataTypes, mapping, visualOptions, styles)
+Internal class used to represent a visual model with its actual configuration of data, dataTypes, mapping, visualOptions and styles.
+
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -30,46 +101,55 @@ slug: /api
 | dataTypes | <code>Object</code> |  |
 | mapping | <code>Object</code> |  |
 | visualOptions | <code>Object</code> |  |
+| styles | <code>Object</code> |  |
 
 <a name="Chart+data"></a>
 
-### chart.data(_data) ⇒ [<code>Chart</code>](#Chart)
+### chart.data(nextData) ⇒ [<code>Chart</code>](#Chart)
+Sets or updates new data and returns a new Chart instance.
+
 **Kind**: instance method of [<code>Chart</code>](#Chart)  
 
 | Param | Type |
 | --- | --- |
-| _data | <code>Array.&lt;Object&gt;</code> | 
+| nextData | <code>Array.&lt;Object&gt;</code> | 
 
 <a name="Chart+dataTypes"></a>
 
-### chart.dataTypes(_dataTypes) ⇒ [<code>Chart</code>](#Chart)
+### chart.dataTypes(nextDataTypes) ⇒ [<code>Chart</code>](#Chart)
+Sets or updates dataTypes and returns a new Chart instance.
+
 **Kind**: instance method of [<code>Chart</code>](#Chart)  
 
 | Param | Type |
 | --- | --- |
-| _dataTypes | [<code>DataTypes</code>](#DataTypes) | 
+| nextDataTypes | [<code>DataTypes</code>](#DataTypes) | 
 
 <a name="Chart+visualOptions"></a>
 
-### chart.visualOptions(_visualOptions) ⇒ [<code>Chart</code>](#Chart)
+### chart.visualOptions(nextVisualOptions) ⇒ [<code>Chart</code>](#Chart)
+Sets or updates visual options and returns a new Chart instance.
+
 **Kind**: instance method of [<code>Chart</code>](#Chart)  
 
 | Param | Type |
 | --- | --- |
-| _visualOptions | [<code>VisualOptions</code>](#VisualOptions) | 
+| nextVisualOptions | [<code>VisualOptions</code>](#VisualOptions) | 
 
-<a name="Chart+getContainer"></a>
+<a name="Chart+styles"></a>
 
-### chart.getContainer(node) ⇒ <code>Node</code>
+### chart.styles(Object) ⇒ [<code>Chart</code>](#Chart)
+Sets or updates styles and returns a new Chart instance.
+
 **Kind**: instance method of [<code>Chart</code>](#Chart)  
 
 | Param | Type |
 | --- | --- |
-| node | <code>Node</code> | 
+| Object | <code>styles</code> | 
 
 <a name="Chart+renderToDOM"></a>
 
-### chart.renderToDOM(node) ⇒ <code>DOMChart</code>
+### chart.renderToDOM(node) ⇒ [<code>DOMChart</code>](#DOMChart)
 **Kind**: instance method of [<code>Chart</code>](#Chart)  
 
 | Param | Type |
@@ -84,6 +164,15 @@ slug: /api
 | Param | Type | Description |
 | --- | --- | --- |
 | document | <code>document</code> | HTML document context (optional if window is available) |
+
+<a name="DOMChart"></a>
+
+## DOMChart
+**Kind**: global class  
+<a name="new_DOMChart_new"></a>
+
+### new DOMChart()
+Internal class used to represent a Chart instance rendered to a DOM node.
 
 <a name="validators"></a>
 

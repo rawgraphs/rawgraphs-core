@@ -17,10 +17,10 @@ import mapValues from "lodash/mapValues";
 
 /**
  * @class
+ * @description Internal class used to represent a visual model with its actual configuration of data, dataTypes, mapping, visualOptions and styles.
  */
 class Chart {
   /**
-   * @constructor
    * @param {VisualModel} visualModel visual model
    * @param {Array.<Object>} data
    * @param {Object} dataTypes
@@ -49,10 +49,11 @@ class Chart {
   }
 
   /**
-   * @param {Array.<Object>} _data
+   * @param {Array.<Object>} nextData
    * @returns {Chart}
+   * @description Sets or updates new data and returns a new Chart instance.
    */
-  data(_data) {
+  data(nextData) {
     if (!arguments.length) {
       return this._data;
     }
@@ -63,14 +64,14 @@ class Chart {
       (typeof this._dataType === "object" &&
         Object.keys(this._dataTypes).length)
     ) {
-      dataTypes = inferTypes(_data);
+      dataTypes = inferTypes(nextData);
     } else {
       dataTypes = this.dataTypes;
     }
 
     return new Chart(
       this._visualModel,
-      _data,
+      nextData,
       dataTypes,
       this._mapping,
       this._visualOptions,
@@ -79,17 +80,18 @@ class Chart {
   }
 
   /**
-   * @param {DataTypes} _dataTypes
+   * @param {DataTypes} nextDataTypes
    * @returns {Chart}
+   * @description Sets or updates dataTypes and returns a new Chart instance.
    */
-  dataTypes(_dataTypes) {
+  dataTypes(nextDataTypes) {
     if (!arguments.length) {
       return this._dataTypes;
     }
     return new RAWChart(
       this._visualModel,
       this._data,
-      _dataTypes,
+      nextDataTypes,
       this._mapping,
       this._visualOptions,
       this._styles,
@@ -97,10 +99,11 @@ class Chart {
   }
 
   /**
-   * @param {VisualOptions} _visualOptions
+   * @param {VisualOptions} nextVisualOptions
    * @returns {Chart}
+   * @description Sets or updates visual options and returns a new Chart instance.
    */
-  visualOptions(_visualOptions) {
+  visualOptions(nextVisualOptions) {
     if (!arguments.length) {
       return this._visualOptions;
     }
@@ -109,7 +112,7 @@ class Chart {
       this._data,
       this._dataTypes,
       this._mapping,
-      _visualOptions,
+      nextVisualOptions,
       this._styles,
     );
   }
@@ -117,6 +120,7 @@ class Chart {
   /**
    * @param {styles} Object
    * @returns {Chart}
+   * @description Sets or updates styles and returns a new Chart instance.
    */
   styles(_styles) {
     if (!arguments.length) {
@@ -135,6 +139,8 @@ class Chart {
   /**
    * @param {Node} node
    * @returns {Node}
+   * @private
+   * @description Creates the container node that will be passed to the actual chart implementation. In the current implementation, an svg node is always created.
    */
   getContainer(document, dataReady) {
     //#TODO: this could, in future, depend on visual model
@@ -231,7 +237,7 @@ class Chart {
     if (!this._visualModel) {
       throw new RawGraphsError("cannot render: visualModel is not set");
     }
-
+    
     const container = this.getContainer(node.ownerDocument, dataReady);
     const vizData = dataReady || this._getVizData()
     const dimensions = this._visualModel.dimensions;
@@ -305,6 +311,10 @@ class Chart {
   }
 }
 
+/**
+ * @class
+ * @description Internal class used to represent a Chart instance rendered to a DOM node.
+ */
 class DOMChart extends Chart {
   constructor(node, ...args) {
     super(...args);
