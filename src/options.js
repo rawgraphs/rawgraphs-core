@@ -1,8 +1,3 @@
-/**
- * options module.
- * @module options
- */
-
 import get from "lodash/get";
 import isString from "lodash/isString";
 import isNumber from "lodash/isNumber";
@@ -53,7 +48,7 @@ export function getDefaultOptionsValues(definition, mapping) {
     let getDefaultValue = (field, idx) => field.default
     if(Array.isArray(repeatDefault)){
       getDefaultValue = (field, idx) => get(repeatDefault, `[${idx}]`, field.default)
-    } 
+    }
     return mappingValue.map((v, i) => getDefaultValue(field, i))
   });
 }
@@ -64,9 +59,9 @@ export function getOptionsConfig(visualModelOptions) {
 
 /**
  * Helper function for checking predicates, used in getEnabledOptions
- * 
- * @param {*} conditionObject 
- * @param {*} values 
+ *
+ * @param {*} conditionObject
+ * @param {*} values
  */
 function checkPredicates(conditionObject, values){
   const tests = Object.keys(conditionObject).map(
@@ -80,7 +75,7 @@ function checkPredicates(conditionObject, values){
 }
 
 export function getEnabledOptions(definition, values) {
-  
+
   let out = {}
   Object.keys(definition).forEach(optionName => {
       if(isPlainObject(definition[optionName].disabled)){
@@ -90,7 +85,7 @@ export function getEnabledOptions(definition, values) {
         out[optionName] = true
       }
   })
-  return out 
+  return out
 }
 
 function getContainerOptionValue(item, optionsConfig, optionsValues){
@@ -125,7 +120,7 @@ export function getContainerOptions(optionsConfig, optionsValues) {
     const modifier = getContainerOptionValue(item, optionsConfig, optionsValues)
     return acc + modifier;
   }, 0);
- 
+
   const height = heightOptions.reduce((acc, item) => {
     const modifier = getContainerOptionValue(item, optionsConfig, optionsValues)
     return acc + modifier
@@ -186,7 +181,7 @@ function validateColor(def, value) {
 }
 
 function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
-  
+
   const dimension = def.dimension
   const mappingValue = get(mapping, `[${dimension}].value`);
   const colorDataset = vizData.map(d => get(d, def.dimension))
@@ -269,7 +264,7 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
 
           const repeatValuesMapping = get(mapping, repeatFor)
           const repeatValues = get(repeatValuesMapping, 'value', [])
-          
+
           validated[name] = repeatValues.map((value, idx) => {
             try {
               const partialMapping = { ...mapping, [repeatFor]: {...mapping[repeatFor], value: [value]}}
@@ -290,11 +285,11 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
               errors[name+idx] = err.message;
               return optionsValues[name][idx]
             }
-            
+
           })
 
         }
-        
+
       } else {
         validated[name] = optionsValues[name];
       }
@@ -312,12 +307,12 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
 export function getOptionsValues(definition, values, mapping, dataTypes, data, vizData) {
   const opts = getDefaultOptionsValues(definition, mapping);
   const valuesClean = omitBy(values, (v, k) => v == undefined)
-  
+
   const allValues = {
     ...opts,
     ...valuesClean,
   };
-  
+
   //removing disabled options
   const enabledOptions = getEnabledOptions(definition, allValues)
   const valuesCleanNoDisabled = omitBy(values, (v, k) => !enabledOptions[k])
@@ -326,7 +321,7 @@ export function getOptionsValues(definition, values, mapping, dataTypes, data, v
     ...opts,
     ...valuesCleanNoDisabled,
   };
-  
-  
+
+
   return validateOptions(definition, finalValues, mapping, dataTypes, data, vizData);
 }

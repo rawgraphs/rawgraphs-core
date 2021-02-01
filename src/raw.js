@@ -1,8 +1,3 @@
-/**
- * charts module.
- * @module charts
- */
-
 import {
   validateMapperDefinition,
   validateMapping,
@@ -229,7 +224,7 @@ class Chart {
       annotatedMapping,
       this._data
     );
-    
+
 
     return new DOMChart(
       node,
@@ -264,7 +259,7 @@ class Chart {
 
     const { optionsConfig, optionsValues } = this._getOptions(vizData)
     // #TODO: TEST THIS FOR HAVING LEGENDS IN renderToString
-    //window.document.body.appendChild(container)  
+    //window.document.body.appendChild(container)
     this._visualModel.render(
       container,
       vizData,

@@ -14,8 +14,12 @@
     "build": "rollup -c",
     "nodebox": "NODE_ENV=test babel-node sandbox/node/index.js",
     "webbox": "webpack-dev-server",
-    "generate-docs": "node_modules/.bin/jsdoc -c jsdoc.json"
+    "generate-docs": "node_modules/.bin/jsdoc -c jsdoc.json",
+    "doc2md": "jsdoc2md -t doc.hbs src/* > website/docs/api.md"
   },
+  "files": [
+    "lib"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -33,6 +37,7 @@
     "docdash": "^1.2.0",
     "jest": "^25.1.0",
     "jsdoc": "^3.6.4",
+    "jsdoc-to-markdown": "^6.0.1",
     "jsdom": "^16.2.0",
     "npm": "^6.14.5",
     "rimraf": "^3.0.2",

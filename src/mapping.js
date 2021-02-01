@@ -1,8 +1,3 @@
-/**
- * mapping module.
- * @module mapping
- */
-
 import { RAWError, getTypeName } from "./utils";
 import { getAggregator, getAggregatorArray } from "./expressionRegister";
 import difference from "lodash/difference";
@@ -175,7 +170,7 @@ export function annotateMapping(dimensions, _mapping, types) {
   const dimensionsById = keyBy(dimensions, "id");
   let mapping = {}
   const dimensionsIds = Object.keys(dimensionsById)
-  
+
   Object.keys(_mapping).forEach((id) => {
     mapping[id] = {..._mapping[id]}
 
@@ -196,7 +191,7 @@ export function annotateMapping(dimensions, _mapping, types) {
           const aggregationForDimension = Array.isArray(aggregationConfig)
           ? aggregationConfig[0]
           : aggregationConfig;
-        
+
           mapping[id].config = {
             ...(mapping[id].config || {}),
             aggregation: aggregationForDimension

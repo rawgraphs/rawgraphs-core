@@ -1,8 +1,3 @@
-/**
- * dataset module.
- * @module dataset
- */
-
 import isNumber from "lodash/isNumber";
 import isDate from "lodash/isDate";
 import isPlainObject from "lodash/isPlainObject";
