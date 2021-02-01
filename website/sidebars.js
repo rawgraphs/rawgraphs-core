@@ -1,6 +1,3 @@
 module.exports = {
-  // someSidebar: {
-  //   "RAW Core": ['start', 'api'],
-  // },
-  someSidebar: ['start', 'api'],
+  someSidebar: ['core', 'architecture', 'start', 'visual-models', 'api'],
 };
