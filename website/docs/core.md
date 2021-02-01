@@ -9,7 +9,9 @@ slug: /
 
 Welcome to the rawgraphs-core documentation!
 
-This library was born simplify and modularize development of the RawGraphs web app and it roughly contains:
+This library was born simplify and modularize development of the RawGraphs web app, but it can be used to implement the RawGraphs workflow and charts from javascript code.
+
+The library roughly contains:
 
 - a factory function used to render a visual model and a dataset to the DOM, just like the RawGraphs web app works
 - helper functions used for the various subtasks of the workflow like data parsing, aggregation, visual options encoding/decoding, etc.
