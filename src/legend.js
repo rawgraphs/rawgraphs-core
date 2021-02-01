@@ -13,7 +13,7 @@ function scaleType(scale) {
   }
 }
 
-export function rawgraphsLegend(
+export function legend(
   legendColor,
   legendSize,
   legendWidth = 200,
@@ -22,7 +22,7 @@ export function rawgraphsLegend(
   shapeHeight = 15,
   margin = { top: 0, right: 5, bottom: 0, left: 5 }
 ) {
-  const legend = (_selection) => {
+  const legendFn = (_selection) => {
     let d3LegendSize, d3legendColor;
     const w = legendWidth - margin.left - margin.right;
 
@@ -138,28 +138,28 @@ export function rawgraphsLegend(
       .attr("stroke", "#ccc");
   };
 
-  legend.addColor = function (_title, _scale) {
+  legendFn.addColor = function (_title, _scale) {
     if (!arguments.length) return legendColor;
 
     legendColor = { title: _title, scale: _scale };
-    return legend;
+    return legendFn;
   };
 
-  legend.addSize = function (_title, _scale, _shape) {
+  legendFn.addSize = function (_title, _scale, _shape) {
     if (!arguments.length) return legendSize;
     legendSize = {
       title: _title,
       scale: _scale,
       shape: _shape,
     };
-    return legend;
+    return legendFn;
   };
 
-  legend.legendWidth = function (_legendWidth) {
+  legendFn.legendWidth = function (_legendWidth) {
     if (!arguments.length) return legendWidth;
     legendWidth = _legendWidth;
-    return legend;
+    return legendFn;
   };
 
-  return legend;
+  return legendFn;
 }

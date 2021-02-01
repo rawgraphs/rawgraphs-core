@@ -1,4 +1,4 @@
-import { RAWError, getTypeName } from "./utils";
+import { RawGraphsError, getTypeName } from "./utils";
 import { getAggregator, getAggregatorArray } from "./expressionRegister";
 import difference from "lodash/difference";
 import get from "lodash/get";
@@ -21,17 +21,17 @@ import isString from "lodash/isString";
 
 export function validateMapperDefinition(dimensions) {
   if (!Array.isArray(dimensions)) {
-    throw new RAWError("dimesions must be an array");
+    throw new RawGraphsError("dimesions must be an array");
   }
 
   if (dimensions.length === 0) {
-    throw new RAWError("empty dimensions");
+    throw new RawGraphsError("empty dimensions");
   }
 }
 
 export function validateDeclarativeMapperDefinition(dimensions) {
   if (dimensions.length === 0) {
-    throw new RAWError("empty dimensions");
+    throw new RawGraphsError("empty dimensions");
   }
 
   const getters = dimensions.filter((d) => d.operation === "get");
@@ -40,13 +40,13 @@ export function validateDeclarativeMapperDefinition(dimensions) {
     (d) => grouperTypes.indexOf(d.operation) !== -1
   );
   if (grouperDimension.length > 1) {
-    throw new RAWError(
+    throw new RawGraphsError(
       `only one operation among ${grouperTypes.join(",")} is allowed`
     );
   }
 
   if (getters.length === 0 && !grouperDimension.length) {
-    throw new RAWError(
+    throw new RawGraphsError(
       `at least one get operation must be present in a dimension set, or an operation among ${grouperTypes.join(
         ","
       )} must be specified`
@@ -54,7 +54,7 @@ export function validateDeclarativeMapperDefinition(dimensions) {
   }
 
   if (getters.length > 0 && grouperDimension.length) {
-    throw new RAWError(
+    throw new RawGraphsError(
       `'${grouperDimension[0].operation}' operation was specified, you cannot define other get operations`
     );
   }
@@ -162,7 +162,7 @@ export function validateMapping(dimensions, _mapping, types) {
   // #TODO: check for multiple, minValues, maxValues
 
   if (errors.length) {
-    throw new RAWError(errors.join("\n"));
+    throw new RawGraphsError(errors.join("\n"));
   }
 }
 
@@ -370,7 +370,7 @@ function makeMapper(dimensionsWithOperations, _mapping, types) {
     rollupsDimension,
   ].filter((x) => !!x);
   if (candidateGroupers.length > 1) {
-    throw new RAWError(
+    throw new RawGraphsError(
       "only one of these operations is allowed in a mapper definition: 'group', 'groups', 'groupBy', 'rollup', 'rollups'"
     );
   }
@@ -533,7 +533,7 @@ function makeMapper(dimensionsWithOperations, _mapping, types) {
               !Array.isArray(rollupConfigAggregation) ||
               rollupConfigAggregation.length !== 2
             ) {
-              throw new RAWError(
+              throw new RawGraphsError(
                 "Rollup aggregation should be an array with aggregation function and target column"
               );
             }

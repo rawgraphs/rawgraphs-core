@@ -6,7 +6,7 @@ import isNaN from "lodash/isNaN";
 import get from "lodash/get";
 import isFunction from "lodash/isFunction";
 import maxBy from "lodash/maxBy";
-import { RAWError, getType, NumberParser } from "./utils";
+import { RawGraphsError, getType, NumberParser } from "./utils";
 import { timeParse, timeFormatLocale } from "d3-time-format";
 import { dateFormats } from "./dateFormats";
 
@@ -185,10 +185,10 @@ function basicGetter(rowValue, dataType) {
 
 function checkType(value, type) {
   if (type === Number && isNaN(value)) {
-    throw new RAWError(`invalid type number for value ${value}`);
+    throw new RawGraphsError(`invalid type number for value ${value}`);
   }
   if (type === Date && !(value instanceof Date)) {
-    throw new RAWError(`invalid type date for value ${value}`);
+    throw new RawGraphsError(`invalid type date for value ${value}`);
   }
 }
 

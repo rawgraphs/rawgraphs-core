@@ -4,17 +4,16 @@ import isNumber from "lodash/isNumber";
 import get from "lodash/get";
 import { formatLocale } from "d3-format";
 
-export class RAWError extends Error {
+export class RawGraphsError extends Error {
   constructor(message) {
     super(message);
-    this.name = "RAWError";
+    this.name = "RawGraphsError";
     this.message = message;
   }
 }
 
 export class ValidationError extends Error {
   constructor(errors) {
-    //super(message)
     super("validation error");
     this.name = "ValidationError";
     this.errors = errors;

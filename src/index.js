@@ -1,4 +1,4 @@
-export { default as chart } from "./raw";
+export { default as chart } from "./rawGraphs";
 export { parseDataset, inferTypes, getValueType } from "./dataset";
 export {
   default as makeMapper,
@@ -31,6 +31,6 @@ export {
   getAvailableScaleTypes,
 } from "./colors";
 export { getTypeName, NumberParser } from "./utils";
-export { rawgraphsLegend } from "./legend";
-export {labelsOcclusion} from './labels'
+export { legend } from "./legend";
+export { labelsOcclusion } from './labels'
 export { dateFormats, translateDateFormat } from "./dateFormats";

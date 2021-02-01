@@ -5,7 +5,7 @@ import {
   default as makeMapper,
 } from "./mapping";
 import { inferTypes } from "./dataset";
-import { RAWError, mergeStyles } from "./utils";
+import { RawGraphsError, mergeStyles } from "./utils";
 import {
   getOptionsValues,
   getOptionsConfig,
@@ -68,7 +68,7 @@ class Chart {
       dataTypes = this.dataTypes;
     }
 
-    return new RAWChart(
+    return new Chart(
       this._visualModel,
       _data,
       dataTypes,
@@ -198,7 +198,7 @@ class Chart {
       );
       return mapFunction(this._data);
     } else {
-      throw new RAWError(
+      throw new RawGraphsError(
         "mapData property of visualModel should be a function or an object"
       );
     }
@@ -229,7 +229,7 @@ class Chart {
    */
   renderToDOM(node, dataReady) {
     if (!this._visualModel) {
-      throw new RAWError("cannot render: visualModel is not set");
+      throw new RawGraphsError("cannot render: visualModel is not set");
     }
 
     const container = this.getContainer(node.ownerDocument, dataReady);
@@ -274,11 +274,11 @@ class Chart {
    */
   renderToString(document, dataReady) {
     if (!this._visualModel) {
-      throw new RAWError("cannot render: visualModel is not set");
+      throw new RawGraphsError("cannot render: visualModel is not set");
     }
 
     if (!document && window === undefined) {
-      throw new RAWError("Document must be passed or window available");
+      throw new RawGraphsError("Document must be passed or window available");
     }
     const container = this.getContainer(document || window.document, dataReady);
     const vizData = dataReady || this._getVizData()

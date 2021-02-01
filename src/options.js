@@ -3,7 +3,7 @@ import isString from "lodash/isString";
 import isNumber from "lodash/isNumber";
 import isArray from "lodash/isArray";
 import isPlainObject from "lodash/isPlainObject"
-import { ValidationError, RAWError, getTypeName } from "./utils";
+import { ValidationError, RawGraphsError, getTypeName } from "./utils";
 import mapValues from "lodash/mapValues";
 import { getColorScale } from './colors'
 import omitBy from "lodash/omitBy";
@@ -138,14 +138,14 @@ export function getContainerOptions(optionsConfig, optionsValues) {
 function validateEnum(def, value) {
   const validValues = get(def, "options", []);
   if (validValues.length && validValues.indexOf(value) === -1) {
-    throw new RAWError(`${value} is not a valid option`);
+    throw new RawGraphsError(`${value} is not a valid option`);
   }
   return value;
 }
 
 function validateText(def, value) {
   if (!isString(value)) {
-    throw new RAWError("String expected");
+    throw new RawGraphsError("String expected");
   }
 
   validateEnum(value);
@@ -153,18 +153,18 @@ function validateText(def, value) {
   const len = get(value, "length");
   const minLength = get(def, "minLength");
   if (minLength !== undefined && len < minLength) {
-    throw new RAWError(`Min length is ${minLength}`);
+    throw new RawGraphsError(`Min length is ${minLength}`);
   }
   const maxLength = get(def, "maxLength");
   if (maxLength !== undefined && len > maxLength) {
-    throw new RAWError(`Max length is ${maxLength}`);
+    throw new RawGraphsError(`Max length is ${maxLength}`);
   }
   return value;
 }
 
 function validateNumber(def, value) {
   if (!isNumber(value)) {
-    throw new RAWError("Number expected");
+    throw new RawGraphsError("Number expected");
   }
 
   validateEnum(value);

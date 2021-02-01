@@ -1,4 +1,4 @@
-import { RAWError, getTypeName } from "./utils";
+import { RawGraphsError, getTypeName } from "./utils";
 import mean from 'lodash/mean'
 import max from 'lodash/max'
 import min from 'lodash/min'
@@ -38,7 +38,7 @@ export function getAggregator(aggregatorExpression){
     if(aggregationsRegister[aggregatorExpression]){
       return aggregationsRegister[aggregatorExpression]
     } else {
-      throw new RAWError(`Aggregator "${aggregatorExpression}" is is not registered in RAW.`)
+      throw new RawGraphsError(`Aggregator "${aggregatorExpression}" is is not registered in RawGraphs.`)
     }
   }
 
@@ -90,7 +90,7 @@ registerAggregation("distinct", itemsUniq)
 
 export function getDefaultDimensionAggregation(dimension, dataType) {
   if (!dimension.aggregation) {
-    throw new RAWError(`Dimension ${dimension.id} is not aggregable`);
+    throw new RawGraphsError(`Dimension ${dimension.id} is not aggregable`);
   }
   const names = getAggregatorNames()
   
