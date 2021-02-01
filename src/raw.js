@@ -10,7 +10,7 @@ import {
   default as makeMapper,
 } from "./mapping";
 import { inferTypes } from "./dataset";
-import { RAWError } from "./utils";
+import { RAWError, mergeStyles } from "./utils";
 import {
   getOptionsValues,
   getOptionsConfig,
@@ -31,8 +31,9 @@ class Chart {
    * @param {Object} dataTypes
    * @param {Object} mapping
    * @param {Object} visualOptions
+   * @param {Object} styles
    */
-  constructor(visualModel, data, dataTypes, mapping, visualOptions) {
+  constructor(visualModel, data, dataTypes, mapping, visualOptions, styles) {
     this._visualModel = visualModel;
     this._data = data;
 
@@ -49,6 +50,7 @@ class Chart {
 
     this._mapping = mapping;
     this._visualOptions = visualOptions;
+    this._styles = styles;
   }
 
   /**
@@ -76,7 +78,8 @@ class Chart {
       _data,
       dataTypes,
       this._mapping,
-      this._visualOptions
+      this._visualOptions,
+      this._styles,
     );
   }
 
@@ -93,7 +96,8 @@ class Chart {
       this._data,
       _dataTypes,
       this._mapping,
-      this._visualOptions
+      this._visualOptions,
+      this._styles,
     );
   }
 
@@ -110,7 +114,26 @@ class Chart {
       this._data,
       this._dataTypes,
       this._mapping,
-      _visualOptions
+      _visualOptions,
+      this._styles,
+    );
+  }
+
+  /**
+   * @param {styles} Object
+   * @returns {Chart}
+   */
+  styles(_styles) {
+    if (!arguments.length) {
+      return this._styles;
+    }
+    return new RAWChart(
+      this._visualModel,
+      this._data,
+      this._dataTypes,
+      this._mapping,
+      _visualOptions,
+      _styles
     );
   }
 
@@ -198,6 +221,12 @@ class Chart {
     return this._visualModel.skipMapping ? this._data : this.mapData();
   }
 
+  _getVizStyles(){
+    const styles = this._visualModel.styles || {}
+    const localStyles = this._styles || {}
+    let mergedStyles = mergeStyles(styles, localStyles)
+    return mergedStyles
+  }
 
   /**
    * @param {Node} node
@@ -216,6 +245,7 @@ class Chart {
       this._mapping,
       this._dataTypes
     );
+    const styles = this._getVizStyles()
 
     const { optionsConfig, optionsValues } = this._getOptions(vizData)
 
@@ -227,7 +257,8 @@ class Chart {
       vizData,
       optionsValues,
       annotatedMapping,
-      this._data
+      this._data,
+      styles,
     );
     
 
@@ -237,7 +268,8 @@ class Chart {
       this._data,
       this._dataTypes,
       this._mapping,
-      this._visualOptions
+      this._visualOptions,
+      this._styles,
     );
   }
 
@@ -261,6 +293,7 @@ class Chart {
       this._mapping,
       this._dataTypes
     );
+    const styles = this._getVizStyles()
 
     const { optionsConfig, optionsValues } = this._getOptions(vizData)
     // #TODO: TEST THIS FOR HAVING LEGENDS IN renderToString
@@ -270,7 +303,8 @@ class Chart {
       vizData,
       optionsValues,
       annotatedMapping,
-      this._data
+      this._data,
+      styles,
     );
     return container.outerHTML;
   }
@@ -380,8 +414,8 @@ class DOMChart extends Chart {
  * @returns {Chart}
  */
 function chart(visualModel, config = {}) {
-  const { data, dataTypes, mapping, visualOptions = {} } = config;
-  return new Chart(visualModel, data, dataTypes, mapping, visualOptions);
+  const { data, dataTypes, mapping, visualOptions = {}, styles={} } = config;
+  return new Chart(visualModel, data, dataTypes, mapping, visualOptions, styles);
 }
 
 export default chart;
