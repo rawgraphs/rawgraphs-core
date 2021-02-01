@@ -187,7 +187,7 @@ function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
   const colorDataset = vizData.map(d => get(d, def.dimension))
   const colorDataType = dataTypes[mappingValue]
   ? getTypeName(dataTypes[mappingValue])
-  : undefined;
+  : 'string';
 
   const {
     scaleType,
