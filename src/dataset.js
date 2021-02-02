@@ -52,7 +52,7 @@ export function getValueType(value, options = {}) {
   if (!strict) {
     try {
       jsonValue = JSON.parse(value);
-    } catch (err) {}
+    } catch (err) { }
   }
 
   if (numberParser) {
@@ -218,7 +218,7 @@ function rowParser(types, parsingOptions = {}, onError) {
         out[k] = getter(row);
       } catch (err) {
         out[k] = null;
-        error[k] = err;
+        error[k] = err.toString();
       }
     });
 
@@ -232,9 +232,9 @@ function rowParser(types, parsingOptions = {}, onError) {
 function parseRows(data, dataTypes, parsingOptions) {
   //#TODO: ADD SENTINEL
   let errors = [];
-  const parser = rowParser(dataTypes, parsingOptions, (error, i) =>
+  const parser = rowParser(dataTypes, parsingOptions, (error, i) => {
     errors.push({ row: i, error })
-  );
+  });
   const dataset = data.map(parser);
   return [dataset, errors];
 }
@@ -258,6 +258,5 @@ function parseRows(data, dataTypes, parsingOptions) {
 export function parseDataset(data, types, parsingOptions) {
   const dataTypes = types || inferTypes(data, parsingOptions);
   const [dataset, errors] = parseRows(data, dataTypes, parsingOptions);
-
   return { dataset, dataTypes, errors };
 }
