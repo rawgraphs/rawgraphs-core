@@ -25,10 +25,12 @@ function getFormatter(dataType, parsingOptions) {
   if (getType(dataType) === Date) {
     if (isString(dataType.dateFormat) && !!dateFormats[dataType.dateFormat]) {
       const mappedFormat = dateFormats[dataType.dateFormat];
+      
       const parser = parsingOptions.dateLocale
         ? timeFormatLocale(parsingOptions.dateLocale).parse(mappedFormat)
         : timeParse(mappedFormat);
       return (value) => {
+        
         if (!value) {
           return EMPTY_DATE_MARKER
         }

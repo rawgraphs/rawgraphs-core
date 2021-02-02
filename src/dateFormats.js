@@ -75,6 +75,9 @@ const dateTokensMap = {
   DD: "%d",
   YY: "%y",
   Month: "%B",
+  HH: "%H",
+  mm: "%M",
+  ss: "%S",
 };
 
 export const translateDateFormat = function (df) {
@@ -97,7 +100,8 @@ const formatsLabels = [
   "MM/YY",
   "MM/YYYY",
   "DD Month YYYY", 
-  "YYYY"
+  "YYYY",
+  "YYYY-MM-DD HH:mm:ss", 
 ];
 
 export const dateFormats = {};
