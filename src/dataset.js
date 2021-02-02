@@ -10,6 +10,8 @@ import { RawGraphsError, getType, NumberParser } from "./utils";
 import { timeParse, timeFormatLocale } from "d3-time-format";
 import { dateFormats } from "./dateFormats";
 
+const EMPTY_DATE_MARKER = '__||_||_||__'
+
 function getFormatter(dataType, parsingOptions) {
   if (!isPlainObject(dataType)) {
     return undefined;
@@ -19,13 +21,20 @@ function getFormatter(dataType, parsingOptions) {
     return dataType.decode;
   }
 
+  //as our date parsers return 'null' when failing parsing we need another marker. see https://github.com/d3/d3-time-format 
   if (getType(dataType) === Date) {
     if (isString(dataType.dateFormat) && !!dateFormats[dataType.dateFormat]) {
       const mappedFormat = dateFormats[dataType.dateFormat];
       const parser = parsingOptions.dateLocale
         ? timeFormatLocale(parsingOptions.dateLocale).parse(mappedFormat)
         : timeParse(mappedFormat);
-      return (value) => parser(value);
+      return (value) => {
+        if (!value) {
+          return EMPTY_DATE_MARKER
+        }
+        const parsedValue = parser(value)
+        return parsedValue
+      }
     }
   }
 
@@ -38,7 +47,7 @@ function getFormatter(dataType, parsingOptions) {
         group,
         numerals,
       });
-      return (value) => numberParser.parse(value);
+      return (value) => value !== '' ? numberParser.parse(value) : null;
     }
   }
 
@@ -183,13 +192,24 @@ function basicGetter(rowValue, dataType) {
   return dataType(rowValue);
 }
 
-function checkType(value, type) {
-  if (type === Number && isNaN(value)) {
+function checkTypeAndGetFinalValue(value, type) {
+  if (type === Number && value !== null && isNaN(value)) {
     throw new RawGraphsError(`invalid type number for value ${value}`);
   }
-  if (type === Date && !(value instanceof Date)) {
-    throw new RawGraphsError(`invalid type date for value ${value}`);
+
+  //as our date parsers return 'null' when failing parsing we need another marker. see https://github.com/d3/d3-time-format 
+  if (type === Date) {
+    if (value === EMPTY_DATE_MARKER) {
+      return null
+    } else {
+      if (!(value instanceof Date)) {
+        throw new RawGraphsError(`invalid type date for value ${value}`);
+      }
+    }
   }
+
+
+  return value
 }
 
 // builds a parser function
@@ -203,8 +223,8 @@ function rowParser(types, parsingOptions = {}, onError) {
     propGetters[k] = (row) => {
       const rowValue = get(row, k);
       const formattedValue = formatter ? formatter(rowValue) : rowValue;
-      const out = basicGetter(formattedValue, formatter ? (x) => x : type);
-      checkType(out, type);
+      let out = basicGetter(formattedValue, formatter ? (x) => x : type);
+      out = checkTypeAndGetFinalValue(out, type);
       return out;
     };
   });
@@ -217,7 +237,7 @@ function rowParser(types, parsingOptions = {}, onError) {
       try {
         out[k] = getter(row);
       } catch (err) {
-        out[k] = null;
+        out[k] = undefined;
         error[k] = err.toString();
       }
     });
