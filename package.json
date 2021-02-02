@@ -15,7 +15,7 @@
     "nodebox": "NODE_ENV=test babel-node sandbox/node/index.js",
     "webbox": "webpack-dev-server",
     "generate-docs": "node_modules/.bin/jsdoc -c jsdoc.json",
-    "doc2md": "jsdoc2md -t doc.hbs src/* > website/docs/api.md"
+    "doc2md": "jsdoc2md --no-cache -t doc.hbs src/* | tail -n +2 > website/docs/api.md"
   },
   "files": [
     "lib"
