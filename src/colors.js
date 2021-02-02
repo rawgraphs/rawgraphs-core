@@ -1,7 +1,7 @@
 import * as d3Color from "d3-color";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import { scaleDiverging, scaleSequential, scaleOrdinal } from "d3-scale";
-import { min, mean, max, extent } from "d3-array";
+import { min, max, extent } from "d3-array";
 import isEqual from "lodash/isEqual";
 import get from 'lodash/get'
 import { quantize, interpolateRgbBasis } from "d3-interpolate";
