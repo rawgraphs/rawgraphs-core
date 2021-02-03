@@ -8,6 +8,8 @@ import { quantize, interpolateRgbBasis } from "d3-interpolate";
 import uniqBy from "lodash/uniqBy";
 import { getValueType } from './dataset'
 
+const NO_COLOR = '#cccccc'
+
 const sequential = {
   interpolateBlues: {
     value: d3ScaleChromatic.interpolateBlues,
@@ -59,16 +61,16 @@ export const colorPresets = {
   ordinal,
 };
 
-export function getPresetScale(scaleType, domain, interpolator, defaultColor) {
+export function getPresetScale(scaleType, domain, interpolator) {
   if (scaleType === "sequential") {
     return scaleSequential(colorPresets.sequential[interpolator].value)
       .domain(domain)
-      .unknown(defaultColor)
+      .unknown(NO_COLOR)
       .clamp(true);
   } else if (scaleType === "diverging") {
     return scaleDiverging(colorPresets.diverging[interpolator].value)
       .domain(domain)
-      .unknown(defaultColor)
+      .unknown(NO_COLOR)
       .clamp(true);
   } else {
 
@@ -88,7 +90,7 @@ export function getPresetScale(scaleType, domain, interpolator, defaultColor) {
       //scaleRange = [...scaleRange, ...rangeToAdd]
     }
     
-    return scaleOrdinal().domain(finalDomain).range(scaleRange).unknown(defaultColor);
+    return scaleOrdinal().domain(finalDomain).range(scaleRange).unknown(NO_COLOR);
   }
 }
 
@@ -150,9 +152,8 @@ function getUserScaleValuesMapped(userScaleValues) {
   };
 }
 
-export function getInitialScaleValues(domain, scaleType, interpolator, defaultColor='#aa0000') {
-  console.log(123, defaultColor)
-  const inputScale = getPresetScale(scaleType, domain, interpolator, defaultColor);
+export function getInitialScaleValues(domain, scaleType, interpolator) {
+  const inputScale = getPresetScale(scaleType, domain, interpolator);
   return domain.map((d, i) => ({
     domain: d,
     range: d3Color.color(inputScale(d)).formatHex(),
@@ -166,16 +167,15 @@ export function getColorScale(
   scaleType, //
   interpolator,
   userScaleValues,
-  defaultColor
 ) {
 
   if(!colorDataset || !colorDataset.length || !colorDataType || !userScaleValues){
-    return getDefaultColorScale(defaultColor)
+    return getDefaultColorScale(NO_COLOR)
   }
   const domain = getColorDomain(colorDataset, colorDataType, scaleType);
-  const presetScale = getPresetScale(scaleType, domain, interpolator, defaultColor);
+  const presetScale = getPresetScale(scaleType, domain, interpolator);
   const scaleValues =
-    userScaleValues || getInitialScaleValues(domain, scaleType, interpolator, defaultColor);
+    userScaleValues || getInitialScaleValues(domain, scaleType, interpolator);
   const scaleValuesMapped = getUserScaleValuesMapped(scaleValues);
   const finalScale = finalizeScale(presetScale, scaleValuesMapped, scaleType);
   return finalScale;

@@ -5,7 +5,7 @@ import isArray from "lodash/isArray";
 import isPlainObject from "lodash/isPlainObject"
 import { ValidationError, RawGraphsError, getTypeName } from "./utils";
 import mapValues from "lodash/mapValues";
-import { getColorScale } from './colors'
+import { getColorScale, getDefaultColorScale } from './colors'
 import omitBy from "lodash/omitBy";
 
 export const baseOptions = {
@@ -201,14 +201,13 @@ function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
     range: x.range
   })) : userScaleValues
 
-  const scale = getColorScale(
+  const scale = mappingValue && mappingValue.length > 0 ? getColorScale(
     colorDataset,
     colorDataType,
     scaleType,
     interpolator,
     typedUserScaleValues,
-    defaultColor
-  )
+  ) : getDefaultColorScale(defaultColor)
 
   return scale;
 }
