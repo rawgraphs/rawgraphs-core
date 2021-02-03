@@ -59,16 +59,16 @@ export const colorPresets = {
   ordinal,
 };
 
-export function getPresetScale(scaleType, domain, interpolator) {
+export function getPresetScale(scaleType, domain, interpolator, defaultColor) {
   if (scaleType === "sequential") {
     return scaleSequential(colorPresets.sequential[interpolator].value)
       .domain(domain)
-      .unknown("#ccc")
+      .unknown(defaultColor)
       .clamp(true);
   } else if (scaleType === "diverging") {
     return scaleDiverging(colorPresets.diverging[interpolator].value)
       .domain(domain)
-      .unknown("#ccc")
+      .unknown(defaultColor)
       .clamp(true);
   } else {
 
@@ -88,7 +88,7 @@ export function getPresetScale(scaleType, domain, interpolator) {
       //scaleRange = [...scaleRange, ...rangeToAdd]
     }
     
-    return scaleOrdinal().domain(finalDomain).range(scaleRange).unknown("#ccc");
+    return scaleOrdinal().domain(finalDomain).range(scaleRange).unknown(defaultColor);
   }
 }
 
@@ -123,7 +123,7 @@ export function getColorDomain(colorDataset, colorDataType, scaleType) {
 function finalizeScale(inputScale, userScaleValuesMapped, scaleType) {
   if (
     inputScale.range && isEqual(
-      inputScale.range().map((d) => d3Color.color(d).hex()),
+      inputScale.range().map((d) => d3Color.color(d).formatHex()),
       userScaleValuesMapped.range
     )
   ) {
@@ -150,11 +150,12 @@ function getUserScaleValuesMapped(userScaleValues) {
   };
 }
 
-export function getInitialScaleValues(domain, scaleType, interpolator) {
-  const inputScale = getPresetScale(scaleType, domain, interpolator);
+export function getInitialScaleValues(domain, scaleType, interpolator, defaultColor='#aa0000') {
+  console.log(123, defaultColor)
+  const inputScale = getPresetScale(scaleType, domain, interpolator, defaultColor);
   return domain.map((d, i) => ({
     domain: d,
-    range: d3Color.color(inputScale(d)).hex(),
+    range: d3Color.color(inputScale(d)).formatHex(),
     index: i,
   }));
 }
@@ -164,24 +165,25 @@ export function getColorScale(
   colorDataType,
   scaleType, //
   interpolator,
-  userScaleValues
+  userScaleValues,
+  defaultColor
 ) {
 
   if(!colorDataset || !colorDataset.length || !colorDataType || !userScaleValues){
-    return getDefaultColorScale()
+    return getDefaultColorScale(defaultColor)
   }
   const domain = getColorDomain(colorDataset, colorDataType, scaleType);
-  const presetScale = getPresetScale(scaleType, domain, interpolator);
+  const presetScale = getPresetScale(scaleType, domain, interpolator, defaultColor);
   const scaleValues =
-    userScaleValues || getInitialScaleValues(domain, scaleType, interpolator);
+    userScaleValues || getInitialScaleValues(domain, scaleType, interpolator, defaultColor);
   const scaleValuesMapped = getUserScaleValuesMapped(scaleValues);
   const finalScale = finalizeScale(presetScale, scaleValuesMapped, scaleType);
   return finalScale;
 }
 
 
-export function getDefaultColorScale(){
-  return scaleOrdinal().unknown("#ccc")
+export function getDefaultColorScale(defaultColor){
+  return scaleOrdinal().unknown(defaultColor)
 }
 
 export const scaleTypes = Object.keys(colorPresets)

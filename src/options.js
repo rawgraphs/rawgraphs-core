@@ -193,7 +193,7 @@ function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
     scaleType,
     interpolator,
     userScaleValues,
-    defaultColor
+    defaultColor='#cccccc'
   } = value
 
   const typedUserScaleValues = colorDataType === 'date' ? userScaleValues.map(x => ({
@@ -206,7 +206,9 @@ function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
     colorDataType,
     scaleType,
     interpolator,
-    typedUserScaleValues)
+    typedUserScaleValues,
+    defaultColor
+  )
 
   return scale;
 }
