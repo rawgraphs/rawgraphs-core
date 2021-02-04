@@ -1,3 +1,7 @@
+## NEXT
+
+- Support for default color scale
+
 ## v1.0.0-beta.4
 #### 01 Feb 2021
 
