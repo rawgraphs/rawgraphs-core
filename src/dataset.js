@@ -251,13 +251,19 @@ function rowParser(types, parsingOptions = {}, onError) {
   };
 }
 
+
+function filterEmpty(row){
+  return Object.values(row).filter(x => x !== null && x !== '').length > 0
+}
+
 function parseRows(data, dataTypes, parsingOptions) {
-  //#TODO: ADD SENTINEL
+  //#TODO: eventually add a sentinel to stop parsing
   let errors = [];
   const parser = rowParser(dataTypes, parsingOptions, (error, i) => {
     errors.push({ row: i, error })
   });
-  const dataset = data.map(parser);
+   
+  const dataset = data.map(parser).filter(filterEmpty);
   return [dataset, errors];
 }
 
