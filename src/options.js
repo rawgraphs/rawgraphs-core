@@ -5,7 +5,7 @@ import isArray from "lodash/isArray";
 import isPlainObject from "lodash/isPlainObject"
 import { ValidationError, RawGraphsError, getTypeName } from "./utils";
 import mapValues from "lodash/mapValues";
-import { getColorScale, getDefaultColorScale } from './colors'
+import { getColorScale, getDefaultColorScale } from './colors'
 import omitBy from "lodash/omitBy";
 
 export const baseOptions = {
@@ -34,19 +34,19 @@ export const baseOptions = {
   },
 };
 
-export function validateOptionsDefinition(definition) {}
+export function validateOptionsDefinition(definition) { }
 
 export function getDefaultOptionsValues(definition, mapping) {
   //repeated options are empy at beginning
   return mapValues(definition, (field) => {
-    if(!field.repeatFor){
+    if (!field.repeatFor) {
       return field.default
     }
     const mappingItem = get(mapping, field.repeatFor)
     const mappingValue = get(mappingItem, 'value', [])
     const repeatDefault = get(field, repeatDefault)
     let getDefaultValue = (field, idx) => field.default
-    if(Array.isArray(repeatDefault)){
+    if (Array.isArray(repeatDefault)) {
       getDefaultValue = (field, idx) => get(repeatDefault, `[${idx}]`, field.default)
     }
     return mappingValue.map((v, i) => getDefaultValue(field, i))
@@ -63,39 +63,52 @@ export function getOptionsConfig(visualModelOptions) {
  * @param {*} conditionObject
  * @param {*} values
  */
-function checkPredicates(conditionObject, values){
+function checkPredicates(conditionObject, values) {
   const tests = Object.keys(conditionObject).map(
     key => values[key] === conditionObject[key]
   )
-  if(tests.filter(x => !!x).length){
-    return true
-  } else {
+  if (tests.filter(x => !!x).length) {
     return false
+  } else {
+    return true
   }
 }
 
-export function getEnabledOptions(definition, values) {
+function checkMapping(requiredDimensions, mapping, optionName) {
+  if (!requiredDimensions) {
+    return true
+  }
+  if (requiredDimensions && !Array.isArray(requiredDimensions)) {
+    throw new RawGraphsError(`the property "requiredDimensions" on ${optionName} option definition must be an array, if present`)
+  }
+  const unmappedDimensions = requiredDimensions.map(r => get(mapping[r], 'value', [])).filter(x => !x.length)
+  return unmappedDimensions.length === 0
+}
+
+
+export function getEnabledOptions(definition, values, mapping) {
 
   let out = {}
   Object.keys(definition).forEach(optionName => {
-      if(isPlainObject(definition[optionName].disabled)){
-        out[optionName] = !checkPredicates(definition[optionName].disabled, values)
-      } else {
-        //no disabled condition given, option is always enabled
-        out[optionName] = true
-      }
+    out[optionName] = true
+    if (isPlainObject(definition[optionName].disabled)) {
+      out[optionName] = out[optionName] && checkPredicates(definition[optionName].disabled, values)
+    }
+    if (Array.isArray(definition[optionName].requiredDimensions)) {
+      out[optionName] = out[optionName] && checkMapping(definition[optionName].requiredDimensions, mapping, optionName)
+    }
   })
   return out
 }
 
-function getContainerOptionValue(item, optionsConfig, optionsValues){
+function getContainerOptionValue(item, optionsConfig, optionsValues) {
   const currentConfig = optionsConfig[item]
   const modifier = optionsValues[item] || 0
-  if(isPlainObject(currentConfig.containerCondition)){
+  if (isPlainObject(currentConfig.containerCondition)) {
     const tests = Object.keys(currentConfig.containerCondition).map(
       key => optionsValues[key] === currentConfig.containerCondition[key]
     )
-    if(tests.filter(x => !!x).length){
+    if (tests.filter(x => !!x).length) {
       return modifier
     }
     return 0
@@ -186,14 +199,14 @@ function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
   const mappingValue = get(mapping, `[${dimension}].value`);
   const colorDataset = vizData.map(d => get(d, def.dimension))
   const colorDataType = dataTypes[mappingValue]
-  ? getTypeName(dataTypes[mappingValue])
-  : 'string';
+    ? getTypeName(dataTypes[mappingValue])
+    : 'string';
 
   const {
     scaleType,
     interpolator,
     userScaleValues,
-    defaultColor='#cccccc'
+    defaultColor = '#cccccc'
   } = value
 
   const typedUserScaleValues = colorDataType === 'date' ? userScaleValues.map(x => ({
@@ -252,7 +265,7 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
       const repeatFor = get(optionConfig, 'repeatFor')
 
       if (validator) {
-        if(!repeatFor){
+        if (!repeatFor) {
           //simple case: options is not repeated
           try {
             validated[name] = validator(optionConfig, optionsValues[name], mapping, dataTypes, data, vizData);
@@ -269,22 +282,22 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
 
           validated[name] = repeatValues.map((value, idx) => {
             try {
-              const partialMapping = { ...mapping, [repeatFor]: {...mapping[repeatFor], value: [value]}}
+              const partialMapping = { ...mapping, [repeatFor]: { ...mapping[repeatFor], value: [value] } }
 
               const hasValue = Array.isArray(optionsValues[name]) && optionsValues[name][idx] !== undefined
               let partialValue
-              if(hasValue){
+              if (hasValue) {
                 partialValue = optionsValues[name][idx]
               } else {
-                if(Array.isArray(optionConfig.repeatDefault)){
+                if (Array.isArray(optionConfig.repeatDefault)) {
                   partialValue = get(optionConfig.repeatDefault, `[${idx}]`, optionConfig.default)
                 } else {
                   partialValue = optionConfig.default
                 }
               }
               return validator(optionConfig, partialValue, partialMapping, dataTypes, data, vizData)
-            } catch(err){
-              errors[name+idx] = err.message;
+            } catch (err) {
+              errors[name + idx] = err.message;
               return optionsValues[name][idx]
             }
 
@@ -316,7 +329,7 @@ export function getOptionsValues(definition, values, mapping, dataTypes, data, v
   };
 
   //removing disabled options
-  const enabledOptions = getEnabledOptions(definition, allValues)
+  const enabledOptions = getEnabledOptions(definition, allValues, mapping)
   const valuesCleanNoDisabled = omitBy(values, (v, k) => !enabledOptions[k])
 
   const finalValues = {
