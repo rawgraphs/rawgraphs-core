@@ -1,6 +1,10 @@
 ## NEXT
 
 - Support for default color scale
+- Support for new color scale property: locked
+- Support for disabing visual options with "requiredDimensions" property
+- Added new date format to defaults (date with time)
+- Skip parsing empty rows
 
 ## v1.0.0-beta.4
 #### 01 Feb 2021
