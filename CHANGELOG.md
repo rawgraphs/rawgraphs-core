@@ -1,4 +1,5 @@
-## NEXT
+## v1.0.0-beta.5
+#### 09 Feb 2021
 
 - Support for default color scale
 - Support for new color scale property: locked
