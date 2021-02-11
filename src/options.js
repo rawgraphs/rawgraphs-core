@@ -193,14 +193,25 @@ function validateColor(def, value) {
   return value;
 }
 
-function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
+function validateColorScale(def, value, mapping, dataTypes, data, vizData, visualModel, visualOptions) {
 
-  const dimension = def.dimension
-  const mappingValue = get(mapping, `[${dimension}].value`);
-  const colorDataset = vizData.map(d => get(d, def.dimension))
-  const colorDataType = dataTypes[mappingValue]
-    ? getTypeName(dataTypes[mappingValue])
-    : 'string';
+  let colorDataset, colorDataType, mappingValue, isDimension
+
+  const domainFunction = def.domain
+  if (domainFunction) {
+    const { domain, type } = visualModel[domainFunction](vizData, mapping, visualOptions)
+    colorDataset = domain
+    colorDataType = type
+    isDimension = false
+  } else {
+    const dimension = def.dimension
+    isDimension = !!dataTypes[mappingValue]
+    mappingValue = get(mapping, `[${dimension}].value`);
+    colorDataset = vizData.map(d => get(d, def.dimension))
+    colorDataType = dataTypes[mappingValue]
+      ? getTypeName(dataTypes[mappingValue])
+      : 'string';
+  }
 
   const {
     scaleType,
@@ -214,7 +225,9 @@ function validateColorScale(def, value, mapping, dataTypes, data, vizData) {
     range: x.range
   })) : userScaleValues
 
-  const scale = mappingValue && mappingValue.length > 0 ? getColorScale(
+
+  //#TODO CHECK ID domainFunction with empty colorDataset will ever happen
+  const scale = ((!domainFunction && (!isDimension || (mappingValue && mappingValue.length > 0))) || (domainFunction && colorDataset.length > 0)) ? getColorScale(
     colorDataset,
     colorDataType,
     scaleType,
@@ -248,7 +261,7 @@ const validators = {
  * @param {object} optionsConfig
  * @param {object} optionsValues
  */
-export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes, data, vizData) {
+export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes, data, vizData, visualModel) {
   let validated = {};
   let errors = {};
 
@@ -268,7 +281,7 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
         if (!repeatFor) {
           //simple case: options is not repeated
           try {
-            validated[name] = validator(optionConfig, optionsValues[name], mapping, dataTypes, data, vizData);
+            validated[name] = validator(optionConfig, optionsValues[name], mapping, dataTypes, data, vizData, visualModel, optionsValues);
           } catch (err) {
             errors[name] = err.message;
           }
@@ -319,7 +332,7 @@ export function validateOptions(optionsConfig, optionsValues, mapping, dataTypes
   return validated;
 }
 
-export function getOptionsValues(definition, values, mapping, dataTypes, data, vizData) {
+export function getOptionsValues(definition, values, mapping, dataTypes, data, vizData, visualModel) {
   const opts = getDefaultOptionsValues(definition, mapping);
   const valuesClean = omitBy(values, (v, k) => v == undefined)
 
@@ -338,5 +351,5 @@ export function getOptionsValues(definition, values, mapping, dataTypes, data, v
   };
 
 
-  return validateOptions(definition, finalValues, mapping, dataTypes, data, vizData);
+  return validateOptions(definition, finalValues, mapping, dataTypes, data, vizData, visualModel);
 }
