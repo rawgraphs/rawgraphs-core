@@ -1,7 +1,6 @@
 import get from "lodash/get";
 import isString from "lodash/isString";
 import isNumber from "lodash/isNumber";
-import isArray from "lodash/isArray";
 import isPlainObject from "lodash/isPlainObject"
 import { ValidationError, RawGraphsError, getTypeName } from "./utils";
 import mapValues from "lodash/mapValues";
