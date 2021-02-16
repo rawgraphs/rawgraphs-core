@@ -5,7 +5,7 @@ import isPlainObject from "lodash/isPlainObject"
 import { ValidationError, RawGraphsError, getTypeName } from "./utils";
 import mapValues from "lodash/mapValues";
 import { getColorScale, getDefaultColorScale } from './colors'
-import {annotateMapping } from './mapping'
+import { annotateMapping } from './mapping'
 import omitBy from "lodash/omitBy";
 
 export const baseOptions = {
@@ -193,20 +193,20 @@ function validateColor(def, value) {
   return value;
 }
 
-function simplifyDataType(dataType){
+function simplifyDataType(dataType) {
   return dataType.type || dataType
 }
 
 function validateColorScale(def, value, mapping, dataTypes, data, vizData, visualModel, visualOptions) {
 
   let colorDataset, colorDataType, mappingValue, isDimension
-  
+
   const domainFunction = def.domain
   if (domainFunction) {
     const annotatedMapping = annotateMapping(visualModel.dimensions, mapping, dataTypes)
     Object.keys(annotatedMapping).forEach(k => {
-      if(Array.isArray(annotatedMapping[k].dataType)){
-        annotatedMapping[k].dataType =  annotatedMapping[k].dataType.map(simplifyDataType)
+      if (Array.isArray(annotatedMapping[k].dataType)) {
+        annotatedMapping[k].dataType = annotatedMapping[k].dataType.map(simplifyDataType)
       } else {
         annotatedMapping[k].dataType = simplifyDataType(annotatedMapping[k].dataType)
       }

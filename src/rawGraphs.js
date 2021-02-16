@@ -13,7 +13,6 @@ import {
 } from "./options";
 import isObject from "lodash/isObject";
 import isFunction from "lodash/isFunction";
-import mapValues from "lodash/mapValues";
 import get from "lodash/get"
 
 /**
