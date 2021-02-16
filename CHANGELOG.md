@@ -1,3 +1,8 @@
+## v1.0.0-beta.6
+#### 16 Feb 2021
+- feature: support for custom domain in color scale via "domain" property in visual options
+- fix: support for using "dimension" property in color scale with non-mapped dimensions
+
 ## v1.0.0-beta.5
 #### 09 Feb 2021
 
