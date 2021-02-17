@@ -29,7 +29,6 @@ export const baseOptions = {
     type: "color",
     label: "Background",
     default: "#FFFFFF",
-    container: { style: "background" },
     group: "artboard",
   },
 };
