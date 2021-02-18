@@ -127,7 +127,7 @@ function castTypesToString(types) {
  * @param {boolean} strict if strict is false, a JSON parsing of the values is tried. (if strict=false: "true" -> true)
  * @return {object} the types guessed (object with column names as keys and value type as value)
  */
-export function inferTypes(data, parsingOptions) {
+export function inferTypes(data, parsingOptions={}) {
   let candidateTypes = {};
   if (!Array.isArray(data)) {
     return candidateTypes;

@@ -1,5 +1,5 @@
 import { chart } from "../../src";
-import testChart from "../../src/testChart";
+import testChart from "../../src/testSupport/chart";
 
 const div = document.querySelector("#root");
 

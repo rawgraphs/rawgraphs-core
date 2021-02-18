@@ -445,7 +445,7 @@ class DOMChart extends Chart {
  * @returns {Chart}
  */
 function chart(visualModel, config = {}) {
-  const { data, dataTypes, mapping, visualOptions = {}, styles = {} } = config;
+  const { data, dataTypes={}, mapping, visualOptions = {}, styles = {} } = config;
   return new Chart(visualModel, data, dataTypes, mapping, visualOptions, styles);
 }
 
