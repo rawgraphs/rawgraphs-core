@@ -5,7 +5,7 @@ sidebar_label: Getting Started
 slug: /getting-started
 ---
 
-## Getting started
+## Installation
 
 ```bash
 # NPM
@@ -28,7 +28,8 @@ npm install rawgraphs-charts
 yarn add rawgraphs-charts
 ```
 
-We'll cover the basics of building a custom chart n the [visual models](visual-model.md) 
+In this example we'll build a bubblechart
+
 
 ```js
 

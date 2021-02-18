@@ -39,11 +39,6 @@ const testChart = {
     y: "get",
   },
 
-  // mapData: function(data, mapping, dataTypes, dimensions){
-  //   return []
-  // },
-
-
   options: {
     "setOriginAt0" : {
       type: "boolean",
