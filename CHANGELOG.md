@@ -1,3 +1,10 @@
+## v1.0.0-beta.7
+#### 19 Feb 2021
+- fixed condition for getting default color scale
+- dataset/inferTypes: default value for parsingOptions
+- added median aggregation function from d3 array
+- working on docs
+
 ## v1.0.0-beta.6
 #### 16 Feb 2021
 - feature: support for custom domain in color scale via "domain" property in visual options
