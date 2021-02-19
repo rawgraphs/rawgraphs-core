@@ -87,7 +87,7 @@ export function getValueType(value, options = {}) {
   // if (isBoolean(jsonValue)) {
   //   return {
   //     type: 'string',
-  //     formatBooleean: true,
+  //     formatBoolean: true,
   //   }
   // }
 

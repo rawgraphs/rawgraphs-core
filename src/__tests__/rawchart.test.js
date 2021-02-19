@@ -1,20 +1,22 @@
-import rawChart from "../raw";
+import rawChart from "../rawGraphs";
 import testChart from "../testSupport/chart";
-
-import { select } from "d3-selection";
-import { scaleLinear } from "d3-scale";
-import { arrayGetter } from "../../src";
-import { extent } from "d3-array";
-import { axisBottom, axisLeft } from "d3-axis";
-
 import { tsvParse } from "d3-dsv";
 import { JSDOM } from "jsdom";
-
 import fs from "fs";
 import path from "path";
 
 const dom = new JSDOM(`<!DOCTYPE html><head></head><body></body>`);
 const document = dom.window.document;
+//hack for generating valid svgs with jsdom
+const createElementNS = document.createElementNS.bind(document);
+document.createElementNS = (ns, name) => {
+  const o = createElementNS(ns, name);
+  o.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  return o;
+};
+
+
+
 
 var dataPath = path.join(__dirname, "../testSupport/titanic.tsv");
 var titanic = fs.readFileSync(dataPath, "utf8");
@@ -30,6 +32,7 @@ const dispersionMapping = {
 
 describe("raw", () => {
   it("should be hello raw", () => {
+    
     const viz = rawChart(testChart, {
       data: testData,
       mapping: dispersionMapping,

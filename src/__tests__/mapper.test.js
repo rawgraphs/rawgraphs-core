@@ -2,6 +2,9 @@ import fs from "fs";
 import makeMapper, { validateMapping } from "../mapping";
 import { tsvParse } from "d3-dsv";
 import { RAWError } from "../utils";
+import { registerAggregation, getAggregatorNames } from "../expressionRegister";
+import uniq from "lodash/uniq";
+
 
 var titanic = fs.readFileSync("data/titanic.tsv", "utf8");
 
@@ -45,6 +48,10 @@ const groupDimensions = [group, x, y];
 
 let testData = tsvParse(titanic);
 testData = testData.slice(0, 10)
+
+const itemsUniq = (items) => uniq(items);
+registerAggregation("distinct", itemsUniq);
+
 
 const dispersionMapping = {
   x: {

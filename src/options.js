@@ -239,8 +239,11 @@ function validateColorScale(def, value, mapping, dataTypes, data, vizData, visua
   })) : userScaleValues
 
 
-  //#TODO CHECK ID domainFunction with empty colorDataset will ever happen
-  const scale = ((!domainFunction && (!isDimension || (mappingValue && mappingValue.length > 0))) || (domainFunction && colorDataset.length > 0)) ? getColorScale(
+  //#TODO CHECK condition
+  const filledDataset = colorDataset ? colorDataset.filter(x => x!== undefined) : colorDataset
+  // const scaleCondition = ((!domainFunction && (!isDimension || (mappingValue && mappingValue.length > 0))) || (domainFunction && colorDataset.length > 0))
+  const scaleCondition = colorDataType && filledDataset && filledDataset.length > 0
+  const scale = scaleCondition ? getColorScale(
     colorDataset,
     colorDataType,
     scaleType,

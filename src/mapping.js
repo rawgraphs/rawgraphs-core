@@ -80,16 +80,6 @@ export function validateMapping(dimensions, _mapping, types) {
       : [],
   }));
 
-  // dimensions.forEach(dim => {
-  //   //dimension not mapped: set value to empty array
-  //   if(!mapping[dim.id]){
-  //     mapping[dim.id] = {
-  //       value: [],
-  //     }
-  //   }
-
-  // })
-
   const dimensionsById = keyBy(dimensions, "id");
 
   // validating that all required dimensions are provided to mapping

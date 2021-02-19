@@ -95,7 +95,6 @@ export function getPresetScale(scaleType, domain, interpolator) {
 }
 
 export function getColorDomain(colorDataset, colorDataType, scaleType) {
-  //
   
   const sample = get(colorDataset, '[0]')
   const sampleDataType = sample !== undefined ? getValueType(sample) : colorDataType
