@@ -1,7 +1,7 @@
 {
-  "name": "@raw-temp/rawgraphs-core",
-  "version": "1.0.0-beta.7",
-  "description": "",
+  "name": "@rawgraphs/rawgraphs-core",
+  "version": "1.0.0-beta.8",
+  "description": "RAWGRAPHS core library",
   "jsdelivr": "lib/index.umd.js",
   "unpkg": "lib/index.umd.js",
   "main": "lib/index.cjs.js",
@@ -21,7 +21,7 @@
     "lib"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.8.4",
     "@babel/node": "^7.8.4",
