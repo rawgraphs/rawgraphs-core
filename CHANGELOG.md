@@ -1,3 +1,13 @@
+## v1.0.0-beta.9
+#### 24 Feb 2021
+- color scale generation: if no scaletype or interpolator, default color scale is generated
+- color scales: allow automatic scale values; explicit scaletype/interpolator check.
+- multiple web sandbox. 
+- better date parsing (parsing iso dates by default)
+
+## v1.0.0-beta.8
+#### 23 Feb 2021
+- switched publishing to npm
 ## v1.0.0-beta.7
 #### 19 Feb 2021
 - fixed condition for getting default color scale
