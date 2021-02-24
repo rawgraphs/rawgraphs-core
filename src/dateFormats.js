@@ -108,3 +108,5 @@ export const dateFormats = {};
 formatsLabels.forEach((label) => {
   dateFormats[label] = translateDateFormat(label);
 });
+
+dateFormats["iso"] = undefined

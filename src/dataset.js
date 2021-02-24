@@ -114,15 +114,32 @@ export function getValueType(value, options = {}) {
     return "date";
   }
 
+  try {
+    const d =  new Date(value)
+    return "date";
+  } catch(err){
+
+  }
+
+  //testing a couple of parses: iso date and iso datetime
   if (dateParser) {
     const dateFormatTest = dateFormats["YYYY-MM-DD"];
     const testDateWithFormat = dateParser(dateFormatTest)(value);
     if (testDateWithFormat !== null) {
       return {
         type: "date",
-        dateFormat: "YYYY-MM-DD",
+        dateFormat: "iso",
       };
     }
+
+    // const dateTimeFormatTest = dateFormats["iso"];
+    // const testDateTimeWithFormat = dateParser(dateTimeFormatTest)(value);
+    // if (testDateTimeWithFormat !== null) {
+    //   return {
+    //     type: "date",
+    //     dateFormat: "iso",
+    //   };
+    // }
   }
 
   return "string";
