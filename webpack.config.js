@@ -1,10 +1,29 @@
 const path = require('path')
+const fs = require('fs')
+
+const files = fs.readdirSync('./sandbox/web/')
+
+
+const targetFiles = files.filter(function(file) {
+  return path.extname(file).toLowerCase() === '.js';
+});
+
+const entry = {}
+targetFiles.forEach(filename => {
+  console.log("file", filename)
+  const name = filename.substr(0, filename.lastIndexOf("."))
+  console.log("m", name)
+  entry[name] = `./sandbox/web/${filename}`
+})
+
+
+
 
 module.exports = {
-  entry: './sandbox/web/index.js',
+  entry: entry,
   mode: 'development',
   output: {
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
     publicPath: '/',
   },
   devServer: {

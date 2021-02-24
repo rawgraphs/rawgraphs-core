@@ -14,6 +14,15 @@ const EMPTY_DATE_MARKER = '__||_||_||__'
 
 function getFormatter(dataType, parsingOptions) {
   if (!isPlainObject(dataType)) {
+    //default formatter for iso date.
+    if (getType(dataType) === Date){
+      return (value) => {
+        if (!value) {
+          return EMPTY_DATE_MARKER
+        }
+        return new Date(value)
+      }
+    }
     return undefined;
   }
 
@@ -37,6 +46,16 @@ function getFormatter(dataType, parsingOptions) {
         const parsedValue = parser(value)
         return parsedValue
       }
+    }
+    else {
+      //testing with no format (iso date or format parsable by new Date(value))
+      return (value) => {
+        if (!value) {
+          return EMPTY_DATE_MARKER
+        }
+        return new Date(value)
+      }
+
     }
   }
 
