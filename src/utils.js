@@ -16,6 +16,8 @@ export class ValidationError extends Error {
   constructor(errors) {
     super("validation error");
     this.name = "ValidationError";
+    
+    this.message = Object.values(errors).join("\n")
     this.errors = errors;
   }
 }

@@ -7,6 +7,7 @@ import get from 'lodash/get'
 import { quantize, interpolateRgbBasis } from "d3-interpolate";
 import uniqBy from "lodash/uniqBy";
 import { getValueType } from './dataset'
+import { RawGraphsError } from "./utils";
 
 const NO_COLOR = '#cccccc'
 
@@ -63,17 +64,25 @@ export const colorPresets = {
 
 export function getPresetScale(scaleType, domain, interpolator) {
   if (scaleType === "sequential") {
+    if(!colorPresets.sequential[interpolator]){
+      throw new RawGraphsError(`interpolator ${interpolator} not valid for sequential scaletype`)
+    }
     return scaleSequential(colorPresets.sequential[interpolator].value)
       .domain(domain)
       .unknown(NO_COLOR)
       .clamp(true);
   } else if (scaleType === "diverging") {
+    if(!colorPresets.diverging[interpolator]){
+      throw new RawGraphsError(`interpolator ${interpolator} not valid for diverging scaletype`)
+    }
     return scaleDiverging(colorPresets.diverging[interpolator].value)
       .domain(domain)
       .unknown(NO_COLOR)
       .clamp(true);
   } else {
-
+    if(!colorPresets.ordinal[interpolator]){
+      throw new RawGraphsError(`interpolator ${interpolator} not valid for ordinal scaletype`)
+    }
     const interpolatorValue = colorPresets.ordinal[interpolator].value
     let scaleRange =
       Array.isArray(interpolatorValue) 
@@ -168,7 +177,7 @@ export function getColorScale(
   userScaleValues,
 ) {
 
-  if(!colorDataset || !colorDataset.length || !colorDataType || !userScaleValues){
+  if(!colorDataset || !colorDataset.length || !colorDataType){
     return getDefaultColorScale(NO_COLOR)
   }
   const domain = getColorDomain(colorDataset, colorDataType, scaleType);

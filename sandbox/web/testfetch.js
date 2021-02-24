@@ -1,7 +1,7 @@
 import { chart, parseDataset } from "../../src";
 
 const div = document.querySelector("#root");
-const bubblechart = window.rawcharts.bubblechart
+const barchart = window.rawcharts.barchart
 
 fetch(
   "https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-andamento-nazionale.json"
@@ -16,29 +16,30 @@ fetch(
     const { dataset, errors } = parseDataset(userData, dataTypes);
     
     const mapping = {
-      x: { value: "data" },
-      y: { value: "nuovi_positivi", config: { aggregation: "sum" } },
+      bars: { value: "data" },
+      size: { value: "nuovi_positivi", config: { aggregation: "sum" } },
+      color: { value: "nuovi_positivi", config: { aggregation: "sum" }}
     };
 
     const visualOptions = {
       colorScale: {
-        scaleType: "sequential",
-        interpoator: "interpolateBlues",
-        userScaleValues: [
-          { range: "#000000", domain: 0 },
-          { range: "#a00000", domain: 100 }
-        ],
-        defaultColor: "red"
+        scaleType: "diverging",
+        // interpolator: "interpolateGreens",
+        // userScaleValues: [
+        //   { range: "#000000", domain: 0 },
+        //   { range: "#0000a0", domain: 50000 }
+        // ],
+        // defaultColor: "red"
       }
     };
 
-    const viz = chart(bubblechart, {
+    const viz = chart(barchart, {
       data: dataset,
 
       mapping,
       dataTypes,
 
-      visualOptions
+      visualOptions,
     });
 
     viz.renderToDOM(div)
