@@ -271,6 +271,10 @@ function validateColorScale(
     defaultColor = "#cccccc",
   } = value;
 
+  if(!scaleType || !interpolator){
+    return getDefaultColorScale(defaultColor);
+  }
+
   const typedUserScaleValues =
     colorDataType === "date"
       ? userScaleValues.map((x) => ({

@@ -1,7 +1,7 @@
 import { chart, parseDataset } from "../../src";
 
 const div = document.querySelector("#root");
-const barchart = window.rawcharts.barchart
+const linechart = window.rawcharts.barchartstacked
 
 fetch(
   "https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-andamento-nazionale.json"
@@ -10,31 +10,29 @@ fetch(
   .then((userData) => {
 
     const dataTypes = {
-      nuovi_positivi: "number",
-      data: "date",
+      totale_ospedalizzati: "number",
+      isolamento_domiciliare: "number",
+      data: {type: "date"},
     }
     const { dataset, errors } = parseDataset(userData, dataTypes);
-    
+    const reducedDataset = dataset.slice(dataset.length -100, dataset.length)
     const mapping = {
-      bars: { value: "data" },
-      size: { value: "nuovi_positivi", config: { aggregation: "sum" } },
-      color: { value: "nuovi_positivi", config: { aggregation: "sum" }}
+      stacks: { value: "data" },
+      bars: { value: ["totale_ospedalizzati", "isolamento_domiciliare"], config: { aggregation: ["sum", "sum"] } },
     };
 
     const visualOptions = {
       colorScale: {
-        scaleType: "diverging",
-        // interpolator: "interpolateGreens",
-        // userScaleValues: [
-        //   { range: "#000000", domain: 0 },
-        //   { range: "#0000a0", domain: 50000 }
-        // ],
-        // defaultColor: "red"
-      }
+        scaleType: "ordinal",
+        interpolator: "schemeCategory10"
+      },
+      showLegend: true,
+      marginLeft : 50,
+      marginBottom : 50,
     };
 
-    const viz = chart(barchart, {
-      data: dataset,
+    const viz = chart(linechart, {
+      data: reducedDataset,
 
       mapping,
       dataTypes,
