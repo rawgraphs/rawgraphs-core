@@ -115,8 +115,10 @@ export function getValueType(value, options = {}) {
   }
 
   try {
-    const d =  new Date(value)
-    return "date";
+    const d = new Date(value)
+    if (d instanceof Date && !isNaN(d.getTime())) {
+      return "date"
+    }
   } catch(err){
 
   }
