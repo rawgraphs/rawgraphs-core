@@ -1,4 +1,8 @@
+## v1.0.0-beta.11
+#### 25 Feb 2021
+- fixed data parsing (everything was parsed as iso date)
 ## v1.0.0-beta.10
+#### 25 Feb 2021
 - added explicit iso (with undefined formatter) to exported date formats
 - updated publishing action
 ## v1.0.0-beta.9
