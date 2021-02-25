@@ -1,3 +1,6 @@
+## v1.0.0-beta.12
+#### 25 Feb 2021
+- removed `iso` date format specialization, added `YYYY-MM-DDTHH:mm:ss` format
 ## v1.0.0-beta.11
 #### 25 Feb 2021
 - fixed data parsing (everything was parsed as iso date)

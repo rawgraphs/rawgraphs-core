@@ -109,7 +109,6 @@ export function getValueType(value, options = {}) {
     const dateFormatTest = dateFormats["YYYY-MM-DD"];
     const testDateWithFormat = dateParser(dateFormatTest)(value);
     if (testDateWithFormat !== null) {
-      console.log("hhh", testDateWithFormat)
       return {
         type: "date",
         dateFormat: "YYYY-MM-DD",
@@ -122,7 +121,6 @@ export function getValueType(value, options = {}) {
     const dateFormatTest = dateFormats["YYYY-MM-DDTHH:mm:ss"];
     const testDateWithFormat = dateParser(dateFormatTest)(value);
     if (testDateWithFormat !== null) {
-      console.log("hhh", testDateWithFormat)
       return {
         type: "date",
         dateFormat: "YYYY-MM-DDTHH:mm:ss",
