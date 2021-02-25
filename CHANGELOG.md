@@ -1,3 +1,6 @@
+## v1.0.0-beta.10
+- added explicit iso (with undefined formatter) to exported date formats
+- updated publishing action
 ## v1.0.0-beta.9
 #### 24 Feb 2021
 - color scale generation: if no scaletype or interpolator, default color scale is generated
