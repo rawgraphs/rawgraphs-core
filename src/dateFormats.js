@@ -102,6 +102,7 @@ const formatsLabels = [
   "DD Month YYYY", 
   "YYYY",
   "YYYY-MM-DD HH:mm:ss", 
+  "YYYY-MM-DDTHH:mm:ss", 
 ];
 
 export const dateFormats = {};
@@ -109,4 +110,4 @@ formatsLabels.forEach((label) => {
   dateFormats[label] = translateDateFormat(label);
 });
 
-dateFormats["iso"] = undefined
+// dateFormats["iso"] = undefined

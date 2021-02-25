@@ -14,7 +14,7 @@ const EMPTY_DATE_MARKER = '__||_||_||__'
 
 function getFormatter(dataType, parsingOptions) {
   if (!isPlainObject(dataType)) {
-    //default formatter for iso date.
+    //we have no format, just trying to parse the date with Date.
     if (getType(dataType) === Date){
       return (value) => {
         if (!value) {
@@ -46,16 +46,6 @@ function getFormatter(dataType, parsingOptions) {
         const parsedValue = parser(value)
         return parsedValue
       }
-    }
-    else {
-      //testing with no format (iso date or format parsable by new Date(value))
-      return (value) => {
-        if (!value) {
-          return EMPTY_DATE_MARKER
-        }
-        return new Date(value)
-      }
-
     }
   }
 
@@ -114,34 +104,30 @@ export function getValueType(value, options = {}) {
     return "date";
   }
 
-  try {
-    const d = new Date(value)
-    if (d instanceof Date && !isNaN(d.getTime())) {
-      return "date"
-    }
-  } catch(err){
-
-  }
-
-  //testing a couple of parses: iso date and iso datetime
+  //testing "YYYY-MM-DD" date format
   if (dateParser) {
     const dateFormatTest = dateFormats["YYYY-MM-DD"];
     const testDateWithFormat = dateParser(dateFormatTest)(value);
     if (testDateWithFormat !== null) {
+      console.log("hhh", testDateWithFormat)
       return {
         type: "date",
-        dateFormat: "iso",
+        dateFormat: "YYYY-MM-DD",
       };
     }
+  }
 
-    // const dateTimeFormatTest = dateFormats["iso"];
-    // const testDateTimeWithFormat = dateParser(dateTimeFormatTest)(value);
-    // if (testDateTimeWithFormat !== null) {
-    //   return {
-    //     type: "date",
-    //     dateFormat: "iso",
-    //   };
-    // }
+  //testing "YYYY-MM-DDTHH:mm:ss" date format
+  if (dateParser) {
+    const dateFormatTest = dateFormats["YYYY-MM-DDTHH:mm:ss"];
+    const testDateWithFormat = dateParser(dateFormatTest)(value);
+    if (testDateWithFormat !== null) {
+      console.log("hhh", testDateWithFormat)
+      return {
+        type: "date",
+        dateFormat: "YYYY-MM-DDTHH:mm:ss",
+      };
+    }
   }
 
   return "string";
