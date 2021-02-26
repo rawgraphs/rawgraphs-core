@@ -12,6 +12,7 @@
     "codecov": "jest --coverage && codecov",
     "prebuild": "rimraf lib",
     "build": "rollup -c",
+    "buildwatch": "rollup -c -w",
     "nodebox": "NODE_ENV=test babel-node sandbox/node/index.js",
     "webbox": "webpack-dev-server",
     "generate-docs": "node_modules/.bin/jsdoc -c jsdoc.json",
