@@ -10,9 +10,7 @@ const targetFiles = files.filter(function(file) {
 
 const entry = {}
 targetFiles.forEach(filename => {
-  console.log("file", filename)
   const name = filename.substr(0, filename.lastIndexOf("."))
-  console.log("m", name)
   entry[name] = `./sandbox/web/${filename}`
 })
 

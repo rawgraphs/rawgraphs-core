@@ -12,7 +12,7 @@ import { dateFormats } from "./dateFormats";
 
 const EMPTY_DATE_MARKER = '__||_||_||__'
 
-function getFormatter(dataType, parsingOptions) {
+function getFormatter(dataType, parsingOptions={}) {
   if (!isPlainObject(dataType)) {
     //we have no format, just trying to parse the date with Date.
     if (getType(dataType) === Date){
@@ -23,7 +23,7 @@ function getFormatter(dataType, parsingOptions) {
         return new Date(value)
       }
     }
-    return undefined;
+    // return undefined;
   }
 
   if (isFunction(dataType.decode)) {
@@ -49,8 +49,8 @@ function getFormatter(dataType, parsingOptions) {
     }
   }
 
-  if (getType(dataType) === Number && isPlainObject(dataType)) {
-    const { locale, decimal, group, numerals } = dataType;
+  if (getType(dataType) === Number) {
+    const { locale, decimal, group, numerals } = parsingOptions;
     if (locale || decimal || group || numerals) {
       const numberParser = new NumberParser({
         locale,
@@ -58,7 +58,9 @@ function getFormatter(dataType, parsingOptions) {
         group,
         numerals,
       });
-      return (value) => value !== '' ? numberParser.parse(value) : null;
+      
+      return (value) => {
+        return value !== '' ? numberParser.parse(value) : null};
     }
   }
 

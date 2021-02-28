@@ -102,15 +102,19 @@ export class NumberParser {
         : defaultDecimal);
 
     const index = new Map(this.numerals.map((d, i) => [d, i]));
-    this._groupRegexp = new RegExp(`[${this.group}}]`, "g");
+    
+    //#todo: infer from locale in NumberParser
+    const groupingChars = 3
+
+    this._groupRegexp = new RegExp(`[${this.group}}](\d{${groupingChars}})`, "g");
     this._decimalRegexp = new RegExp(`[${this.decimal}]`);
     this._numeralRegexp = new RegExp(`[${this.numerals.join("")}]`, "g");
     this._index = (d) => index.get(d);
 
+    
     this.formatter = formatLocale({
       decimal: this.decimal,
-      //#todo: infer from locale in NumberParser
-      grouping: [3],
+      grouping: [groupingChars],
       thousands: this.group,
       numerals: this.numerals,
     }).format(",");
@@ -120,17 +124,14 @@ export class NumberParser {
     if (isNumber(string)) {
       return string;
     }
-    let out = (string = string.trim
-      ? string.trim()
-      : string
-          .toString()
-          .trim()
-          .replace(this._groupRegexp, "")
-          .replace(this._decimalRegexp, ".")
-          .replace(this._numeralRegexp, this._index))
-      ? +string
-      : NaN;
 
+    const trimmedString = string.trim ? string.trim() : string.toString().trim()
+    const parsed = trimmedString
+        .replace(this._groupRegexp, function(match, captured){ return captured })
+        .replace(this._decimalRegexp, ".")
+        .replace(this._numeralRegexp, this._index)
+    
+    let out = parsed ? +parsed : NaN;
     return out;
   }
 
