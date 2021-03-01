@@ -1,11 +1,11 @@
-export { default as chart } from "./rawGraphs";
-export { parseDataset, inferTypes, getValueType } from "./dataset";
+export { default as chart } from "./rawGraphs"
+export { parseDataset, inferTypes, getValueType } from "./dataset"
 export {
   default as makeMapper,
   validateMapping,
   validateMapperDefinition,
   arrayGetter,
-} from "./mapping";
+} from "./mapping"
 export {
   registerAggregation,
   unregisterAggregation,
@@ -13,14 +13,14 @@ export {
   getAggregatorNames,
   getDefaultDimensionAggregation,
   getDimensionAggregator,
-} from "./expressionRegister";
+} from "./expressionRegister"
 export {
   baseOptions,
   getDefaultOptionsValues,
   getOptionsConfig,
   getEnabledOptions,
   getContainerOptions,
-} from "./options";
+} from "./options"
 export {
   getInitialScaleValues,
   getColorScale,
@@ -29,8 +29,14 @@ export {
   colorPresets,
   getColorDomain,
   getAvailableScaleTypes,
-} from "./colors";
-export { getTypeName, NumberParser } from "./utils";
-export { legend } from "./legend";
-export { labelsOcclusion } from './labels'
-export { dateFormats, translateDateFormat } from "./dateFormats";
+} from "./colors"
+export { getTypeName, NumberParser } from "./utils"
+export { legend } from "./legend"
+export { labelsOcclusion } from "./labels"
+export { dateFormats, translateDateFormat } from "./dateFormats"
+
+export {
+  serializeProject,
+  deserializeProject,
+  registerSerializerDeserializer,
+} from "./importExport"
