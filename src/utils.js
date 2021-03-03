@@ -106,7 +106,7 @@ export class NumberParser {
     //#todo: infer from locale in NumberParser
     const groupingChars = 3
 
-    this._groupRegexp = new RegExp(`[${this.group}}](\d{${groupingChars}})`, "g");
+    this._groupRegexp = new RegExp(`[${this.group}}](\\d{${groupingChars}})`, "g");
     this._decimalRegexp = new RegExp(`[${this.decimal}]`);
     this._numeralRegexp = new RegExp(`[${this.numerals.join("")}]`, "g");
     this._index = (d) => index.get(d);
