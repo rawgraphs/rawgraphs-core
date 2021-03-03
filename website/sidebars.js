@@ -1,3 +1,3 @@
 module.exports = {
-  someSidebar: ['core', 'architecture', 'start', 'visual-models', 'api'],
+  someSidebar: ['core', 'concepts', 'start', 'charts', 'api'],
 };

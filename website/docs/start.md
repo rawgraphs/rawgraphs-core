@@ -15,10 +15,8 @@ npm install rawgraphs-core
 yarn add rawgraphs-core
 ```
 
-
 To do something useful with rawgraphs-core, we'll need some charts.
 Let's use the charts from the rawgraphs-charts package.
-
 
 ```bash
 # NPM
@@ -30,11 +28,9 @@ yarn add rawgraphs-charts
 
 In this example we'll build a bubblechart
 
-
 ```js
-
-import { chart } from 'rawgraphs-core'
-import { bubblechart } from 'rawgraphs-charts'
+import { chart } from "rawgraphs-core";
+import { bubblechart } from "rawgraphs-charts";
 
 const div = document.querySelector("#root");
 
@@ -57,11 +53,8 @@ const mapping = {
 const viz = chart(testChart, {
   data: testData,
   mapping,
-  visualOptions: {
-      
-  },
+  visualOptions: {},
 });
 
 viz.renderToDOM(div);
-
 ```

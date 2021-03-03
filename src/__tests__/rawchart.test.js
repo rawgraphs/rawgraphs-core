@@ -15,9 +15,6 @@ document.createElementNS = (ns, name) => {
   return o;
 };
 
-
-
-
 var dataPath = path.join(__dirname, "../testSupport/titanic.tsv");
 var titanic = fs.readFileSync(dataPath, "utf8");
 const testData = tsvParse(titanic);
