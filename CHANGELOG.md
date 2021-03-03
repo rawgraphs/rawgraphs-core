@@ -1,3 +1,8 @@
+## v1.0.0-beta.14
+#### 03 Mar 2021
+- numberparser: fixed regexp for group separator
+- Add import and export (multiversion)
+- working on docs
 ## v1.0.0-beta.13
 #### 28 Feb 2021
 - fixed number parsing
