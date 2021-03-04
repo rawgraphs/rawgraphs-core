@@ -16,5 +16,10 @@ The library roughly contains:
 - utility functions that can be used in visual models implementations (ex: legends)
 
 
-Please refer to the [architecture](architecture.md) description for more details about the relations between this library and the actual visual models, and to [visual models](visual-model.md) for more info about the visual model protocol and how to create your custom charts that can be used with rawgraphs-core and with the RawGraphs app.
+Please refer to the [workflow](workflow.md) description for more details about the relations between this library and the actual visual models, and to [charts](visual-model.md) for more info about the visual model protocol and how to create your custom charts that can be used with rawgraphs-core and with the RawGraphs app.
 
+:::note
+
+Example note. see https://v2.docusaurus.io/docs/markdown-features#calloutsadmonitions
+
+:::

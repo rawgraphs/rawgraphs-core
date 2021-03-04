@@ -5,4 +5,3 @@ sidebar_label: Charts
 slug: /charts
 ---
 
-## Visual models
