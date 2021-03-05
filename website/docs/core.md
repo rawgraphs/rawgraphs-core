@@ -7,7 +7,7 @@ slug: /
 
 Welcome to the rawgraphs-core documentation!
 
-This library was born simplify and modularize development of the RawGraphs web app, but it can be used to implement the RawGraphs workflow and charts from javascript code.
+This library was born simplify and modularize development of the [RawGraphs web app](https://app.rawgraphs.io), but it can be used to implement the RAWGraphs workflow and rendering charts from javascript code.
 
 The library roughly contains:
 
@@ -16,10 +16,5 @@ The library roughly contains:
 - utility functions that can be used in visual models implementations (ex: legends)
 
 
-Please refer to the [workflow](workflow.md) description for more details about the relations between this library and the actual visual models, and to [charts](visual-model.md) for more info about the visual model protocol and how to create your custom charts that can be used with rawgraphs-core and with the RawGraphs app.
+Please refer to the [workflow](workflow.md) description for more details about the relations between this library and the actual visual models, and to [charts interface](charts-interface.md) for more info about how to create your custom charts that can be used with rawgraphs-core and with the RAWGraphs app.
 
-:::note
-
-Example note. see https://v2.docusaurus.io/docs/markdown-features#calloutsadmonitions
-
-:::

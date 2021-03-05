@@ -5,5 +5,13 @@ sidebar_label: Glossary
 slug: /glossary
 ---
 
+#### Dataset
+The data to be visualized. RAWGraphs is able to process tabular datasets, where each row represents a data point and each column a property.
 
-visual model and a dataset to the DOM, just like the RawGraphs web app works
+#### Data type
+Each data column in a dataset 
+
+#### Data column
+A column of the input dataset.  Each column must have a unique name that will be used as identifier in the mapping process.
+
+
