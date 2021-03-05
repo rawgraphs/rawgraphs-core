@@ -22,7 +22,7 @@ import * as __defs from './typeDefs'
  */
 class Chart {
   /**
-   * @param {VisualModel} visualModel visual model
+   * @param {ChartImplementation} visualModel chart implementation
    * @param {Array.<Object>} data
    * @param {Object} dataTypes
    * @param {Object} mapping

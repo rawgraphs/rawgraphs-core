@@ -96,7 +96,7 @@
  */
 
 /**
- * @typedef VisualModel
+ * @typedef ChartImplementation
  * @global
  * @type {object}
  * @property {'svg'|'canvas'|div} [type='svg'] the chart type (defaults to svg)

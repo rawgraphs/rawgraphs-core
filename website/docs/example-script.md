@@ -32,7 +32,8 @@ Again, we'll use a `<script>` tag in our HTML
 <script src="https://cdn.jsdelivr.net/npm/@rawgraphs/rawgraphs-charts"></script>
 ```
 
-In this case the rawgraphs-core api will be available in the `raw` object in the global (window) scope.
+In this case the rawgraphs-core api will be available in the `raw` object in the global (window) scope,
+and the rawgraphs-charts contents will be available in the `rawcharts` object.
 
 ## Rendering a bubblechart
 

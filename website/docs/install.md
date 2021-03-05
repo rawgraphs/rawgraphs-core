@@ -19,6 +19,8 @@ It's still possible to use rawgraphs-core in a server environment, for example u
 
 ## Installing from npm
 
+You can install the library from npm, using your favourite package manager:
+
 ```bash
 # NPM
 npm install @rawgraphs/rawgraphs-core
