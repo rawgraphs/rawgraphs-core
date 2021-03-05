@@ -6,4 +6,4 @@ slug: /chart-utilities
 ---
 
 
-visual model and a dataset to the DOM, just like the RawGraphs web app works
+document legends, labels occlusions, ecc
