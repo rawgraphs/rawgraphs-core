@@ -5,7 +5,7 @@ module.exports = {
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.png',
   organizationName: 'rawgraphs', // Usually your GitHub org/user name.
   projectName: 'rawgraphs-core', // Usually your repo name.
   themeConfig: {
