@@ -140,7 +140,7 @@ class Chart {
   /**
    * @param {document} document
    * @param {containerType} string
-   * @param {dataReady} array
+   * @param {dataReady} (array|object)
    * @returns {Node}
    * @private
    * @description Creates the container node that will be passed to the actual chart implementation. In the current implementation, an svg node is always created.
@@ -256,6 +256,7 @@ class Chart {
 
   /**
    * @param {Node} node
+   * @param {dataReady} (array|object) mapped data if available
    * @returns {DOMChart}
    */
   renderToDOM(node, dataReady) {
@@ -302,6 +303,7 @@ class Chart {
 
   /**
    * @param {document} document HTML document context (optional if window is available)
+   * @param {dataReady} (array|object) mapped data if available
    * @returns {string}
    */
   renderToString(document, dataReady) {
@@ -324,8 +326,6 @@ class Chart {
     const styles = this._getVizStyles()
 
     const { optionsConfig, optionsValues } = this._getOptions(vizData)
-    // #TODO: TEST THIS FOR HAVING LEGENDS IN renderToString
-    //window.document.body.appendChild(container)
     this._visualModel.render(
       container,
       vizData,

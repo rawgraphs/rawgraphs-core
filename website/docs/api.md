@@ -16,8 +16,8 @@ slug: /api
     * [.dataTypes(nextDataTypes)](#Chart+dataTypes) ⇒ [<code>Chart</code>](#Chart)
     * [.visualOptions(nextVisualOptions)](#Chart+visualOptions) ⇒ [<code>Chart</code>](#Chart)
     * [.styles(Object)](#Chart+styles) ⇒ [<code>Chart</code>](#Chart)
-    * [.renderToDOM(node)](#Chart+renderToDOM) ⇒ [<code>DOMChart</code>](#DOMChart)
-    * [.renderToString(document)](#Chart+renderToString) ⇒ <code>string</code>
+    * [.renderToDOM(node, (array|object))](#Chart+renderToDOM) ⇒ [<code>DOMChart</code>](#DOMChart)
+    * [.renderToString(document, (array|object))](#Chart+renderToString) ⇒ <code>string</code>
 
 <a name="new_Chart_new"></a>
 
@@ -80,21 +80,23 @@ Sets or updates styles and returns a new Chart instance.
 
 <a name="Chart+renderToDOM"></a>
 
-### chart.renderToDOM(node) ⇒ [<code>DOMChart</code>](#DOMChart)
+### chart.renderToDOM(node, (array|object)) ⇒ [<code>DOMChart</code>](#DOMChart)
 **Kind**: instance method of [<code>Chart</code>](#Chart)  
 
-| Param | Type |
-| --- | --- |
-| node | <code>Node</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Node</code> |  |
+| (array|object) | <code>dataReady</code> | mapped data if available |
 
 <a name="Chart+renderToString"></a>
 
-### chart.renderToString(document) ⇒ <code>string</code>
+### chart.renderToString(document, (array|object)) ⇒ <code>string</code>
 **Kind**: instance method of [<code>Chart</code>](#Chart)  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | document | <code>document</code> | HTML document context (optional if window is available) |
+| (array|object) | <code>dataReady</code> | mapped data if available |
 
 <a name="DOMChart"></a>
 
@@ -224,9 +226,20 @@ This is the entry point for creating a chart with raw. It will return an instanc
 | dataTypes | <code>Object</code> | dataTypes used for parsing dataset |
 | errors | <code>Array</code> | list of errors from parsing |
 
+<a name="DataType"></a>
+
+## DataType : <code>object</code> \| <code>string</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| [type] | <code>string</code> | 
+| [dateFormat] | <code>string</code> | 
+
 <a name="DataTypes"></a>
 
-## DataTypes : <code>object</code>
+## DataTypes : [<code>object.&lt;DataType&gt;</code>](#DataType)
 **Kind**: global typedef  
 <a name="Dimension"></a>
 
@@ -247,9 +260,11 @@ This is the entry point for creating a chart with raw. It will return an instanc
 | validTypes | <code>Array</code> |  | valid data types for the dimension (one or more of 'number', 'string', 'date', 'boolean') |
 | [aggregation] | <code>Boolean</code> |  | true if a dimension will be aggregated |
 
-<a name="MappingDefinition"></a>
+<a name="DimensionsDefinition"></a>
 
-## MappingDefinition : [<code>Array.&lt;Dimension&gt;</code>](#Dimension)
+## DimensionsDefinition : [<code>Array.&lt;Dimension&gt;</code>](#Dimension)
+An array of dimensions, used to describe dimensions of a chart
+
 **Kind**: global typedef  
 <a name="MappedDimension"></a>
 
@@ -263,14 +278,22 @@ This is the entry point for creating a chart with raw. It will return an instanc
 
 ## VisualOption : <code>object</code>
 **Kind**: global typedef  
-<a name="VisualOptionsDefinition"></a>
-
-## VisualOptionsDefinition : [<code>Array.&lt;VisualOption&gt;</code>](#VisualOption)
-**Kind**: global typedef  
 <a name="VisualOptions"></a>
 
-## VisualOptions : <code>object</code>
+## VisualOptions : [<code>Object.&lt;VisualOption&gt;</code>](#VisualOption)
 **Kind**: global typedef  
+<a name="MappingFunction"></a>
+
+## MappingFunction : <code>function</code>
+**Kind**: global typedef  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| dataset | <code>array</code> | the input dataset |
+| mapping | [<code>Mapping</code>](#Mapping) | the mapping object |
+| dataTypes | [<code>DataTypes</code>](#DataTypes) |  |
+| dimensions | [<code>DimensionsDefinition</code>](#DimensionsDefinition) | the chart dimensions |
+
 <a name="RenderFunction"></a>
 
 ## RenderFunction : <code>function</code>
@@ -283,6 +306,22 @@ This is the entry point for creating a chart with raw. It will return an instanc
 | visualOptions | <code>object</code> | the chart visual options |
 | mapping | <code>object</code> | the mapping from column names to |
 | originalData | <code>array</code> | the original tabular dataset |
+| Object | <code>styles</code> | - css in js styles definitions |
+
+<a name="ChartMetadata"></a>
+
+## ChartMetadata : <code>object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | An unique id for the chart |
+| name | <code>string</code> | The chart name |
+| description | <code>string</code> | The chart description |
+| categories | <code>Array.&lt;string&gt;</code> | The list of chart categories |
+| icon | <code>string</code> | base64 representation of chart icon |
+| thumbnail | <code>string</code> | base64 representation of chart thumbnail |
 
 <a name="VisualModel"></a>
 
@@ -292,10 +331,13 @@ This is the entry point for creating a chart with raw. It will return an instanc
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
+| [type] | <code>&#x27;svg&#x27;</code> \| <code>&#x27;canvas&#x27;</code> \| <code>div</code> | <code>&#x27;svg&#x27;</code> | the chart type (defaults to svg) |
+| metadata | [<code>ChartMetadata</code>](#ChartMetadata) |  | the chart metadata |
 | render | [<code>RenderFunction</code>](#RenderFunction) |  | the render function |
-| dimensions | [<code>MappingDefinition</code>](#MappingDefinition) |  | the dimensions configuration (mapping definition) |
-| options | [<code>VisualOptionsDefinition</code>](#VisualOptionsDefinition) |  | the visual options exposed by the model |
+| dimensions | [<code>DimensionsDefinition</code>](#DimensionsDefinition) |  | the dimensions configuration (mapping definition) |
+| visualOptions | [<code>VisualOptions</code>](#VisualOptions) |  | the visual options exposed by the model |
 | [skipMapping] | <code>Boolean</code> | <code>false</code> | if set to true will skip the mapping phase (current mapping is still passed to the render function) |
+| [styles] | <code>Object</code> | <code>{}</code> | - css in js styles definitions |
 
 <a name="RawConfig"></a>
 
@@ -303,10 +345,11 @@ This is the entry point for creating a chart with raw. It will return an instanc
 **Kind**: global typedef  
 **Properties**
 
-| Name | Type | Description |
-| --- | --- | --- |
-| data | <code>Array.&lt;Object&gt;</code> | the tabular data to be represented |
-| dataTypes | [<code>DataTypes</code>](#DataTypes) | object with data types annotations (column name => type name) |
-| mapping | [<code>Mapping</code>](#Mapping) | the current mapping of column names to dimensions of the current visual model |
-| visualOptions | [<code>VisualOptions</code>](#VisualOptions) | visual options |
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| data | <code>Array.&lt;Object&gt;</code> |  | the tabular data to be represented |
+| dataTypes | [<code>DataTypes</code>](#DataTypes) |  | object with data types annotations (column name => type name) |
+| mapping | [<code>Mapping</code>](#Mapping) |  | the current mapping of column names to dimensions of the current visual model |
+| [visualOptions] | [<code>VisualOptions</code>](#VisualOptions) | <code>{}</code> | visual options |
+| [styles] | <code>Object</code> | <code>{}</code> | - css in js styles definitions |
 

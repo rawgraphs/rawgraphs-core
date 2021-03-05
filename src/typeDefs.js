@@ -1,8 +1,16 @@
 
 /**
+ * @typedef DataType
+ * @global
+ * @type {object|string}
+ * @property {string} [type]
+ * @property {string} [dateFormat]
+ */
+
+/**
  * @typedef DataTypes
  * @global
- * @type {object}
+ * @type {object.<DataType>}
  */
 
 /**
@@ -22,7 +30,8 @@
  */
 
 /**
- * @typedef MappingDefinition
+ * @typedef DimensionsDefinition
+ * @description An array of dimensions, used to describe dimensions of a chart
  * @global
  * @type {Array.<Dimension>}
  */
@@ -46,16 +55,21 @@
  */
 
 /**
- * @typedef VisualOptionsDefinition
+ * @typedef VisualOptions
  * @global
- * @type {Array.<VisualOption>}
+ * @type {Object.<VisualOption>}
  */
 
 /**
- * @typedef VisualOptions
+ * @typedef MappingFunction
  * @global
- * @type {object}
+ * @type {function}
+ * @param {array} dataset the input dataset
+ * @param {Mapping} mapping the mapping object
+ * @param {DataTypes} dataTypes
+ * @param {DimensionsDefinition} dimensions the chart dimensions
  */
+
 
 /**
  * @typedef RenderFunction
@@ -66,16 +80,32 @@
  * @param {object} visualOptions the chart visual options
  * @param {object} mapping the mapping from column names to
  * @param {array} originalData the original tabular dataset
+ * @param {styles} Object -- css in js styles definitions
+ */
+
+ /**
+ * @typedef ChartMetadata
+ * @global
+ * @type {object}
+ * @property {string} id An unique id for the chart
+ * @property {string} name The chart name
+ * @property {string} description The chart description
+ * @property {Array.<string>} categories The list of chart categories
+ * @property {string} icon base64 representation of chart icon
+ * @property {string} thumbnail base64 representation of chart thumbnail
  */
 
 /**
  * @typedef VisualModel
  * @global
  * @type {object}
+ * @property {'svg'|'canvas'|div} [type='svg'] the chart type (defaults to svg)
+ * @property {ChartMetadata} metadata the chart metadata
  * @property {RenderFunction} render the render function
- * @property {MappingDefinition} dimensions the dimensions configuration (mapping definition)
- * @property {VisualOptionsDefinition} options the visual options exposed by the model
+ * @property {DimensionsDefinition} dimensions the dimensions configuration (mapping definition)
+ * @property {VisualOptions} visualOptions the visual options exposed by the model
  * @property {Boolean} [skipMapping=false] if set to true will skip the mapping phase (current mapping is still passed to the render function)
+ * @property {Object} [styles={}] -- css in js styles definitions
  */
 
 /**
@@ -85,5 +115,6 @@
  * @property {Array.<Object>} data - the tabular data to be represented
  * @property {DataTypes} dataTypes - object with data types annotations (column name => type name)
  * @property {Mapping} mapping - the current mapping of column names to dimensions of the current visual model
- * @property {VisualOptions} visualOptions - visual options
+ * @property {VisualOptions} [visualOptions={}] - visual options
+ * @property {Object} [styles={}] -- css in js styles definitions
  */
