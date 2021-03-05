@@ -31,6 +31,7 @@ yarn add @rawgraphs/rawgraphs-core
 ## Direct `<script>` inclusion
 
 Another way to install rawgraphs-core, is to directly include it in your html via a `<script>` tag, that will include the UMD build of the library.
+In this case we'll use [jsdelivr](https://www.jsdelivr.com/), a free CDN for open source packages.
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/@rawgraphs/rawgraphs-core"></script>

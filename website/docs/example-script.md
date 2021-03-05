@@ -8,7 +8,8 @@ slug: /example-script
 Here's a super-quick example of using the rawgraphs from javascript code.
 
 In this case we'll assume that we'll add rawgraphs to our webpage by
-[direct script inclusion](install.md#direct-script-inclusion) for other options.
+[direct script inclusion](install.md#direct-script-inclusion). Refer to 
+[installation](install.md) for other options.
 
 See the [live demo](#live-demo) at the end of the page for a complete example.
 

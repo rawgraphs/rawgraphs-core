@@ -8,7 +8,7 @@ slug: /example-npm
 Here's a super-quick example of using the rawgraphs from javascript code.
 
 In this case we'll assume we're using `yarn` to install the package from npm. Refer to 
-[installing from npm](install.md#installing-from-npm) for other options.
+[installation](install.md) for other options.
 
 See the [live demo](#live-demo) at the end of the page for a complete example.
 
