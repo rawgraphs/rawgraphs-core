@@ -16,5 +16,5 @@ The library roughly contains:
 - utility functions that can be used in visual models implementations (ex: legends)
 
 
-Please refer to the [workflow](workflow.md) description for more details about the relations between this library and the actual visual models, and to [charts interface](charts-interface.md) for more info about how to create your custom charts that can be used with rawgraphs-core and with the RAWGraphs app.
+Please refer to the [workflow](workflow.md) description for more details about the relations between this library and the actual visual models, and to [chart interface](chart-interface.md) for more info about how to create your custom charts that can be used with rawgraphs-core and with the RAWGraphs app.
 

@@ -23,7 +23,7 @@ module.exports = {
           position: 'left',
         },
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/rawgraphs/rawgraphs-core',
           label: 'GitHub',
           position: 'right',
         },
@@ -33,50 +33,25 @@ module.exports = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Links',
           items: [
             {
-              label: 'Style Guide',
-              to: 'docs/',
+              label: 'Main RAWGraphs site',
+              to: 'https://rawgraphs.io',
             },
             {
-              label: 'Second Doc',
-              to: 'docs/doc2/',
+              label: 'Web application',
+              to: 'https://rawgraphs.io',
             },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
-            {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-            },
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'Twitter',
-              href: 'https://twitter.com/docusaurus',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
             {
               label: 'Blog',
-              to: 'blog',
+              href: 'https://rawgraphs.io/blog',
             },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
-            },
+            
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} RAWGraphs.`,
     },
   },
   presets: [
@@ -87,7 +62,7 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:
-            'https://github.com/facebook/docusaurus/edit/master/website/',
+            'https://github.com/rawgraphs/rawgraphs-core/edit/master/website/',
         },
         blog: false,
         theme: {
