@@ -10,10 +10,10 @@ module.exports = {
   projectName: 'rawgraphs-core', // Usually your repo name.
   themeConfig: {
     navbar: {
-      title: 'RAW Core',
+      title: 'RAWGraphs core',
       logo: {
         alt: 'RAW logo',
-        src: 'img/logo.svg',
+        src: 'img/icon-512x512.png',
       },
       items: [
         {
