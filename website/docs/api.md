@@ -27,7 +27,7 @@ Internal class used to represent a visual model with its actual configuration of
 
 | Param | Type | Description |
 | --- | --- | --- |
-| visualModel | [<code>VisualModel</code>](#VisualModel) | visual model |
+| visualModel | [<code>ChartImplementation</code>](#ChartImplementation) | chart implementation |
 | data | <code>Array.&lt;Object&gt;</code> |  |
 | dataTypes | <code>Object</code> |  |
 | mapping | <code>Object</code> |  |
@@ -211,7 +211,7 @@ This is the entry point for creating a chart with raw. It will return an instanc
 
 | Param | Type |
 | --- | --- |
-| visualModel | [<code>VisualModel</code>](#VisualModel) | 
+| visualModel | <code>VisualModel</code> | 
 | config | [<code>RawConfig</code>](#RawConfig) | 
 
 <a name="ParserResult"></a>
@@ -323,9 +323,9 @@ An array of dimensions, used to describe dimensions of a chart
 | icon | <code>string</code> | base64 representation of chart icon |
 | thumbnail | <code>string</code> | base64 representation of chart thumbnail |
 
-<a name="VisualModel"></a>
+<a name="ChartImplementation"></a>
 
-## VisualModel : <code>object</code>
+## ChartImplementation : <code>object</code>
 **Kind**: global typedef  
 **Properties**
 
