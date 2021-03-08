@@ -100,6 +100,25 @@ class Chart {
   }
 
   /**
+   * @param {Mapping} nextMapping
+   * @returns {Chart}
+   * @description Sets or updates mapping and returns a new Chart instance.
+   */
+  mapping(nextMapping) {
+    if (!arguments.length) {
+      return this._mapping;
+    }
+    return new RAWChart(
+      this._visualModel,
+      this._data,
+      this._dataTypes,
+      nextMapping,
+      this._visualOptions,
+      this._styles,
+    );
+  }
+
+  /**
    * @param {VisualOptions} nextVisualOptions
    * @returns {Chart}
    * @description Sets or updates visual options and returns a new Chart instance.
