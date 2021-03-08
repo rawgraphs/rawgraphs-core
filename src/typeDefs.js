@@ -263,7 +263,7 @@
  * @global
  * @type {object}
  * @property {Array.<Object>} data - the tabular data to be represented
- * @property {DataTypes} dataTypes - object with data types annotations (column name => type name)
+ * @property {DataTypes} [dataTypes] - object with data types annotations (column name => type name). if not passed will be inferred with the `inferTypes` function
  * @property {Mapping} mapping - the current mapping of column names to dimensions of the current visual model
  * @property {VisualOptions} [visualOptions={}] - visual options values
  * @property {Object} [styles={}] - css in js styles definitions

@@ -371,8 +371,8 @@ class DOMChart extends Chart {
 /**
  * raw factory function
  * @description This is the entry point for creating a chart with raw. It will return an instance of the RAWChart class
- * @param {ChartImplementation} chartImplementation
- * @param {RawConfig} config
+ * @param {ChartImplementation} chartImplementation 
+ * @param {RawConfig} [config] Config object. 
  * @returns {Chart}
  */
 function chart(chartImplementation, config = {}) {
