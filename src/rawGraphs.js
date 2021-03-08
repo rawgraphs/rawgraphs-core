@@ -360,6 +360,7 @@ class Chart {
 /**
  * @class
  * @description Internal class used to represent a Chart instance rendered to a DOM node.
+ * The class has no extra methods for now, but il could be used to provide an "update" functionality in the future.
  */
 class DOMChart extends Chart {
   constructor(node, ...args) {
