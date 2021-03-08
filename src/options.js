@@ -1,12 +1,12 @@
-import get from "lodash/get";
-import isString from "lodash/isString";
-import isNumber from "lodash/isNumber";
-import isPlainObject from "lodash/isPlainObject";
-import { ValidationError, RawGraphsError, getTypeName } from "./utils";
-import mapValues from "lodash/mapValues";
-import { getColorScale, getDefaultColorScale } from "./colors";
-import { annotateMapping } from "./mapping";
-import omitBy from "lodash/omitBy";
+import get from "lodash/get"
+import isString from "lodash/isString"
+import isNumber from "lodash/isNumber"
+import isPlainObject from "lodash/isPlainObject"
+import { ValidationError, RawGraphsError, getTypeName } from "./utils"
+import mapValues from "lodash/mapValues"
+import { getColorScale, getDefaultColorScale } from "./colors"
+import { annotateMapping } from "./mapping"
+import omitBy from "lodash/omitBy"
 
 export const baseOptions = {
   width: {
@@ -31,30 +31,28 @@ export const baseOptions = {
     default: "#FFFFFF",
     group: "artboard",
   },
-};
-
-export function validateOptionsDefinition(definition) {}
+}
 
 export function getDefaultOptionsValues(definition, mapping) {
   //repeated options are empy at beginning
   return mapValues(definition, (field) => {
     if (!field.repeatFor) {
-      return field.default;
+      return field.default
     }
-    const mappingItem = get(mapping, field.repeatFor);
-    const mappingValue = get(mappingItem, "value", []);
-    const repeatDefault = get(field, repeatDefault);
-    let getDefaultValue = (field, idx) => field.default;
+    const mappingItem = get(mapping, field.repeatFor)
+    const mappingValue = get(mappingItem, "value", [])
+    const repeatDefault = get(field, repeatDefault)
+    let getDefaultValue = (field, idx) => field.default
     if (Array.isArray(repeatDefault)) {
       getDefaultValue = (field, idx) =>
-        get(repeatDefault, `[${idx}]`, field.default);
+        get(repeatDefault, `[${idx}]`, field.default)
     }
-    return mappingValue.map((v, i) => getDefaultValue(field, i));
-  });
+    return mappingValue.map((v, i) => getDefaultValue(field, i))
+  })
 }
 
 export function getOptionsConfig(visualModelOptions) {
-  return { ...baseOptions, ...(visualModelOptions || {}) };
+  return { ...baseOptions, ...(visualModelOptions || {}) }
 }
 
 /**
@@ -66,37 +64,37 @@ export function getOptionsConfig(visualModelOptions) {
 function checkPredicates(conditionObject, values) {
   const tests = Object.keys(conditionObject).map(
     (key) => values[key] === conditionObject[key]
-  );
+  )
   if (tests.filter((x) => !!x).length) {
-    return false;
+    return false
   } else {
-    return true;
+    return true
   }
 }
 
 function checkMapping(requiredDimensions, mapping, optionName) {
   if (!requiredDimensions) {
-    return true;
+    return true
   }
   if (requiredDimensions && !Array.isArray(requiredDimensions)) {
     throw new RawGraphsError(
       `the property "requiredDimensions" on ${optionName} option definition must be an array, if present`
-    );
+    )
   }
   const unmappedDimensions = requiredDimensions
     .map((r) => get(mapping[r], "value", []))
-    .filter((x) => !x.length);
-  return unmappedDimensions.length === 0;
+    .filter((x) => !x.length)
+  return unmappedDimensions.length === 0
 }
 
 export function getEnabledOptions(definition, values, mapping) {
-  let out = {};
+  let out = {}
   Object.keys(definition).forEach((optionName) => {
-    out[optionName] = true;
+    out[optionName] = true
     if (isPlainObject(definition[optionName].disabled)) {
       out[optionName] =
         out[optionName] &&
-        checkPredicates(definition[optionName].disabled, values);
+        checkPredicates(definition[optionName].disabled, values)
     }
     if (Array.isArray(definition[optionName].requiredDimensions)) {
       out[optionName] =
@@ -105,114 +103,106 @@ export function getEnabledOptions(definition, values, mapping) {
           definition[optionName].requiredDimensions,
           mapping,
           optionName
-        );
+        )
     }
-  });
-  return out;
+  })
+  return out
 }
 
 function getContainerOptionValue(item, optionsConfig, optionsValues) {
-  const currentConfig = optionsConfig[item];
-  const modifier = optionsValues[item] || 0;
+  const currentConfig = optionsConfig[item]
+  const modifier = optionsValues[item] || 0
   if (isPlainObject(currentConfig.containerCondition)) {
     const tests = Object.keys(currentConfig.containerCondition).map(
       (key) => optionsValues[key] === currentConfig.containerCondition[key]
-    );
+    )
     if (tests.filter((x) => !!x).length) {
-      return modifier;
+      return modifier
     }
-    return 0;
+    return 0
   } else {
-    return modifier;
+    return modifier
   }
 }
 
 export function getContainerOptions(optionsConfig, optionsValues) {
   const widthOptions = Object.keys(optionsConfig).filter(
     (name) => get(optionsConfig[name], "container") === "width"
-  );
+  )
   const heightOptions = Object.keys(optionsConfig).filter(
     (name) => get(optionsConfig[name], "container") === "height"
-  );
+  )
   const backgroundOptions = Object.keys(optionsConfig).filter((name) => {
-    const container = get(optionsConfig[name], "container");
-    return get(container, "style") === "background";
-  });
+    const container = get(optionsConfig[name], "container")
+    return get(container, "style") === "background"
+  })
 
   const width = widthOptions.reduce((acc, item) => {
-    const modifier = getContainerOptionValue(
-      item,
-      optionsConfig,
-      optionsValues
-    );
-    return acc + modifier;
-  }, 0);
+    const modifier = getContainerOptionValue(item, optionsConfig, optionsValues)
+    return acc + modifier
+  }, 0)
 
   const height = heightOptions.reduce((acc, item) => {
-    const modifier = getContainerOptionValue(
-      item,
-      optionsConfig,
-      optionsValues
-    );
-    return acc + modifier;
-  }, 0);
+    const modifier = getContainerOptionValue(item, optionsConfig, optionsValues)
+    return acc + modifier
+  }, 0)
 
-  let style = {};
+  let style = {}
 
   if (backgroundOptions.length) {
-    style["background"] = optionsValues[backgroundOptions[0]];
+    style["background"] = optionsValues[backgroundOptions[0]]
   }
 
-  return { width, height, style };
+  return { width, height, style }
 }
 
 function validateEnum(def, value) {
-  const validValues = get(def, "options", []);
+  const validValues = get(def, "options", [])
   if (validValues.length && validValues.indexOf(value) === -1) {
-    throw new RawGraphsError(`${value} is not a valid option`);
+    throw new RawGraphsError(`${value} is not a valid option`)
   }
-  return value;
+  return value
 }
 
 function validateText(def, value) {
   if (!isString(value)) {
-    throw new RawGraphsError("String expected");
+    throw new RawGraphsError("String expected")
   }
 
-  validateEnum(value);
+  validateEnum(value)
 
-  const len = get(value, "length");
-  const minLength = get(def, "minLength");
+  const len = get(value, "length")
+  const minLength = get(def, "minLength")
   if (minLength !== undefined && len < minLength) {
-    throw new RawGraphsError(`Min length is ${minLength}`);
+    throw new RawGraphsError(`Min length is ${minLength}`)
   }
-  const maxLength = get(def, "maxLength");
+  const maxLength = get(def, "maxLength")
   if (maxLength !== undefined && len > maxLength) {
-    throw new RawGraphsError(`Max length is ${maxLength}`);
+    throw new RawGraphsError(`Max length is ${maxLength}`)
   }
-  return value;
+  return value
 }
 
 function validateNumber(def, value) {
   if (!isNumber(value)) {
-    throw new RawGraphsError("Number expected");
+    throw new RawGraphsError("Number expected")
   }
 
-  validateEnum(value);
-  return value;
+  validateEnum(value)
+  return value
 }
 
 function validateRange(def, value) {
-  return value;
+  return value
 }
 
 function validateColor(def, value) {
-  validateEnum(value);
-  return value;
+  validateEnum(value)
+  return value
 }
 
 function simplifyDataType(dataType) {
-  return dataType.type || dataType;
+  return dataType.type || dataType
 }
 
 function validateColorScale(
@@ -222,46 +212,46 @@ function validateColorScale(
   dataTypes,
   data,
   vizData,
-  visualModel,
+  chartImplementation,
   visualOptions
 ) {
-  let colorDataset, colorDataType, mappingValue, isDimension;
+  let colorDataset, colorDataType, mappingValue, isDimension
 
-  const domainFunction = def.domain;
+  const domainFunction = def.domain
   if (domainFunction) {
     const annotatedMapping = annotateMapping(
-      visualModel.dimensions,
+      chartImplementation.dimensions,
       mapping,
       dataTypes
-    );
+    )
     Object.keys(annotatedMapping).forEach((k) => {
       if (Array.isArray(annotatedMapping[k].dataType)) {
         annotatedMapping[k].dataType = annotatedMapping[k].dataType.map(
           simplifyDataType
-        );
+        )
       } else {
         annotatedMapping[k].dataType = simplifyDataType(
           annotatedMapping[k].dataType
-        );
+        )
       }
-    });
+    })
 
-    const { domain, type } = visualModel[domainFunction](
+    const { domain, type } = chartImplementation[domainFunction](
       vizData,
       annotatedMapping,
       visualOptions
-    );
-    colorDataset = domain;
-    colorDataType = type;
-    isDimension = false;
+    )
+    colorDataset = domain
+    colorDataType = type
+    isDimension = false
   } else {
-    const dimension = def.dimension;
-    isDimension = !!dataTypes[mappingValue];
-    mappingValue = get(mapping, `[${dimension}].value`);
-    colorDataset = vizData.map((d) => get(d, def.dimension));
+    const dimension = def.dimension
+    isDimension = !!dataTypes[mappingValue]
+    mappingValue = get(mapping, `[${dimension}].value`)
+    colorDataset = vizData.map((d) => get(d, def.dimension))
     colorDataType = dataTypes[mappingValue]
       ? getTypeName(dataTypes[mappingValue])
-      : "string";
+      : "string"
   }
 
   const {
@@ -269,10 +259,10 @@ function validateColorScale(
     interpolator,
     userScaleValues,
     defaultColor = "#cccccc",
-  } = value;
+  } = value
 
-  if(!scaleType || !interpolator){
-    return getDefaultColorScale(defaultColor);
+  if (!scaleType || !interpolator) {
+    return getDefaultColorScale(defaultColor)
   }
 
   const typedUserScaleValues =
@@ -281,15 +271,15 @@ function validateColorScale(
           domain: new Date(x.domain),
           range: x.range,
         }))
-      : userScaleValues;
+      : userScaleValues
 
   //#TODO CHECK condition
   const filledDataset = colorDataset
     ? colorDataset.filter((x) => x !== undefined)
-    : colorDataset;
+    : colorDataset
   // const scaleCondition = ((!domainFunction && (!isDimension || (mappingValue && mappingValue.length > 0))) || (domainFunction && colorDataset.length > 0))
   const scaleCondition =
-    colorDataType && filledDataset && filledDataset.length > 0;
+    colorDataType && filledDataset && filledDataset.length > 0
   const scale = scaleCondition
     ? getColorScale(
         colorDataset,
@@ -298,13 +288,13 @@ function validateColorScale(
         interpolator,
         typedUserScaleValues
       )
-    : getDefaultColorScale(defaultColor);
+    : getDefaultColorScale(defaultColor)
 
-  return scale;
+  return scale
 }
 
 function validateBoolean(def, value) {
-  return value;
+  return value
 }
 
 /**
@@ -318,7 +308,7 @@ const validators = {
   color: validateColor,
   colorScale: validateColorScale,
   boolean: validateBoolean,
-};
+}
 
 /**
  * options validation and deserialization
@@ -333,22 +323,22 @@ export function validateOptions(
   dataTypes,
   data,
   vizData,
-  visualModel
+  chartImplementation
 ) {
-  let validated = {};
-  let errors = {};
+  let validated = {}
+  let errors = {}
 
   //validating not undefined values
   Object.keys(optionsValues)
     .filter((k) => optionsValues[k] !== undefined)
     .map((name) => {
-      const optionConfig = optionsConfig[name];
+      const optionConfig = optionsConfig[name]
       if (!optionConfig) {
-        throw new ValidationError(`Visual option ${name} is not available`);
+        throw new ValidationError(`Visual option ${name} is not available`)
       }
 
-      const validator = get(validators, optionConfig.type);
-      const repeatFor = get(optionConfig, "repeatFor");
+      const validator = get(validators, optionConfig.type)
+      const repeatFor = get(optionConfig, "repeatFor")
 
       if (validator) {
         if (!repeatFor) {
@@ -361,42 +351,42 @@ export function validateOptions(
               dataTypes,
               data,
               vizData,
-              visualModel,
+              chartImplementation,
               optionsValues
-            );
+            )
           } catch (err) {
-            errors[name] = err.message;
+            errors[name] = err.message
           }
         } else {
           // repeated option case
           // to ease work of rawgraphs frontend, the validation step takes care of integrating missing repeated
           // values with defaults, taking in account `repeatDefault` property if available, `default` otherwise
 
-          const repeatValuesMapping = get(mapping, repeatFor);
-          const repeatValues = get(repeatValuesMapping, "value", []);
+          const repeatValuesMapping = get(mapping, repeatFor)
+          const repeatValues = get(repeatValuesMapping, "value", [])
 
           validated[name] = repeatValues.map((value, idx) => {
             try {
               const partialMapping = {
                 ...mapping,
                 [repeatFor]: { ...mapping[repeatFor], value: [value] },
-              };
+              }
 
               const hasValue =
                 Array.isArray(optionsValues[name]) &&
-                optionsValues[name][idx] !== undefined;
-              let partialValue;
+                optionsValues[name][idx] !== undefined
+              let partialValue
               if (hasValue) {
-                partialValue = optionsValues[name][idx];
+                partialValue = optionsValues[name][idx]
               } else {
                 if (Array.isArray(optionConfig.repeatDefault)) {
                   partialValue = get(
                     optionConfig.repeatDefault,
                     `[${idx}]`,
                     optionConfig.default
-                  );
+                  )
                 } else {
-                  partialValue = optionConfig.default;
+                  partialValue = optionConfig.default
                 }
               }
               return validator(
@@ -406,25 +396,25 @@ export function validateOptions(
                 dataTypes,
                 data,
                 vizData
-              );
+              )
             } catch (err) {
-              errors[name + idx] = err.message;
-              return optionsValues[name][idx];
+              errors[name + idx] = err.message
+              return optionsValues[name][idx]
             }
-          });
+          })
         }
       } else {
-        validated[name] = optionsValues[name];
+        validated[name] = optionsValues[name]
       }
-    });
+    })
 
-  const errorNames = Object.keys(errors);
+  const errorNames = Object.keys(errors)
   if (errorNames.length) {
     // console.error("error in validation", errors)
-    throw new ValidationError(errors);
+    throw new ValidationError(errors)
   }
 
-  return validated;
+  return validated
 }
 
 export function getOptionsValues(
@@ -434,24 +424,24 @@ export function getOptionsValues(
   dataTypes,
   data,
   vizData,
-  visualModel
+  chartImplementation
 ) {
-  const opts = getDefaultOptionsValues(definition, mapping);
-  const valuesClean = omitBy(values, (v, k) => v == undefined);
+  const opts = getDefaultOptionsValues(definition, mapping)
+  const valuesClean = omitBy(values, (v, k) => v == undefined)
 
   const allValues = {
     ...opts,
     ...valuesClean,
-  };
+  }
 
   //removing disabled options
-  const enabledOptions = getEnabledOptions(definition, allValues, mapping);
-  const valuesCleanNoDisabled = omitBy(values, (v, k) => !enabledOptions[k]);
+  const enabledOptions = getEnabledOptions(definition, allValues, mapping)
+  const valuesCleanNoDisabled = omitBy(values, (v, k) => !enabledOptions[k])
 
   const finalValues = {
     ...opts,
     ...valuesCleanNoDisabled,
-  };
+  }
 
   return validateOptions(
     definition,
@@ -460,6 +450,6 @@ export function getOptionsValues(
     dataTypes,
     data,
     vizData,
-    visualModel
-  );
+    chartImplementation
+  )
 }

@@ -22,15 +22,15 @@ import * as __defs from './typeDefs'
  */
 class Chart {
   /**
-   * @param {ChartImplementation} visualModel chart implementation
+   * @param {ChartImplementation} chartImplementation chart implementation
    * @param {Array.<Object>} data
-   * @param {Object} dataTypes
-   * @param {Object} mapping
-   * @param {Object} visualOptions
+   * @param {DataTypes} dataTypes
+   * @param {Mapping} mapping
+   * @param {VisualOptions} visualOptions
    * @param {Object} styles
    */
-  constructor(visualModel, data, dataTypes, mapping, visualOptions, styles) {
-    this._visualModel = visualModel;
+  constructor(chartImplementation, data, dataTypes, mapping, visualOptions, styles) {
+    this._chartImplementation = chartImplementation;
     this._data = data;
 
     if (
@@ -71,7 +71,7 @@ class Chart {
     }
 
     return new Chart(
-      this._visualModel,
+      this._chartImplementation,
       nextData,
       dataTypes,
       this._mapping,
@@ -90,7 +90,7 @@ class Chart {
       return this._dataTypes;
     }
     return new RAWChart(
-      this._visualModel,
+      this._chartImplementation,
       this._data,
       nextDataTypes,
       this._mapping,
@@ -109,7 +109,7 @@ class Chart {
       return this._mapping;
     }
     return new RAWChart(
-      this._visualModel,
+      this._chartImplementation,
       this._data,
       this._dataTypes,
       nextMapping,
@@ -128,7 +128,7 @@ class Chart {
       return this._visualOptions;
     }
     return new RAWChart(
-      this._visualModel,
+      this._chartImplementation,
       this._data,
       this._dataTypes,
       this._mapping,
@@ -147,7 +147,7 @@ class Chart {
       return this._styles;
     }
     return new RAWChart(
-      this._visualModel,
+      this._chartImplementation,
       this._data,
       this._dataTypes,
       this._mapping,
@@ -217,28 +217,28 @@ class Chart {
   }
 
   mapData() {
-    let dimensions = this._visualModel.dimensions;
+    let dimensions = this._chartImplementation.dimensions;
 
     validateMapperDefinition(dimensions);
     validateMapping(dimensions, this._mapping, this._dataTypes);
 
-    if (isFunction(this._visualModel.mapData)) {
+    if (isFunction(this._chartImplementation.mapData)) {
       const annotatedMapping = annotateMapping(
         dimensions,
         this._mapping,
         this._dataTypes
       );
-      return this._visualModel.mapData(
+      return this._chartImplementation.mapData(
         this._data,
         annotatedMapping,
         this._dataTypes,
         dimensions
       );
-    } else if (isObject(this._visualModel.mapData)) {
+    } else if (isObject(this._chartImplementation.mapData)) {
       const dimensionsWithOperations = dimensions.map((dim) => {
         return {
           ...dim,
-          operation: this._visualModel.mapData[dim.id],
+          operation: this._chartImplementation.mapData[dim.id],
         };
       });
       const mapFunction = makeMapper(
@@ -249,25 +249,25 @@ class Chart {
       return mapFunction(this._data);
     } else {
       throw new RawGraphsError(
-        "mapData property of visualModel should be a function or an object"
+        "mapData property of chartImplementation should be a function or an object"
       );
     }
   }
 
 
   _getOptions(dataReady) {
-    const optionsConfig = getOptionsConfig(this._visualModel.visualOptions);
+    const optionsConfig = getOptionsConfig(this._chartImplementation.visualOptions);
     const vizData = dataReady || this._getVizData()
-    const optionsValues = getOptionsValues(optionsConfig, this._visualOptions, this._mapping, this._dataTypes, this._data, vizData, this._visualModel);
+    const optionsValues = getOptionsValues(optionsConfig, this._visualOptions, this._mapping, this._dataTypes, this._data, vizData, this._chartImplementation);
     return { optionsConfig, optionsValues }
   }
 
   _getVizData() {
-    return this._visualModel.skipMapping ? this._data : this.mapData();
+    return this._chartImplementation.skipMapping ? this._data : this.mapData();
   }
 
   _getVizStyles() {
-    const styles = this._visualModel.styles || {}
+    const styles = this._chartImplementation.styles || {}
     const localStyles = this._styles || {}
     let mergedStyles = mergeStyles(styles, localStyles)
     return mergedStyles
@@ -279,14 +279,14 @@ class Chart {
    * @returns {DOMChart}
    */
   renderToDOM(node, dataReady) {
-    if (!this._visualModel) {
-      throw new RawGraphsError("cannot render: visualModel is not set");
+    if (!this._chartImplementation) {
+      throw new RawGraphsError("cannot render: chartImplementation is not set");
     }
 
-    const containerType = get(this._visualModel, 'type', 'svg');
+    const containerType = get(this._chartImplementation, 'type', 'svg');
     const container = this.getContainer(node.ownerDocument, containerType, dataReady);
     const vizData = dataReady || this._getVizData()
-    const dimensions = this._visualModel.dimensions;
+    const dimensions = this._chartImplementation.dimensions;
     const annotatedMapping = annotateMapping(
       dimensions,
       this._mapping,
@@ -299,7 +299,7 @@ class Chart {
     node.innerHTML = "";
     node.appendChild(container);
 
-    this._visualModel.render(
+    this._chartImplementation.render(
       container,
       vizData,
       optionsValues,
@@ -311,7 +311,7 @@ class Chart {
 
     return new DOMChart(
       node,
-      this._visualModel,
+      this._chartImplementation,
       this._data,
       this._dataTypes,
       this._mapping,
@@ -326,17 +326,17 @@ class Chart {
    * @returns {string}
    */
   renderToString(document, dataReady) {
-    if (!this._visualModel) {
-      throw new RawGraphsError("cannot render: visualModel is not set");
+    if (!this._chartImplementation) {
+      throw new RawGraphsError("cannot render: chartImplementation is not set");
     }
 
     if (!document && window === undefined) {
       throw new RawGraphsError("Document must be passed or window available");
     }
-    const containerType = get(this._visualModel, 'type', 'svg');
+    const containerType = get(this._chartImplementation, 'type', 'svg');
     const container = this.getContainer(document || window.document, containerType, dataReady);
     const vizData = dataReady || this._getVizData()
-    const dimensions = this._visualModel.dimensions;
+    const dimensions = this._chartImplementation.dimensions;
     const annotatedMapping = annotateMapping(
       dimensions,
       this._mapping,
@@ -345,7 +345,7 @@ class Chart {
     const styles = this._getVizStyles()
 
     const { optionsConfig, optionsValues } = this._getOptions(vizData)
-    this._visualModel.render(
+    this._chartImplementation.render(
       container,
       vizData,
       optionsValues,
@@ -371,13 +371,13 @@ class DOMChart extends Chart {
 /**
  * raw factory function
  * @description This is the entry point for creating a chart with raw. It will return an instance of the RAWChart class
- * @param {VisualModel} visualModel
+ * @param {ChartImplementation} chartImplementation
  * @param {RawConfig} config
  * @returns {Chart}
  */
-function chart(visualModel, config = {}) {
+function chart(chartImplementation, config = {}) {
   const { data, dataTypes={}, mapping, visualOptions = {}, styles = {} } = config;
-  return new Chart(visualModel, data, dataTypes, mapping, visualOptions, styles);
+  return new Chart(chartImplementation, data, dataTypes, mapping, visualOptions, styles);
 }
 
 export default chart;
