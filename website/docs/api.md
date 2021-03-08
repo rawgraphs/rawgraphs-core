@@ -11,9 +11,10 @@ slug: /api
 **Kind**: global class  
 
 * [Chart](#Chart)
-    * [new Chart(visualModel, data, dataTypes, mapping, visualOptions, styles)](#new_Chart_new)
+    * [new Chart(chartImplementation, data, dataTypes, mapping, visualOptions, styles)](#new_Chart_new)
     * [.data(nextData)](#Chart+data) ⇒ [<code>Chart</code>](#Chart)
     * [.dataTypes(nextDataTypes)](#Chart+dataTypes) ⇒ [<code>Chart</code>](#Chart)
+    * [.mapping(nextMapping)](#Chart+mapping) ⇒ [<code>Chart</code>](#Chart)
     * [.visualOptions(nextVisualOptions)](#Chart+visualOptions) ⇒ [<code>Chart</code>](#Chart)
     * [.styles(Object)](#Chart+styles) ⇒ [<code>Chart</code>](#Chart)
     * [.renderToDOM(node, (array|object))](#Chart+renderToDOM) ⇒ [<code>DOMChart</code>](#DOMChart)
@@ -21,17 +22,17 @@ slug: /api
 
 <a name="new_Chart_new"></a>
 
-### new Chart(visualModel, data, dataTypes, mapping, visualOptions, styles)
+### new Chart(chartImplementation, data, dataTypes, mapping, visualOptions, styles)
 Internal class used to represent a visual model with its actual configuration of data, dataTypes, mapping, visualOptions and styles.
 
 
 | Param | Type | Description |
 | --- | --- | --- |
-| visualModel | [<code>ChartImplementation</code>](#ChartImplementation) | chart implementation |
+| chartImplementation | [<code>ChartImplementation</code>](#ChartImplementation) | chart implementation |
 | data | <code>Array.&lt;Object&gt;</code> |  |
-| dataTypes | <code>Object</code> |  |
-| mapping | <code>Object</code> |  |
-| visualOptions | <code>Object</code> |  |
+| dataTypes | [<code>DataTypes</code>](#DataTypes) |  |
+| mapping | [<code>Mapping</code>](#Mapping) |  |
+| visualOptions | [<code>VisualOptions</code>](#VisualOptions) |  |
 | styles | <code>Object</code> |  |
 
 <a name="Chart+data"></a>
@@ -55,6 +56,17 @@ Sets or updates dataTypes and returns a new Chart instance.
 | Param | Type |
 | --- | --- |
 | nextDataTypes | [<code>DataTypes</code>](#DataTypes) | 
+
+<a name="Chart+mapping"></a>
+
+### chart.mapping(nextMapping) ⇒ [<code>Chart</code>](#Chart)
+Sets or updates mapping and returns a new Chart instance.
+
+**Kind**: instance method of [<code>Chart</code>](#Chart)  
+
+| Param | Type |
+| --- | --- |
+| nextMapping | [<code>Mapping</code>](#Mapping) | 
 
 <a name="Chart+visualOptions"></a>
 
@@ -204,14 +216,14 @@ options validation and deserialization
 
 <a name="chart"></a>
 
-## chart(visualModel, config) ⇒ [<code>Chart</code>](#Chart)
+## chart(chartImplementation, config) ⇒ [<code>Chart</code>](#Chart)
 This is the entry point for creating a chart with raw. It will return an instance of the RAWChart class
 
 **Kind**: global function  
 
 | Param | Type |
 | --- | --- |
-| visualModel | <code>VisualModel</code> | 
+| chartImplementation | [<code>ChartImplementation</code>](#ChartImplementation) | 
 | config | [<code>RawConfig</code>](#RawConfig) | 
 
 <a name="ParserResult"></a>
@@ -226,21 +238,49 @@ This is the entry point for creating a chart with raw. It will return an instanc
 | dataTypes | <code>Object</code> | dataTypes used for parsing dataset |
 | errors | <code>Array</code> | list of errors from parsing |
 
-<a name="DataType"></a>
+<a name="DataTypeObject"></a>
 
-## DataType : <code>object</code> \| <code>string</code>
+## DataTypeObject : <code>object</code> \| <code>string</code>
 **Kind**: global typedef  
 **Properties**
 
-| Name | Type |
-| --- | --- |
-| [type] | <code>string</code> | 
-| [dateFormat] | <code>string</code> | 
+| Name | Type | Description |
+| --- | --- | --- |
+| type | <code>&#x27;number&#x27;</code> \| <code>&#x27;string&#x27;</code> \| <code>&#x27;date&#x27;</code> |  |
+| [dateFormat] | <code>string</code> | date format for dates |
 
+**Example**  
+```js
+{ type: 'date', dateFormat: 'DD-MM-YYYY } 
+```
 <a name="DataTypes"></a>
 
-## DataTypes : [<code>object.&lt;DataType&gt;</code>](#DataType)
+## DataTypes : <code>Object.&lt;(&#x27;number&#x27;\|&#x27;string&#x27;\|&#x27;date&#x27;\|DataTypeObject)&gt;</code>
 **Kind**: global typedef  
+**Example**  
+```js
+{ x: 'number', y: { type: 'date', dateFormat: 'DD-MM-YYYY } }
+```
+<a name="AggregationdDefaultObject"></a>
+
+## AggregationdDefaultObject : <code>object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| [date] | <code>string</code> | default aggregation function for dates |
+| [number] | <code>string</code> | default aggregation function for numbers |
+| [string] | <code>string</code> | default aggregation function for strings |
+
+**Example**  
+```js
+{
+    number: 'sum',
+    string: 'csvDistinct',
+    date: 'csvDistinct',
+}
+```
 <a name="Dimension"></a>
 
 ## Dimension : <code>object</code>
@@ -252,36 +292,177 @@ This is the entry point for creating a chart with raw. It will return an instanc
 | id | <code>string</code> |  | unique id |
 | name | <code>string</code> |  | label |
 | required | <code>boolean</code> |  |  |
-| operation | <code>&#x27;get&#x27;</code> \| <code>&#x27;group&#x27;</code> \| <code>&#x27;groups&#x27;</code> \| <code>&#x27;rollup&#x27;</code> \| <code>&#x27;rollup-leaf&#x27;</code> \| <code>&#x27;rollups&#x27;</code> \| <code>&#x27;groupAggregate&#x27;</code> \| <code>&#x27;groupBy&#x27;</code> \| <code>&#x27;proxy&#x27;</code> |  | the operation type |
+| operation | <code>&#x27;get&#x27;</code> \| <code>&#x27;group&#x27;</code> \| <code>&#x27;groups&#x27;</code> \| <code>&#x27;rollup&#x27;</code> \| <code>&#x27;rollup-leaf&#x27;</code> \| <code>&#x27;rollups&#x27;</code> \| <code>&#x27;groupAggregate&#x27;</code> \| <code>&#x27;groupBy&#x27;</code> \| <code>&#x27;proxy&#x27;</code> |  | the operation type (used for declarative mapping) |
 | targets | <code>Object</code> |  | only for proxy operations |
 | [multiple] | <code>Boolean</code> | <code>false</code> | controls if a dimension accept a value with more than one item |
 | [minValues] | <code>number</code> |  | min number of items required for the value of the dimension |
 | [maxValues] | <code>number</code> |  | max number of items required for the value of the dimension |
 | validTypes | <code>Array</code> |  | valid data types for the dimension (one or more of 'number', 'string', 'date', 'boolean') |
 | [aggregation] | <code>Boolean</code> |  | true if a dimension will be aggregated |
+| [aggregationDefault] | <code>string</code> \| [<code>AggregationdDefaultObject</code>](#AggregationdDefaultObject) |  | default for aggregation |
 
+**Example**  
+```js
+{
+    id: 'size',
+    name: 'Size',
+    validTypes: ['number'],
+    required: false,
+    aggregation: true,
+    aggregationDefault: 'sum',
+  }
+```
 <a name="DimensionsDefinition"></a>
 
 ## DimensionsDefinition : [<code>Array.&lt;Dimension&gt;</code>](#Dimension)
 An array of dimensions, used to describe dimensions of a chart
 
 **Kind**: global typedef  
+**Example**  
+```js
+[
+  {
+    id: 'steps',
+    name: 'Steps',
+    validTypes: ['number', 'date', 'string'],
+    required: true,
+    multiple: true,
+    minValues: 2,
+  },
+  {
+    id: 'size',
+    name: 'Size',
+    validTypes: ['number'],
+    required: false,
+    aggregation: true,
+    aggregationDefault: 'sum',
+  },
+]
+```
+<a name="MappedConfigValue"></a>
+
+## MappedConfigValue : <code>object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| aggregation | <code>string</code> \| <code>Array.&lt;string&gt;</code> | aggregation(s) function name(s) |
+
 <a name="MappedDimension"></a>
 
 ## MappedDimension : <code>object</code>
 **Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| value | <code>string</code> \| <code>Array.&lt;string&gt;</code> | the mapping value |
+| [config] | [<code>MappedConfigValue</code>](#MappedConfigValue) | the optional config |
+
 <a name="Mapping"></a>
 
-## Mapping : <code>object</code>
+## Mapping : [<code>Object.&lt;MappedDimension&gt;</code>](#MappedDimension)
 **Kind**: global typedef  
-<a name="VisualOption"></a>
+<a name="VisualOptionDefinition"></a>
 
-## VisualOption : <code>object</code>
+## VisualOptionDefinition : <code>object</code>
 **Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| type | <code>&#x27;number&#x27;</code> \| <code>&#x27;boolean&#x27;</code> \| <code>&#x27;text&#x27;</code> \| <code>&#x27;colorScale&#x27;</code> | type of option |
+| label | <code>string</code> | the option label |
+| default | <code>any</code> | the default value for the option. should match the option type |
+| [group] | <code>string</code> | the name of the options panel |
+| [disabled] | <code>object</code> | cross-conditions disabling the option |
+| [requiredDimensions] | <code>Array.&lt;string&gt;</code> | dimensions that must have a value in mapping for enabling the option |
+| [container] | <code>string</code> | container node property reference |
+| [containerCondition] | <code>object</code> | conditions for applying container node property reference |
+
+**Example**  
+```js
+{
+    type: 'number',
+    label: 'Maximum radius',
+    default: 20,
+    group: 'chart',
+  }
+```
+**Example**  
+```js
+{
+    type: 'boolean',
+    label: 'Show legend',
+    default: false,
+    group: 'artboard',
+  }
+```
+<a name="VisualOptionsDefinition"></a>
+
+## VisualOptionsDefinition : [<code>Object.&lt;VisualOptionDefinition&gt;</code>](#VisualOptionDefinition)
+**Kind**: global typedef  
+**Example**  
+```js
+{
+  maxRadius: {
+    type: 'number',
+    label: 'Maximum radius',
+    default: 20,
+    group: 'chart',
+  },
+
+  showLegend: {
+    type: 'boolean',
+    label: 'Show legend',
+    default: false,
+    group: 'artboard',
+  },
+
+  legendWidth: {
+    type: 'number',
+    label: 'Legend width',
+    default: 200,
+    group: 'artboard',
+    disabled: {
+      showLegend: false,
+    },
+    container: 'width',
+    containerCondition: {
+      showLegend: true,
+    },
+  },
+
+  layout: {
+    type: 'text',
+    label: 'Layout algorythm',
+    group: 'chart',
+    options: ['Cluster Dendogram', 'Tree'],
+    default: 'Tree',
+  },
+
+  colorScale: {
+    type: 'colorScale',
+    label: 'Color scale',
+    dimension: 'color',
+    default: {
+      scaleType: 'ordinal',
+      interpolator: 'interpolateSpectral',
+    },
+    group: 'color',
+  }
+
+}
+```
 <a name="VisualOptions"></a>
 
-## VisualOptions : [<code>Object.&lt;VisualOption&gt;</code>](#VisualOption)
+## VisualOptions : <code>Object</code>
 **Kind**: global typedef  
+**Example**  
+```js
+{ with: 100, showLegend: true }
+```
 <a name="MappingFunction"></a>
 
 ## MappingFunction : <code>function</code>
@@ -306,7 +487,7 @@ An array of dimensions, used to describe dimensions of a chart
 | visualOptions | <code>object</code> | the chart visual options |
 | mapping | <code>object</code> | the mapping from column names to |
 | originalData | <code>array</code> | the original tabular dataset |
-| Object | <code>styles</code> | - css in js styles definitions |
+| Object | <code>styles</code> | css in js styles definitions |
 
 <a name="ChartMetadata"></a>
 
@@ -323,6 +504,18 @@ An array of dimensions, used to describe dimensions of a chart
 | icon | <code>string</code> | base64 representation of chart icon |
 | thumbnail | <code>string</code> | base64 representation of chart thumbnail |
 
+**Example**  
+```js
+{
+  name: 'Bumpchart',
+  id: 'rawgraphs.bumpchart',
+  thumbnail: 'data:image/svg+xml;base64...',
+  icon: 'data:image/svg+xml;base64...',
+  categories: ['correlations', 'proportions'],
+  description:
+    'It allows the comparison on multiple categories over a continuous dimension and the evolution of its sorting. By default, sorting is based on the stream size.',
+}
+```
 <a name="ChartImplementation"></a>
 
 ## ChartImplementation : <code>object</code>
@@ -334,10 +527,11 @@ An array of dimensions, used to describe dimensions of a chart
 | [type] | <code>&#x27;svg&#x27;</code> \| <code>&#x27;canvas&#x27;</code> \| <code>div</code> | <code>&#x27;svg&#x27;</code> | the chart type (defaults to svg) |
 | metadata | [<code>ChartMetadata</code>](#ChartMetadata) |  | the chart metadata |
 | render | [<code>RenderFunction</code>](#RenderFunction) |  | the render function |
-| dimensions | [<code>DimensionsDefinition</code>](#DimensionsDefinition) |  | the dimensions configuration (mapping definition) |
-| visualOptions | [<code>VisualOptions</code>](#VisualOptions) |  | the visual options exposed by the model |
 | [skipMapping] | <code>Boolean</code> | <code>false</code> | if set to true will skip the mapping phase (current mapping is still passed to the render function) |
-| [styles] | <code>Object</code> | <code>{}</code> | - css in js styles definitions |
+| mapData | [<code>MappingFunction</code>](#MappingFunction) |  | the mapping function |
+| dimensions | [<code>DimensionsDefinition</code>](#DimensionsDefinition) |  | the dimensions configuration (mapping definition) |
+| visualOptions | [<code>VisualOptionsDefinition</code>](#VisualOptionsDefinition) |  | the visual options exposed by the model |
+| [styles] | <code>Object</code> | <code>{}</code> | css in js styles definitions |
 
 <a name="RawConfig"></a>
 
@@ -350,6 +544,6 @@ An array of dimensions, used to describe dimensions of a chart
 | data | <code>Array.&lt;Object&gt;</code> |  | the tabular data to be represented |
 | dataTypes | [<code>DataTypes</code>](#DataTypes) |  | object with data types annotations (column name => type name) |
 | mapping | [<code>Mapping</code>](#Mapping) |  | the current mapping of column names to dimensions of the current visual model |
-| [visualOptions] | [<code>VisualOptions</code>](#VisualOptions) | <code>{}</code> | visual options |
-| [styles] | <code>Object</code> | <code>{}</code> | - css in js styles definitions |
+| [visualOptions] | [<code>VisualOptions</code>](#VisualOptions) | <code>{}</code> | visual options values |
+| [styles] | <code>Object</code> | <code>{}</code> | css in js styles definitions |
 
