@@ -118,6 +118,7 @@ Sets or updates styles and returns a new Chart instance.
 
 ### new DOMChart()
 Internal class used to represent a Chart instance rendered to a DOM node.
+The class has no extra methods for now, but il could be used to provide an "update" functionality in the future.
 
 <a name="validators"></a>
 
@@ -216,15 +217,15 @@ options validation and deserialization
 
 <a name="chart"></a>
 
-## chart(chartImplementation, config) ⇒ [<code>Chart</code>](#Chart)
+## chart(chartImplementation, [config]) ⇒ [<code>Chart</code>](#Chart)
 This is the entry point for creating a chart with raw. It will return an instance of the RAWChart class
 
 **Kind**: global function  
 
-| Param | Type |
-| --- | --- |
-| chartImplementation | [<code>ChartImplementation</code>](#ChartImplementation) | 
-| config | [<code>RawConfig</code>](#RawConfig) | 
+| Param | Type | Description |
+| --- | --- | --- |
+| chartImplementation | [<code>ChartImplementation</code>](#ChartImplementation) |  |
+| [config] | [<code>RawConfig</code>](#RawConfig) | Config object. |
 
 <a name="ParserResult"></a>
 
@@ -501,8 +502,8 @@ An array of dimensions, used to describe dimensions of a chart
 | name | <code>string</code> | The chart name |
 | description | <code>string</code> | The chart description |
 | categories | <code>Array.&lt;string&gt;</code> | The list of chart categories |
-| icon | <code>string</code> | base64 representation of chart icon |
-| thumbnail | <code>string</code> | base64 representation of chart thumbnail |
+| icon | <code>string</code> | url or base64 representation of chart icon (will be used as `src` attribute of an `<image>` tag) |
+| thumbnail | <code>string</code> | url or base64 representation of chart thumbnail (will be used as `src` attribute of an `<image>` tag) |
 
 **Example**  
 ```js
@@ -542,7 +543,7 @@ An array of dimensions, used to describe dimensions of a chart
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | data | <code>Array.&lt;Object&gt;</code> |  | the tabular data to be represented |
-| dataTypes | [<code>DataTypes</code>](#DataTypes) |  | object with data types annotations (column name => type name) |
+| [dataTypes] | [<code>DataTypes</code>](#DataTypes) |  | object with data types annotations (column name => type name). if not passed will be inferred with the `inferTypes` function |
 | mapping | [<code>Mapping</code>](#Mapping) |  | the current mapping of column names to dimensions of the current visual model |
 | [visualOptions] | [<code>VisualOptions</code>](#VisualOptions) | <code>{}</code> | visual options values |
 | [styles] | <code>Object</code> | <code>{}</code> | css in js styles definitions |

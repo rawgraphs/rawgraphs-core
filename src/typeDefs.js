@@ -39,8 +39,6 @@
  * @property {string} id unique id
  * @property {string} name label
  * @property {boolean} required
- * @property {'get'| 'group'|'groups'|'rollup'|'rollup-leaf'|'rollups'|'groupAggregate'|'groupBy'|'proxy'} operation the operation type (used for declarative mapping)
- * @property {Object} targets  only for proxy operations
  * @property {Boolean} [multiple=false] controls if a dimension accept a value with more than one item
  * @property {number} [minValues=undefined] min number of items required for the value of the dimension
  * @property {number} [maxValues=undefined]  max number of items required for the value of the dimension
@@ -230,8 +228,8 @@
  * @property {string} name The chart name
  * @property {string} description The chart description
  * @property {Array.<string>} categories The list of chart categories
- * @property {string} icon base64 representation of chart icon
- * @property {string} thumbnail base64 representation of chart thumbnail
+ * @property {string} icon url or base64 representation of chart icon (will be used as `src` attribute of an `<image>` tag)
+ * @property {string} thumbnail url or base64 representation of chart thumbnail (will be used as `src` attribute of an `<image>` tag)
  * @example
  * {
   name: 'Bumpchart',
@@ -268,3 +266,11 @@
  * @property {VisualOptions} [visualOptions={}] - visual options values
  * @property {Object} [styles={}] - css in js styles definitions
  */
+
+
+
+
+//
+//  * @property {'get'| 'group'|'groups'|'rollup'|'rollup-leaf'|'rollups'|'groupAggregate'|'groupBy'|'proxy'} operation the operation type (used for declarative mapping)
+//  * @property {Object} targets  only for proxy operations
+ 

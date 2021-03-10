@@ -5,7 +5,7 @@ sidebar_label: Workflow
 slug: /workflow
 ---
 
-RAWGraphs solves the generic problem of visualizing data with a modular approach, separating common operations, like parsing data or exporting a visualization to svg, from more specific ones related to the visual model we're going to visualize.
+RAWGraphs solves the generic problem of visualizing data with a modular approach, separating common operations, like parsing data or exporting a visualization to svg, from more specific ones related to the visual model we're going to render.
 
 The process of creating a visualization in the [rawgraphs-app](https://github.com/rawgraphs/rawgraphs-app) is broken down into these steps:
 
@@ -23,7 +23,7 @@ that must be implemented by each visual model in order to be "hooked" into the p
 Each chart implementation is delegated for:
 
 - defining the semantics of the visual model (dimensions)
-- transforming a tabular dataset based on the dimensions
+- transforming a tabular dataset based on a "mapping" between the dimensions and data columns in the dataset
 - describing a set of visual options
 - implement the actual rendering in a HTML DOM node.
 

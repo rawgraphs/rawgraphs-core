@@ -11,7 +11,7 @@ This library was born simplify and modularize development of the [RawGraphs web 
 
 The library roughly contains:
 
-- a factory function used to render a visual model and a dataset to the DOM, just like the RawGraphs web app works
+- functions for rendering a visual model and a dataset to the DOM, just like the RawGraphs web app works
 - helper functions used for the various subtasks of the workflow like data parsing, aggregation, visual options encoding/decoding, etc.
 - utility functions that can be used in visual models implementations (ex: legends)
 
