@@ -309,3 +309,21 @@ This is an advanced api that can be used if you want to reuse common styles betw
 you want to override some css class defined by the chart when you use it.
 
 We won't use this property in our example.
+
+
+
+# Using the chart - live demo
+
+Here's a live demo of our custom chart running in codesandbox. Click on the "Open Sandbox" link to view the full code of our example.
+
+
+<iframe src="https://codesandbox.io/embed/rawgraphs-custom-chart-1g8oj?fontsize=14&hidenavigation=1&theme=light&view=preview"
+  style={{
+    width: '100%',
+    height: 700,
+    border: 0,
+  }}
+  title="rawgraphs at a glance"
+  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+></iframe>
