@@ -65,7 +65,7 @@ This is the entry point for creating a chart with raw. It will return an instanc
 | config | [<code>RawConfig</code>](#RawConfig) | 
 
 
-The first parameter, the `chartImplementation` is a chart object conforming the [chart interface](chart-inteface.md).
+The first parameter, the `chartImplementation` is a chart object conforming the [chart interface](chart-interface.md).
 
 The second parameter, the `config` object, has following properties:
 
