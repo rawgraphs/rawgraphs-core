@@ -267,6 +267,14 @@
  * @property {Object} [styles={}] - css in js styles definitions
  */
 
+/**
+ * @typedef ParserResult
+ * @global
+ * @type {object}
+ * @property {Array} dataset parsed dataset (list of objects)
+ * @property {Object} dataTypes dataTypes used for parsing dataset
+ * @property {Array} errors list of errors from parsing
+ */
 
 
 
