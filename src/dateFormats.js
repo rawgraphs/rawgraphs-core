@@ -78,36 +78,32 @@ const dateTokensMap = {
   HH: "%H",
   mm: "%M",
   ss: "%S",
-};
+}
 
 export const translateDateFormat = function (df) {
-  let out = new String(df);
+  let out = new String(df)
   Object.keys(dateTokensMap).forEach((token) => {
-    const reg = new RegExp(token, 'g')
-    out = out.replace(reg, dateTokensMap[token]);
-  });
-  return out;
-};
-
-
+    const reg = new RegExp(token, "g")
+    out = out.replace(reg, dateTokensMap[token])
+  })
+  return out
+}
 
 // actual dateFormats export
 const formatsLabels = [
-  "YYYY-MM-DD", 
-  "DD/MM/YYYY", 
-  "YYYY-MM", 
+  "YYYY-MM-DD",
+  "DD/MM/YYYY",
+  "YYYY-MM",
   "YY-MM",
   "MM/YY",
   "MM/YYYY",
-  "DD Month YYYY", 
+  "DD Month YYYY",
   "YYYY",
-  "YYYY-MM-DD HH:mm:ss", 
-  "YYYY-MM-DDTHH:mm:ss", 
-];
+  "YYYY-MM-DD HH:mm:ss",
+  "YYYY-MM-DDTHH:mm:ss",
+]
 
-export const dateFormats = {};
+export const dateFormats = {}
 formatsLabels.forEach((label) => {
-  dateFormats[label] = translateDateFormat(label);
-});
-
-// dateFormats["iso"] = undefined
+  dateFormats[label] = translateDateFormat(label)
+})
