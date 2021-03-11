@@ -8,6 +8,13 @@ import { getColorScale, getDefaultColorScale } from "./colors"
 import { annotateMapping } from "./mapping"
 import omitBy from "lodash/omitBy"
 
+/**
+ * @constant
+ * @global
+ * @description base options that are injected in all charts and extended by the visualOptions declared by the chart implementation
+ * @type {Object}
+ * @default
+ */
 export const baseOptions = {
   width: {
     type: "number",

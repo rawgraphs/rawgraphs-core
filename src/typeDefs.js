@@ -212,12 +212,12 @@
  * @typedef RenderFunction
  * @global
  * @type {function}
- * @param {Node} node
- * @param {any} data the data from mapping
- * @param {object} visualOptions the chart visual options
- * @param {object} mapping the mapping from column names to
+ * @param {Node} node an empty DOMNode that conforms to the `type` exposed by the chart implementation. 
+ * @param {any} data the data output from the mapData function defined in the cart
+ * @param {object} visualOptions the current values of the chart visual options
+ * @param {object} mapping the mapping from column names to chart dimensions
  * @param {array} originalData the original tabular dataset
- * @param {styles} Object css in js styles definitions
+ * @param {styles} Object css in js styles definitions, defined by the chart itself and possibly overridden when the chart instance is created.
  */
 
  /**
@@ -228,8 +228,8 @@
  * @property {string} name The chart name
  * @property {string} description The chart description
  * @property {Array.<string>} categories The list of chart categories
- * @property {string} icon url or base64 representation of chart icon (will be used as `src` attribute of an `<image>` tag)
- * @property {string} thumbnail url or base64 representation of chart thumbnail (will be used as `src` attribute of an `<image>` tag)
+ * @property {string} icon url or base64 representation of chart icon (will be used as `src` attribute of an `<img>` tag)
+ * @property {string} thumbnail url or base64 representation of chart thumbnail (will be used as `src` attribute of an `<img>` tag)
  * @example
  * {
   name: 'Bumpchart',

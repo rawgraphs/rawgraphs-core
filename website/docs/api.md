@@ -120,6 +120,12 @@ Sets or updates styles and returns a new Chart instance.
 Internal class used to represent a Chart instance rendered to a DOM node.
 The class has no extra methods for now, but il could be used to provide an "update" functionality in the future.
 
+<a name="baseOptions"></a>
+
+## baseOptions : <code>Object</code>
+base options that are injected in all charts and extended by the visualOptions declared by the chart implementation
+
+**Kind**: global constant  
 <a name="validators"></a>
 
 ## validators
@@ -293,8 +299,6 @@ This is the entry point for creating a chart with raw. It will return an instanc
 | id | <code>string</code> |  | unique id |
 | name | <code>string</code> |  | label |
 | required | <code>boolean</code> |  |  |
-| operation | <code>&#x27;get&#x27;</code> \| <code>&#x27;group&#x27;</code> \| <code>&#x27;groups&#x27;</code> \| <code>&#x27;rollup&#x27;</code> \| <code>&#x27;rollup-leaf&#x27;</code> \| <code>&#x27;rollups&#x27;</code> \| <code>&#x27;groupAggregate&#x27;</code> \| <code>&#x27;groupBy&#x27;</code> \| <code>&#x27;proxy&#x27;</code> |  | the operation type (used for declarative mapping) |
-| targets | <code>Object</code> |  | only for proxy operations |
 | [multiple] | <code>Boolean</code> | <code>false</code> | controls if a dimension accept a value with more than one item |
 | [minValues] | <code>number</code> |  | min number of items required for the value of the dimension |
 | [maxValues] | <code>number</code> |  | max number of items required for the value of the dimension |
@@ -483,12 +487,12 @@ An array of dimensions, used to describe dimensions of a chart
 
 | Param | Type | Description |
 | --- | --- | --- |
-| node | <code>Node</code> |  |
-| data | <code>any</code> | the data from mapping |
-| visualOptions | <code>object</code> | the chart visual options |
-| mapping | <code>object</code> | the mapping from column names to |
+| node | <code>Node</code> | an empty DOMNode that conforms to the `type` exposed by the chart implementation. |
+| data | <code>any</code> | the data output from the mapData function defined in the cart |
+| visualOptions | <code>object</code> | the current values of the chart visual options |
+| mapping | <code>object</code> | the mapping from column names to chart dimensions |
 | originalData | <code>array</code> | the original tabular dataset |
-| Object | <code>styles</code> | css in js styles definitions |
+| Object | <code>styles</code> | css in js styles definitions, defined by the chart itself and possibly overridden when the chart instance is created. |
 
 <a name="ChartMetadata"></a>
 
@@ -502,8 +506,8 @@ An array of dimensions, used to describe dimensions of a chart
 | name | <code>string</code> | The chart name |
 | description | <code>string</code> | The chart description |
 | categories | <code>Array.&lt;string&gt;</code> | The list of chart categories |
-| icon | <code>string</code> | url or base64 representation of chart icon (will be used as `src` attribute of an `<image>` tag) |
-| thumbnail | <code>string</code> | url or base64 representation of chart thumbnail (will be used as `src` attribute of an `<image>` tag) |
+| icon | <code>string</code> | url or base64 representation of chart icon (will be used as `src` attribute of an `<img>` tag) |
+| thumbnail | <code>string</code> | url or base64 representation of chart thumbnail (will be used as `src` attribute of an `<img>` tag) |
 
 **Example**  
 ```js

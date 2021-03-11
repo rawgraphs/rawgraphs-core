@@ -9,7 +9,7 @@ slug: /chart-interface
 To display a chart with rawgraphs we need to implement an object conforming the chart-interface.
 In this page we'll describe this interface and provide an example of implementing a simple chart.
 
-Each chart implementation consist of a javascript object, with some properties that are used to:
+Each chart implementation is defined by a javascript object, with some properties that are used to:
 
 - describe the chart with some metadata (title, description, an unique id, thumbnail and icon)
 - define the semantics of the visual model (dimensions)
@@ -68,8 +68,8 @@ An object with some additional properties describing the chart.
 | name | <code>string</code> | The chart name |
 | description | <code>string</code> | The chart description |
 | categories | <code>Array.&lt;string&gt;</code> | The list of chart categories |
-| icon | <code>string</code> | url or base64 representation of chart icon (will be used as `src` attribute of an `<image>` tag) |
-| thumbnail | <code>string</code> | url or base64 representation of chart thumbnail (will be used as `src` attribute of an `<image>` tag) |
+| icon | <code>string</code> | url or base64 representation of chart icon (will be used as `src` attribute of an `<img>` tag) |
+| thumbnail | <code>string</code> | url or base64 representation of chart thumbnail (will be used as `src` attribute of an `<img>` tag) |
 
 
 
@@ -88,6 +88,10 @@ const XYPlot = {
 
 ## `dimensions`
 
+The dimension property must be an array of [Dimension definitions](api#dimension--object) and is used to create the "slots" to whom can be mapped the columns of the user dataset. 
+Each dimension is an object with the following properties:
+
+
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | id | <code>string</code> |  | unique id |
@@ -99,6 +103,11 @@ const XYPlot = {
 | validTypes | <code>Array</code> |  | valid data types for the dimension (one or more of 'number', 'string', 'date', 'boolean') |
 | [aggregation] | <code>Boolean</code> |  | true if a dimension will be aggregated |
 | [aggregationDefault] | <code>string</code> \| [<code>AggregationdDefaultObject</code>](api#aggregationddefaultobject--object) |  | default for aggregation |
+
+
+In our "XYPlot" example we will be able to encode 4 dimensions: the x and y on the cartesian plane, the size (radius) of each bubble, and the label shown.
+In our example the user will have to map each of these dimension to single a data column (all dimensions are required).
+Let's add the dimensions property to our chart definition:
 
 
 ```js
@@ -140,6 +149,33 @@ In our example we'll define a `mapData` function, so this property will not be d
 
 ## `mapData` 
 
+This property must contain a function that will be used to transform data from the user dataset, which is always a tabular format, into a new object, suitable for rendering data. The result of this function, the **mapped** dataset, will be passed to the `render` function, described later in this document.
+
+The transformation has different purposes:
+
+- Simplyfing data before rendering: for example the unused columns of the dataset can be removed before passing data to render
+- Translating the names of the properties of each data point from column names to the chart semantics (dimensions). This operation is based on the "mapping" provided by the user and simplifies the rendering step, as variable names are always known (while name of columns change each time the user changes dataset).
+- Preparing the data in a shape that easier to use to perform the chart rendering. 
+
+The separation of data mapping from the actual rendering also reflects the workflow of the rawgraphs app and helps to optimize the process: once a dataset is mapped, we can "tweak" the visual options of the chart without performing all data transformations each time we try a new option. 
+The render function will still be able to apply more transformations to the dataset and also access the initial data provided by the user.
+
+The `mapData` function is expected to have the following signature:
+
+**mapData(dataset, mapping, dataTypes, dimensions)**
+
+Where the parameters are the following:
+
+| Param | Type | Description |
+| --- | --- | --- |
+| dataset | <code>array</code> | the input dataset |
+| mapping | [<code>Mapping</code>](#Mapping) | the mapping object |
+| dataTypes | [<code>DataTypes</code>](#DataTypes) |  |
+| dimensions | [<code>DimensionsDefinition</code>](#DimensionsDefinition) | the chart dimensions |
+
+
+In our case, since we need just to pull out the needed columns and rename them according to dimensions, the mapData function can be implemented as follows:
+
 
 ```js
 const XYPlot = {
@@ -156,7 +192,45 @@ const XYPlot = {
 }
 ```
 
+:::info
+Rawgraphs also has a concept of "declarative mapping" that allows to specify a `mapData` in a declarative way, without writing a function. This feature is still under development, but it's already used, in its simplest form, for some charts in the [rawgraphs-charts](https://github.com/rawgraphs/rawgraphs-charts) repository.
+See the section about [declarative mapping](declarative-mapping.md) for more info.
+:::
+
 ## `visualOptions` 
+
+This property exposes the options that are available to change the visual appeareance of the chart once the dataset has been mapped.
+It must be an object, with keys representing the variables that will be available into the render function and values representing the configuration: type of option and a default value, and a label to be used to show the option in the rawgraphs-app.
+
+The configuration also accepts more options, for handling deactivation of visual options in certain cases. 
+The optional `disabled` property of each visual option is an object that may be used to specify a condition to disable the option, given the values of other options.
+The optional `requiredDimensions` property of each visual option, gives the possibility to enable a certain option only if the specified dimensions ids have been provided by the current mapping specified by the user. 
+
+This is the complete list of property supported by visual options configuration:
+
+
+| Name | Type | Description |
+| --- | --- | --- |
+| type | <code>&#x27;number&#x27;</code> \| <code>&#x27;boolean&#x27;</code> \| <code>&#x27;text&#x27;</code> \| <code>&#x27;colorScale&#x27;</code> | type of option |
+| label | <code>string</code> | the option label |
+| default | <code>any</code> | the default value for the option. should match the option type |
+| [group] | <code>string</code> | the name of the options panel |
+| [disabled] | <code>object</code> | cross-conditions disabling the option |
+| [requiredDimensions] | <code>Array.&lt;string&gt;</code> | dimensions that must have a value in mapping for enabling the option |
+| [container] | <code>string</code> | container node property reference |
+| [containerCondition] | <code>object</code> | conditions for applying container node property reference |
+
+
+
+In our example, we'll add a set of visual options to control:
+
+- the max radius of the bubbles
+- wether to show the stroke of the bubbles
+- the color of the stroke
+- the color for the fill
+- the color for the labels
+
+Here is our visualOptions definition:
 
 
 ```js
@@ -164,23 +238,28 @@ const XYPlot = {
   ...
   visualOptions: {
     maxRadius: {
+      label: "Max radius",
       type: "number",
       default: 10,
       min: 2
     },
     showStroke: {
+      label: "Show stroke",
       type: "boolean",
       default: true
     },
     stroke: {
+      label: "Stroke color",
       type: "color",
       default: "red"
     },
     fill: {
+      label: "Fill color",
       type: "color",
       default: "red"
     },
     labelsColor: {
+      label: "Labels color",
       type: "color",
       default: "hotpink"
     }
@@ -191,6 +270,22 @@ const XYPlot = {
 
 
 ## `render` 
+
+The `render` property is a function that takes care of performing the final rendering of the chart into a DOM node. This is where the visual model is finally implemented.
+The function has the following signature:
+
+**render(node, data, visualOptions, mapping, originalData, styles)**
+
+and has no return value. The parameters have the following roles:
+
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Node</code> | an empty DOMNode that conforms to the `type` exposed by the chart implementation. |
+| data | <code>any</code> | the data output from the mapData function defined in the cart |
+| visualOptions | <code>object</code> | the current values of the chart visual options |
+| mapping | <code>object</code> | the mapping from column names to chart dimensions |
+| originalData | <code>array</code> | the original tabular dataset |
+| Object | <code>styles</code> | css in js styles definitions, defined by the chart itself and possibly overridden when the chart instance is created. |
 
 
 ```js
