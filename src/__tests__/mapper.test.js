@@ -1,12 +1,11 @@
-import fs from "fs";
-import makeMapper, { validateMapping } from "../mapping";
-import { tsvParse } from "d3-dsv";
-import { RAWError } from "../utils";
-import { registerAggregation, getAggregatorNames } from "../expressionRegister";
-import uniq from "lodash/uniq";
+import fs from "fs"
+import makeMapper, { validateMapping } from "../mapping"
+import { tsvParse } from "d3-dsv"
+import { RAWError } from "../utils"
+import { registerAggregation, getAggregatorNames } from "../expressionRegister"
+import uniq from "lodash/uniq"
 
-
-var titanic = fs.readFileSync("data/titanic.tsv", "utf8");
+var titanic = fs.readFileSync("data/titanic.tsv", "utf8")
 
 const x = {
   id: "x",
@@ -14,7 +13,7 @@ const x = {
   validTypes: ["number", "date"],
   required: true,
   operation: "get",
-};
+}
 
 const y = {
   id: "y",
@@ -22,7 +21,7 @@ const y = {
   validTypes: ["number", "date"],
   required: true,
   operation: "get",
-};
+}
 
 const groupAgg = {
   id: "groupAgg",
@@ -31,7 +30,7 @@ const groupAgg = {
   required: true,
   operation: "groupAggregate",
   multiple: true,
-};
+}
 
 const group = {
   id: "group",
@@ -40,18 +39,17 @@ const group = {
   required: true,
   operation: "group",
   multiple: true,
-};
+}
 
-const dispersionDimensions = [x, y];
-const groupAggregateDimensions = [groupAgg, x, y];
-const groupDimensions = [group, x, y];
+const dispersionDimensions = [x, y]
+const groupAggregateDimensions = [groupAgg, x, y]
+const groupDimensions = [group, x, y]
 
-let testData = tsvParse(titanic);
+let testData = tsvParse(titanic)
 testData = testData.slice(0, 10)
 
-const itemsUniq = (items) => uniq(items);
-registerAggregation("distinct", itemsUniq);
-
+const itemsUniq = (items) => uniq(items)
+registerAggregation("distinct", itemsUniq)
 
 const dispersionMapping = {
   x: {
@@ -60,7 +58,7 @@ const dispersionMapping = {
   y: {
     value: "Fare",
   },
-};
+}
 
 const groupAggregateMapping = {
   x: {
@@ -76,7 +74,7 @@ const groupAggregateMapping = {
   groupAgg: {
     value: ["Gender", "Destination"],
   },
-};
+}
 
 const groupMapping = {
   x: {
@@ -88,29 +86,29 @@ const groupMapping = {
   group: {
     value: ["Gender", "Destination"],
   },
-};
+}
 
 describe("makeMapper", () => {
   it("should perform some mappings", () => {
     const mappingFunctionDispersion = makeMapper(
       dispersionDimensions,
       dispersionMapping
-    );
-    const mappedDataDispersion = mappingFunctionDispersion(testData);
+    )
+    const mappedDataDispersion = mappingFunctionDispersion(testData)
 
     // console.log(mappedDataDispersion)
 
     const mappingFunctionGroupAggregate = makeMapper(
       groupAggregateDimensions,
       groupAggregateMapping
-    );
-    const mappedDataGroupAggregate = mappingFunctionGroupAggregate(testData);
+    )
+    const mappedDataGroupAggregate = mappingFunctionGroupAggregate(testData)
 
     // console.log(mappedDataGroupAggregate)
 
-    const mappingFunctionGroup = makeMapper(groupDimensions, groupMapping);
-    const mappedDataGroup = mappingFunctionGroup(testData);
-  });
+    const mappingFunctionGroup = makeMapper(groupDimensions, groupMapping)
+    const mappedDataGroup = mappingFunctionGroup(testData)
+  })
 
   it("throw an error if a required dimension is not set", () => {
     const requiredException = {
@@ -120,12 +118,12 @@ describe("makeMapper", () => {
       group: {
         value: ["Gender", "Destination"],
       },
-    };
+    }
     expect(() => {
       validateMapping(groupDimensions, requiredException)
-      makeMapper(groupDimensions, requiredException);
-    }).toThrow(RAWError);
-  });
+      makeMapper(groupDimensions, requiredException)
+    }).toThrow(RAWError)
+  })
 
   it("throw an error if multiple is not set on dimension x", () => {
     const groupMultipleException = {
@@ -138,12 +136,12 @@ describe("makeMapper", () => {
       group: {
         value: ["Gender", "Destination"],
       },
-    };
+    }
     expect(() => {
       validateMapping(groupDimensions, groupMultipleException)
       //makeMapper(groupDimensions, groupMultipleException);
-    }).toThrow(RAWError);
-  });
+    }).toThrow(RAWError)
+  })
 
   it("throw an error if minValues and maxValues are not ok", () => {
     const testMappingMinMax = [
@@ -157,28 +155,28 @@ describe("makeMapper", () => {
         minValues: 3,
         maxValues: 4,
       },
-    ];
+    ]
 
     const testMappingMinMaxExceptionMin = {
       x: {
         value: ["Gender", "Destination"],
       },
-    };
+    }
     expect(() => {
       validateMapping(testMappingMinMax, testMappingMinMaxExceptionMin)
       //makeMapper(testMappingMinMax, testMappingMinMaxExceptionMin);
-    }).toThrow(RAWError);
+    }).toThrow(RAWError)
 
     const testMappingMinMaxExceptionMax = {
       x: {
         value: ["Gender", "Destination", "Age", "Fare", "Survival"],
       },
-    };
+    }
     expect(() => {
       validateMapping(testMappingMinMax, testMappingMinMaxExceptionMax)
-      makeMapper(testMappingMinMax, testMappingMinMaxExceptionMax);
-    }).toThrow(RAWError);
-  });
+      makeMapper(testMappingMinMax, testMappingMinMaxExceptionMax)
+    }).toThrow(RAWError)
+  })
 
   it("tests rollup", () => {
     const rollupConfig = [
@@ -189,16 +187,16 @@ describe("makeMapper", () => {
         operation: "rollup",
         multiple: true,
       },
-    ];
+    ]
 
     const rollupMapping = {
       group: {
         value: ["Gender"],
       },
-    };
+    }
 
-    const rollupMapper = makeMapper(rollupConfig, rollupMapping);
-    const rolledUpData = rollupMapper(testData);
+    const rollupMapper = makeMapper(rollupConfig, rollupMapping)
+    const rolledUpData = rollupMapper(testData)
 
     const rollupMappingLeaf = {
       group: {
@@ -207,12 +205,10 @@ describe("makeMapper", () => {
           leafAggregation: ["distinct", "Port of Embarkation"],
         },
       },
-    };
-    const rollupMapperLeaf = makeMapper(rollupConfig, rollupMappingLeaf);
-    const rolledUpDataLeaf = rollupMapperLeaf(testData);
-    
-    
-  });
+    }
+    const rollupMapperLeaf = makeMapper(rollupConfig, rollupMappingLeaf)
+    const rolledUpDataLeaf = rollupMapperLeaf(testData)
+  })
 
   const rollupWithLeafConfig = [
     {
@@ -228,19 +224,20 @@ describe("makeMapper", () => {
       required: true,
       operation: "rollupLeaf",
     },
-  ];
+  ]
   const rollupMappingWithLeaf = {
     group: {
-      value: ["Gender"]
+      value: ["Gender"],
     },
     groupLeaf: {
       value: "Port of Embarkation",
-      config : { aggregation: 'distinct'}
+      config: { aggregation: "distinct" },
     },
-  };
+  }
 
-  const rollupMapperWithLeaf = makeMapper(rollupWithLeafConfig, rollupMappingWithLeaf);
-  const rolledUpDataWithLeafData = rollupMapperWithLeaf(testData);
-  
-
-});
+  const rollupMapperWithLeaf = makeMapper(
+    rollupWithLeafConfig,
+    rollupMappingWithLeaf
+  )
+  const rolledUpDataWithLeafData = rollupMapperWithLeaf(testData)
+})

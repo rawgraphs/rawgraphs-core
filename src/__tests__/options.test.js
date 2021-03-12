@@ -1,7 +1,5 @@
 describe("options", () => {
-  it("should test options", () => {
-    
-  });
+  it("should test options", () => {})
 
   it("throw an error if a required dimension is not set", () => {
     // const requiredException = {
@@ -16,7 +14,5 @@ describe("options", () => {
     //   validateMapping(groupDimensions, requiredException)
     //   makeMapper(groupDimensions, requiredException);
     // }).toThrow(RAWError);
-  });
-
-  
-});
+  })
+})

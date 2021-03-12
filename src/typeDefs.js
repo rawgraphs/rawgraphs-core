@@ -1,4 +1,3 @@
-
 /**
  * @typedef DataTypeObject
  * @global
@@ -6,7 +5,7 @@
  * @property {'number'|'string'|'date'} type
  * @property {string} [dateFormat] date format for dates
  * @example
- * { type: 'date', dateFormat: 'DD-MM-YYYY } 
+ * { type: 'date', dateFormat: 'DD-MM-YYYY }
  */
 
 /**
@@ -82,7 +81,7 @@
 ]
  */
 
- /**
+/**
  * @typedef MappedConfigValue
  * @global
  * @type {object}
@@ -93,7 +92,7 @@
  * @typedef MappedDimension
  * @global
  * @type {object}
- * @property {string|Array.<string>} value the mapping value 
+ * @property {string|Array.<string>} value the mapping value
  * @property {MappedConfigValue} [config] the optional config
  */
 
@@ -133,7 +132,7 @@
 
 */
 
- /**
+/**
  * @typedef VisualOptionsDefinition
  * @global
  * @type {Object.<VisualOptionDefinition>}
@@ -207,12 +206,11 @@
  * @param {DimensionsDefinition} dimensions the chart dimensions
  */
 
-
 /**
  * @typedef RenderFunction
  * @global
  * @type {function}
- * @param {Node} node an empty DOMNode that conforms to the `type` exposed by the chart implementation. 
+ * @param {Node} node an empty DOMNode that conforms to the `type` exposed by the chart implementation.
  * @param {any} data the data output from the mapData function defined in the cart
  * @param {object} visualOptions the current values of the chart visual options
  * @param {object} mapping the mapping from column names to chart dimensions
@@ -220,7 +218,7 @@
  * @param {styles} Object css in js styles definitions, defined by the chart itself and possibly overridden when the chart instance is created.
  */
 
- /**
+/**
  * @typedef ChartMetadata
  * @global
  * @type {object}
@@ -276,9 +274,6 @@
  * @property {Array} errors list of errors from parsing
  */
 
-
-
 //
 //  * @property {'get'| 'group'|'groups'|'rollup'|'rollup-leaf'|'rollups'|'groupAggregate'|'groupBy'|'proxy'} operation the operation type (used for declarative mapping)
 //  * @property {Object} targets  only for proxy operations
- 

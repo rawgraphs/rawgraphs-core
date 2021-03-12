@@ -1,8 +1,8 @@
-import { select } from "d3-selection";
-import { scaleLinear } from "d3-scale";
-import { arrayGetter } from "../../src";
-import { extent } from "d3-array";
-import { axisBottom, axisLeft } from "d3-axis";
+import { select } from "d3-selection"
+import { scaleLinear } from "d3-scale"
+import { arrayGetter } from "../../src"
+import { extent } from "d3-array"
+import { axisBottom, axisLeft } from "d3-axis"
 
 const testChart = {
   dimensions: [
@@ -23,14 +23,14 @@ const testChart = {
   ],
 
   mapData: function (data, mapping, dataTypes, dimensions) {
-    const getX = arrayGetter(mapping["x"].value);
-    const getY = arrayGetter(mapping["y"].value);
+    const getX = arrayGetter(mapping["x"].value)
+    const getY = arrayGetter(mapping["y"].value)
 
     const out = data.map((d) => ({
       x: getX(d),
       y: getY(d),
-    }));
-    return out;
+    }))
+    return out
   },
 
   //declarative version ... with automatic mapping
@@ -40,34 +40,32 @@ const testChart = {
   },
 
   options: {
-    "setOriginAt0" : {
+    setOriginAt0: {
       type: "boolean",
       default: true,
       group: "chart",
-      label: "Set origin at 0,0"
-
-    }
-
+      label: "Set origin at 0,0",
+    },
   },
 
   render: function (node, data, visualOptions, mapping, originalData) {
-    const { width, height } = visualOptions;
+    const { width, height } = visualOptions
     const margin = {
       top: 25,
       right: 20,
       bottom: 35,
       left: 40,
-    };
+    }
 
     const x = scaleLinear()
       .domain(extent(data, (d) => d.x))
       .nice()
-      .range([margin.left, width - margin.right]);
+      .range([margin.left, width - margin.right])
 
     const y = scaleLinear()
       .domain(extent(data, (d) => d.y))
       .nice()
-      .range([height - margin.bottom, margin.top]);
+      .range([height - margin.bottom, margin.top])
 
     const xAxis = (g) =>
       g
@@ -82,7 +80,7 @@ const testChart = {
             .attr("fill", "red")
             .attr("text-anchor", "end")
             .text(data.x)
-        );
+        )
 
     const yAxis = (g) =>
       g
@@ -97,13 +95,13 @@ const testChart = {
             .attr("fill", "red")
             .attr("text-anchor", "start")
             .text(data.y)
-        );
+        )
 
-    const svg = select(node);
+    const svg = select(node)
 
-    svg.append("g").call(xAxis);
+    svg.append("g").call(xAxis)
 
-    svg.append("g").call(yAxis);
+    svg.append("g").call(yAxis)
 
     // svg.append("g")
     //     .call(grid);
@@ -118,7 +116,7 @@ const testChart = {
       .join("circle")
       .attr("cx", (d) => x(d.x))
       .attr("cy", (d) => y(d.y))
-      .attr("r", 3);
+      .attr("r", 3)
 
     svg
       .append("g")
@@ -130,8 +128,8 @@ const testChart = {
       .attr("dy", "0.35em")
       .attr("x", (d) => x(d.x) + 7)
       .attr("y", (d) => y(d.y))
-      .text((d) => d.y);
+      .text((d) => d.y)
   },
-};
+}
 
-export default testChart;
+export default testChart

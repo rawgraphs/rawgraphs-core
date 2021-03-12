@@ -1,15 +1,15 @@
-import * as d3Legend from "d3-svg-legend";
-import { format } from "d3-format";
+import * as d3Legend from "d3-svg-legend"
+import { format } from "d3-format"
 
 function scaleType(scale) {
   if (scale.interpolate) {
-    return "continuous";
+    return "continuous"
   } else if (scale.interpolator) {
-    return "sequential";
+    return "sequential"
   } else if (scale.invertExtent) {
-    return "other";
+    return "other"
   } else {
-    return "ordinal";
+    return "ordinal"
   }
 }
 
@@ -23,19 +23,19 @@ export function legend(
   margin = { top: 0, right: 5, bottom: 0, left: 5 }
 ) {
   const legendFn = (_selection) => {
-    let d3LegendSize, d3legendColor;
-    const w = legendWidth - margin.left - margin.right;
+    let d3LegendSize, d3legendColor
+    const w = legendWidth - margin.left - margin.right
 
     const legendContainer = _selection
       .append("g")
-      .attr("transform", `translate(${margin.left},${0})`);
+      .attr("transform", `translate(${margin.left},${0})`)
 
     //draw size scale
     if (legendSize && legendSize.title) {
       legendContainer
         .append("g")
         .attr("class", "legendSize")
-        .attr("transform", `translate(0,${margin.top})`);
+        .attr("transform", `translate(0,${margin.top})`)
 
       let d3LegendSize = d3Legend
         .legendSize()
@@ -50,20 +50,20 @@ export function legend(
           legendSize.shape === "circle"
             ? legendSize.scale.range()[1]
             : shapePadding
-        );
+        )
 
-      legendContainer.select(".legendSize").call(d3LegendSize);
+      legendContainer.select(".legendSize").call(d3LegendSize)
     }
     //draw color scale
     if (legendColor && legendColor.title) {
       const legendColorHeight = legendContainer.select(".legendSize").empty()
         ? 0
-        : legendContainer.select(".legendSize").node().getBBox().height + 20;
+        : legendContainer.select(".legendSize").node().getBBox().height + 20
 
       legendContainer
         .append("g")
         .attr("class", "legendColor")
-        .attr("transform", "translate(0," + legendColorHeight + ")");
+        .attr("transform", "translate(0," + legendColorHeight + ")")
 
       d3legendColor = d3Legend
         .legendColor()
@@ -72,7 +72,7 @@ export function legend(
         .titleWidth(w)
         .labelWrap(w - shapePadding - shapeWidth)
         .labelOffset(5)
-        .scale(legendColor.scale);
+        .scale(legendColor.scale)
 
       if (scaleType(legendColor.scale) !== "ordinal") {
         d3legendColor
@@ -85,81 +85,81 @@ export function legend(
           .labelAlign("start")
           .labels(({ i, genLength, generatedLabels, domain }) => {
             if (i === 0 || i === genLength - 1) {
-              return generatedLabels[i];
+              return generatedLabels[i]
             }
             if (domain.length === 3 && i === genLength / 2 - 1) {
-              return format(".01f")((domain[0] + domain[2]) / 2);
+              return format(".01f")((domain[0] + domain[2]) / 2)
             }
-          });
+          })
       }
 
-      legendContainer.select(".legendColor").call(d3legendColor);
+      legendContainer.select(".legendColor").call(d3legendColor)
     }
 
     //Hardcore style with much love
     legendContainer
       .selectAll("text")
       .attr("font-family", '"Arial", sans-serif')
-      .attr("font-size", "10px");
+      .attr("font-size", "10px")
 
     legendContainer
       .selectAll(".legendTitle")
       .attr("font-size", "12px")
-      .attr("font-weight", "bold");
+      .attr("font-weight", "bold")
 
     legendContainer
       .selectAll(".horizontal-legendTitle")
       .attr("font-size", "12px")
-      .attr("font-weight", "bold");
+      .attr("font-weight", "bold")
 
     legendContainer
       .selectAll(".horizontal-cell text")
       .style("text-anchor", "middle")
-      .attr("text-anchor", "middle");
+      .attr("text-anchor", "middle")
 
     legendContainer
       .selectAll(".horizontal-cell:first-of-type text")
       .style("text-anchor", "start")
-      .attr("text-anchor", "start");
+      .attr("text-anchor", "start")
 
     legendContainer
       .selectAll(".horizontal-cell:last-of-type text")
       .style("text-anchor", "end")
-      .attr("text-anchor", "end");
+      .attr("text-anchor", "end")
 
     legendContainer
       .selectAll(".legendSize circle")
       .attr("fill", "none")
-      .attr("stroke", "#ccc");
+      .attr("stroke", "#ccc")
 
     legendContainer
       .selectAll(".legendSize rect")
       .attr("fill", "none")
-      .attr("stroke", "#ccc");
-  };
+      .attr("stroke", "#ccc")
+  }
 
   legendFn.addColor = function (_title, _scale) {
-    if (!arguments.length) return legendColor;
+    if (!arguments.length) return legendColor
 
-    legendColor = { title: _title, scale: _scale };
-    return legendFn;
-  };
+    legendColor = { title: _title, scale: _scale }
+    return legendFn
+  }
 
   legendFn.addSize = function (_title, _scale, _shape) {
-    if (!arguments.length) return legendSize;
+    if (!arguments.length) return legendSize
     legendSize = {
       title: _title,
       scale: _scale,
       shape: _shape,
-    };
-    return legendFn;
-  };
+    }
+    return legendFn
+  }
 
   legendFn.legendWidth = function (_legendWidth) {
-    if (!arguments.length) return legendWidth;
-    legendWidth = _legendWidth;
-    return legendFn;
-  };
+    if (!arguments.length) return legendWidth
+    legendWidth = _legendWidth
+    return legendFn
+  }
 
-  return legendFn;
+  return legendFn
 }
