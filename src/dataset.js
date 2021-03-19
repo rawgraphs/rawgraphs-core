@@ -147,7 +147,7 @@ function castTypesToString(types) {
  * Types guessing
  *
  * @param {array} data data to be parsed (list of objects)
- * @param {boolean} strict if strict is false, a JSON parsing of the values is tried. (if strict=false: "true" -> true)
+ * @param {parsingOptions} parsingOptions 
  * @return {object} the types guessed (object with column names as keys and value type as value)
  */
 export function inferTypes(data, parsingOptions = {}) {
@@ -292,7 +292,8 @@ function parseRows(data, dataTypes, parsingOptions) {
  * Dataset parser
  *
  * @param {array} data data to be parsed (list of objects)
- * @param {object} types optional column types
+ * @param {object} [types] optional column types
+ * @param {ParsingOptions} [parsingOptions] optional parsing options
  * @return {ParserResult} dataset, dataTypes, errors
  */
 export function parseDataset(data, types, parsingOptions) {

@@ -120,6 +120,18 @@ Sets or updates styles and returns a new Chart instance.
 Internal class used to represent a Chart instance rendered to a DOM node.
 The class has no extra methods for now, but il could be used to provide an "update" functionality in the future.
 
+<a name="colorPresets"></a>
+
+## colorPresets
+Color presets objects
+
+**Kind**: global constant  
+<a name="scaleTypes"></a>
+
+## scaleTypes
+Scale types (names)
+
+**Kind**: global constant  
 <a name="baseOptions"></a>
 
 ## baseOptions : <code>Object</code>
@@ -130,12 +142,88 @@ base options that are injected in all charts and extended by the visualOptions d
 
 ## validators
 default validators.
-#TODO: registration approach?
 
 **Kind**: global constant  
+<a name="getPresetScale"></a>
+
+## getPresetScale(scaleType, domain, interpolator) ⇒ <code>function</code>
+**Kind**: global function  
+**Returns**: <code>function</code> - a d3 scale  
+
+| Param | Type |
+| --- | --- |
+| scaleType | <code>\*</code> | 
+| domain | <code>\*</code> | 
+| interpolator | <code>\*</code> | 
+
+<a name="getColorDomain"></a>
+
+## getColorDomain(colorDataset, colorDataType, scaleType) ⇒ <code>Array</code>
+Extracts the color domain, given a color dataset, a color data type and a scale type
+for sequential scales will return 2 points domain (min and max values)
+for diverging scales will have 3 points domain (min value, mid value and max value)
+for ordinal scales the domain consists of all unique values found in the color dataset
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| colorDataset | <code>\*</code> | 
+| colorDataType | <code>\*</code> | 
+| scaleType | <code>\*</code> | 
+
+<a name="getInitialScaleValues"></a>
+
+## getInitialScaleValues(domain, scaleType, interpolator) ⇒ <code>Array.&lt;Object&gt;</code>
+Compute the initial ranges and domains, given a domain, a scale type and an interpolator. Used to initialize the values that can be overridden by the user
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| domain | <code>\*</code> | 
+| scaleType | <code>\*</code> | 
+| interpolator | <code>\*</code> | 
+
+<a name="getColorScale"></a>
+
+## getColorScale(colorDataset, colorDataType, scaleType, interpolator, userScaleValues) ⇒ <code>function</code>
+**Kind**: global function  
+**Returns**: <code>function</code> - The d3 color scale  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| colorDataset | <code>Array</code> | the array of values of the dataset mapped on the color dimension |
+| colorDataType | <code>&#x27;number&#x27;</code> \| <code>&#x27;string&#x27;</code> \| <code>&#x27;date&#x27;</code> \| [<code>DataTypeObject</code>](#DataTypeObject) | the type of the |
+| scaleType | <code>string</code> | the name of the scale type used |
+| interpolator | <code>string</code> | the name of the interpolator used (must be compatible with scaleType) |
+| userScaleValues | <code>Array.&lt;Object&gt;</code> | overrides of ranges/domains points provided by the user |
+
+<a name="getDefaultColorScale"></a>
+
+## getDefaultColorScale(defaultColor) ⇒
+**Kind**: global function  
+**Returns**: A d3 scale that map any value to the default color.  
+
+| Param | Type |
+| --- | --- |
+| defaultColor | <code>\*</code> | 
+
+<a name="getAvailableScaleTypes"></a>
+
+## getAvailableScaleTypes(colorDataType, colorDataset) ⇒ <code>Array.&lt;string&gt;</code>
+gets the array of names of available scale types, given the color data type and color dataset
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| colorDataType | <code>\*</code> | 
+| colorDataset | <code>\*</code> | 
+
 <a name="inferTypes"></a>
 
-## inferTypes(data, strict) ⇒ <code>object</code>
+## inferTypes(data, parsingOptions) ⇒ <code>object</code>
 Types guessing
 
 **Kind**: global function  
@@ -144,11 +232,11 @@ Types guessing
 | Param | Type | Description |
 | --- | --- | --- |
 | data | <code>array</code> | data to be parsed (list of objects) |
-| strict | <code>boolean</code> | if strict is false, a JSON parsing of the values is tried. (if strict=false: "true" -> true) |
+| parsingOptions | <code>parsingOptions</code> |  |
 
 <a name="parseDataset"></a>
 
-## parseDataset(data, types) ⇒ [<code>ParserResult</code>](#ParserResult)
+## parseDataset(data, [types], [parsingOptions]) ⇒ [<code>ParserResult</code>](#ParserResult)
 Dataset parser
 
 **Kind**: global function  
@@ -157,7 +245,8 @@ Dataset parser
 | Param | Type | Description |
 | --- | --- | --- |
 | data | <code>array</code> | data to be parsed (list of objects) |
-| types | <code>object</code> | optional column types |
+| [types] | <code>object</code> | optional column types |
+| [parsingOptions] | [<code>ParsingOptions</code>](#ParsingOptions) | optional parsing options |
 
 <a name="validateMapperDefinition"></a>
 
@@ -233,18 +322,6 @@ This is the entry point for creating a chart with raw. It will return an instanc
 | chartImplementation | [<code>ChartImplementation</code>](#ChartImplementation) |  |
 | [config] | [<code>RawConfig</code>](#RawConfig) | Config object. |
 
-<a name="ParserResult"></a>
-
-## ParserResult : <code>object</code>
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| dataset | <code>Array</code> | parsed dataset (list of objects) |
-| dataTypes | <code>Object</code> | dataTypes used for parsing dataset |
-| errors | <code>Array</code> | list of errors from parsing |
-
 <a name="DataTypeObject"></a>
 
 ## DataTypeObject : <code>object</code> \| <code>string</code>
@@ -258,7 +335,7 @@ This is the entry point for creating a chart with raw. It will return an instanc
 
 **Example**  
 ```js
-{ type: 'date', dateFormat: 'DD-MM-YYYY } 
+{ type: 'date', dateFormat: 'DD-MM-YYYY }
 ```
 <a name="DataTypes"></a>
 
@@ -551,4 +628,31 @@ An array of dimensions, used to describe dimensions of a chart
 | mapping | [<code>Mapping</code>](#Mapping) |  | the current mapping of column names to dimensions of the current visual model |
 | [visualOptions] | [<code>VisualOptions</code>](#VisualOptions) | <code>{}</code> | visual options values |
 | [styles] | <code>Object</code> | <code>{}</code> | css in js styles definitions |
+
+<a name="ParsingOptions"></a>
+
+## ParsingOptions : <code>object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| strict | <code>boolean</code> | if strict is false, a JSON parsing of the values is tried. (if strict=false: "true" -> true) |
+| locale | <code>string</code> |  |
+| decimal | <code>string</code> |  |
+| group | <code>string</code> |  |
+| numerals | <code>Array.&lt;string&gt;</code> |  |
+| dateLocale | <code>string</code> |  |
+
+<a name="ParserResult"></a>
+
+## ParserResult : <code>object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| dataset | <code>Array</code> | parsed dataset (list of objects) |
+| dataTypes | <code>Object</code> | dataTypes used for parsing dataset |
+| errors | <code>Array</code> | list of errors from parsing |
 

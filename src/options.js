@@ -306,7 +306,6 @@ function validateBoolean(def, value) {
 
 /**
  * default validators.
- * #TODO: registration approach?
  */
 const validators = {
   text: validateText,

@@ -265,6 +265,19 @@
  * @property {Object} [styles={}] - css in js styles definitions
  */
 
+
+/**
+ * @typedef ParsingOptions
+ * @global
+ * @type {object}
+ * @property {boolean} strict if strict is false, a JSON parsing of the values is tried. (if strict=false: "true" -> true)
+ * @property {string} locale
+ * @property {string} decimal
+ * @property {string} group
+ * @property {Array.<string>} numerals
+ * @property {string} dateLocale
+ */
+
 /**
  * @typedef ParserResult
  * @global
