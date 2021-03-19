@@ -6,7 +6,7 @@ slug: /chart-interface
 ---
 
 
-To display a chart with rawgraphs we need to implement an object conforming the chart-interface.
+To display a chart with rawgraphs we need to provide an implementation of the rawgraphs **chart-interface**.
 In this page we'll describe this interface and provide an example of implementing a simple chart.
 
 Each chart implementation is defined by a javascript object, with some properties that are used to:

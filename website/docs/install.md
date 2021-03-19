@@ -8,7 +8,7 @@ slug: /installation
 ## Environment
 
 The rawgraphs-core library has no strict requirements of a browser envirnonment.
-However, as the charts rendering leverages the DOM api (in particular additional apis provided by SVG) the library always needs a valid html document to operate. 
+However, as the charts rendering leverages the DOM api (in particular additional apis provided by SVG) the library always needs a valid html document to operate on. 
 
 At the moment we could not find any pure node.js implementation of the DOM api supporting the full svg specification, so **rawgraphs-core is officially fully supported only in a browser environment**.
 
