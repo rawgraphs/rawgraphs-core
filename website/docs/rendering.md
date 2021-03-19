@@ -90,5 +90,5 @@ To render the chart, we call the `renderToDOM` method of our chart instance, whi
 this function call will draw the chart in your document and return an instance of the `DOMChart` class, which extends the `Chart` class and has an internal reference to the DOM node.
 
 :::info
-At the moment rawgraphs-core has not support for **updating** a chart once it's rendered. In the `renderToDOM` method, the target dom node inner html always cleaned before proceeding to the actual chart rendering.
+At the moment rawgraphs-core has not support for **updating** a chart once it's rendered. In the `renderToDOM` method, the target dom node inner html is always cleaned before proceeding to the actual chart rendering.
 :::
