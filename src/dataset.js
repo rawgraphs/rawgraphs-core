@@ -148,7 +148,7 @@ function castTypesToString(types) {
  *
  * @param {array} data data to be parsed (list of objects)
  * @param {parsingOptions} parsingOptions 
- * @return {object} the types guessed (object with column names as keys and value type as value)
+ * @return {DataTypes} the types guessed (object with column names as keys and value type as value)
  */
 export function inferTypes(data, parsingOptions = {}) {
   let candidateTypes = {}
@@ -292,7 +292,7 @@ function parseRows(data, dataTypes, parsingOptions) {
  * Dataset parser
  *
  * @param {array} data data to be parsed (list of objects)
- * @param {object} [types] optional column types
+ * @param {DataTypes} [types] optional column types
  * @param {ParsingOptions} [parsingOptions] optional parsing options
  * @return {ParserResult} dataset, dataTypes, errors
  */

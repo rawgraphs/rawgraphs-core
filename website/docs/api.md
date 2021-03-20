@@ -223,11 +223,11 @@ gets the array of names of available scale types, given the color data type and 
 
 <a name="inferTypes"></a>
 
-## inferTypes(data, parsingOptions) ⇒ <code>object</code>
+## inferTypes(data, parsingOptions) ⇒ [<code>DataTypes</code>](#DataTypes)
 Types guessing
 
 **Kind**: global function  
-**Returns**: <code>object</code> - the types guessed (object with column names as keys and value type as value)  
+**Returns**: [<code>DataTypes</code>](#DataTypes) - the types guessed (object with column names as keys and value type as value)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -245,7 +245,7 @@ Dataset parser
 | Param | Type | Description |
 | --- | --- | --- |
 | data | <code>array</code> | data to be parsed (list of objects) |
-| [types] | <code>object</code> | optional column types |
+| [types] | [<code>DataTypes</code>](#DataTypes) | optional column types |
 | [parsingOptions] | [<code>ParsingOptions</code>](#ParsingOptions) | optional parsing options |
 
 <a name="validateMapperDefinition"></a>

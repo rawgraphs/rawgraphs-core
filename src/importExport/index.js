@@ -2,8 +2,16 @@ import * as V1 from "./importExportV1"
 import * as V1_1 from "./importExportV1.1"
 import get from "lodash/get"
 import keyBy from "lodash/keyBy"
+import { Module } from "webpack"
 
 const DESERIALIZERS = keyBy([V1, V1_1], "VERSION")
+
+/**
+ * Serializes a rawgraphs project to json format
+ * @param {Object} project 
+ * @param {string} [version="latest"] 
+ * @returns {string}
+ */
 
 export function serializeProject(project, version = "latest") {
   const defaultSerializer =
@@ -20,6 +28,13 @@ export function serializeProject(project, version = "latest") {
   return serializer(project)
 }
 
+
+/**
+ * Deserializes a project from JSON
+ * @param {string} serializedProject 
+ * @param {object} charts 
+ * @returns 
+ */
 export function deserializeProject(serializedProject, charts) {
   try {
     const parsedProject = JSON.parse(serializedProject)

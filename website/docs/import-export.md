@@ -6,4 +6,12 @@ slug: /import-export
 ---
 
 
-visual model and a dataset to the DOM, just like the RawGraphs web app works
+The rawgraphs-core library provides the functions used in the RAWGraphs app to load and save visualizazions in `.rawgraphs` format.
+
+This format a JSON file that contains all the data and choices made with the graphical interface (dataset, parsing options, the id of the chart used, mapping, visual options).
+
+
+
+
+
+
