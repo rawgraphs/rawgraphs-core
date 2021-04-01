@@ -7,7 +7,7 @@ slug: /
 
 Welcome to the rawgraphs-core documentation!
 
-This library was born simplify and modularize development of the [RawGraphs web app](https://app.rawgraphs.io), but it can be used to implement the RAWGraphs workflow and rendering charts from javascript code.
+This library was born to simplify and modularize development of the [RawGraphs web app](https://app.rawgraphs.io), but it can be used to implement the RAWGraphs workflow and rendering charts from javascript code.
 
 The library roughly contains:
 
