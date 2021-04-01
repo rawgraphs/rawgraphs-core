@@ -7,6 +7,10 @@ slug: /workflow
 
 RAWGraphs solves the generic problem of visualizing data with a modular approach, separating common operations, like parsing data or exporting a visualization to svg, from more specific ones related to the visual model we're going to render.
 
+:::info
+In this documentation we will use a glossary wich [you can consult here](glossary). In particular we will use [**"visual model"**](glossary#visual-model) to define the kind of visual result we want to achieve, [**"chart"**](glossary#chart) as the code implementation to realise a visual model, and [**"visualization"**](glossary#visualization) to define the rendered image.
+:::
+
 The process of creating a visualization in the [rawgraphs-app](https://github.com/rawgraphs/rawgraphs-app) is broken down into these steps:
 
 1. **data loading**
@@ -30,7 +34,6 @@ Each chart implementation is delegated for:
 The [chart interface page](chart-interface.md) describes in detail the API that can be used to create charts.
 
 The set of charts implementations used in the official RAWGraphs app can be found the [rawgraphs-charts](https://github.com/rawgraphs/rawgraphs-charts) repository.
-
 
 :::info
 The chart interface intentionally splits the task of rendering a set of data to a document, in order to be plugged into the 
