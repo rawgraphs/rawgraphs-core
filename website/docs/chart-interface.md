@@ -22,15 +22,14 @@ A **chart implementation** object must have the following properties:
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| [type] | <code>&#x27;svg&#x27;</code> \| <code>&#x27;canvas&#x27;</code> \| <code>div</code> | <code>&#x27;svg&#x27;</code> | the chart type (defaults to svg) |
-| metadata | [<code>ChartMetadata</code>](#ChartMetadata) |  | the chart metadata |
-| dimensions | [<code>DimensionsDefinition</code>](#DimensionsDefinition) |  | the dimensions configuration (mapping definition) |
+| [type] | <code>'svg'</code> \| <code>'canvas'</code> \| <code>'div'</code> | <code>svg</code> | the chart type (defaults to svg) |
+| metadata | [<code>ChartMetadata</code>](api#chartmetadata--object) |  | the chart metadata |
+| dimensions | [<code>DimensionsDefinition</code>](api#dimensionsdefinition--codearraydimensioncode) |  | the dimensions configuration (mapping definition) |
 | [skipMapping] | <code>Boolean</code> | <code>false</code> | if set to true will skip the mapping phase (current mapping is still passed to the render function) |
-| mapData | [<code>MappingFunction</code>](#MappingFunction) |  | the mapping function |
-| visualOptions | [<code>VisualOptionsDefinition</code>](#VisualOptionsDefinition) |  | the visual options exposed by the model |
-| render | [<code>RenderFunction</code>](#RenderFunction) |  | the render function |
+| mapData | [<code>MappingFunction</code>](api#mappingfunction--function) |  | the mapping function |
+| visualOptions | [<code>VisualOptionsDefinition</code>](api#visualoptionsdefinition--codeobjectvisualoptiondefinitioncode) |  | the visual options exposed by the model |
+| render | [<code>RenderFunction</code>](api#renderfunction--function) |  | the render function |
 | [styles] | <code>Object</code> | <code>{}</code> | css in js styles definitions |
-
 
 As an example, we'll build a simple chart that will plot "bubbles" on an xy plane, a simplified version of the bubble chart you can find in the RAWGraphs app.
 We'll call it "XYPlot":
@@ -60,14 +59,14 @@ A string, that describes the type of DOM node the charts needs as "parent" in th
 Can be one of `svg` (the default), `canvas` or `div`.
 
 ## `metadata`
-An object with some additional properties describing the chart.
+An object with some additional properties describing the chart. Metadata is used to populate the graphic interface of [rawgraphs-app](https://github.com/rawgraphs/rawgraphs-app).
 
 | Name | Type | Description |
 | --- | --- | --- |
 | id | <code>string</code> | An unique id for the chart |
 | name | <code>string</code> | The chart name |
 | description | <code>string</code> | The chart description |
-| categories | <code>Array.&lt;string&gt;</code> | The list of chart categories |
+| categories | <code>Array.\<string\></code> | The list of chart categories |
 | icon | <code>string</code> | url or base64 representation of chart icon (will be used as `src` attribute of an `<img>` tag) |
 | thumbnail | <code>string</code> | url or base64 representation of chart thumbnail (will be used as `src` attribute of an `<img>` tag) |
 
@@ -169,9 +168,9 @@ Where the parameters are the following:
 | Param | Type | Description |
 | --- | --- | --- |
 | dataset | <code>array</code> | the input dataset |
-| mapping | [<code>Mapping</code>](#Mapping) | the mapping object |
-| dataTypes | [<code>DataTypes</code>](#DataTypes) |  |
-| dimensions | [<code>DimensionsDefinition</code>](#DimensionsDefinition) | the chart dimensions |
+| mapping | [<code>Mapping</code>](api#mapping--codeobjectmappeddimensioncode) | the mapping object |
+| dataTypes | [<code>DataTypes</code>](api#datatypes--objectnumberstringdatedatatypeobject) |  |
+| dimensions | [<code>DimensionsDefinition</code>](api#dimensionsdefinition--codearraydimensioncode) | the chart dimensions |
 
 
 In our case, since we need just to pull out the needed columns and rename them according to dimensions, the mapData function can be implemented as follows:
@@ -193,7 +192,7 @@ const XYPlot = {
 ```
 
 :::info
-Rawgraphs also has a concept of "declarative mapping" that allows to specify a `mapData` in a declarative way, without writing a function. This feature is still under development, but it's already used, in its simplest form, for some charts in the [rawgraphs-charts](https://github.com/rawgraphs/rawgraphs-charts) repository.
+Rawgraphs also has a concept of "declarative mapping" that allows to specify a `mapData` in a declarative way, without writing a function. This feature is still under development, but it's already used, in its simplest form, for some charts in the [rawgraphs-charts](https://github.com/rawgraphs/rawgraphs-charts) repository, for example the [bubble chart](https://github.com/rawgraphs/rawgraphs-charts/tree/master/src/bubblechart).
 See the section about [declarative mapping](declarative-mapping.md) for more info.
 :::
 
@@ -211,7 +210,7 @@ This is the complete list of property supported by visual options configuration:
 
 | Name | Type | Description |
 | --- | --- | --- |
-| type | <code>&#x27;number&#x27;</code> \| <code>&#x27;boolean&#x27;</code> \| <code>&#x27;text&#x27;</code> \| <code>&#x27;colorScale&#x27;</code> | type of option |
+| type | <code>'number'</code> \| <code>'boolean'</code> \| <code>'text'</code> \| <code>'colorScale'</code> | type of option |
 | label | <code>string</code> | the option label |
 | default | <code>any</code> | the default value for the option. should match the option type |
 | [group] | <code>string</code> | the name of the options panel |
