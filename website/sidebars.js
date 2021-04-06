@@ -27,7 +27,7 @@ module.exports = {
       label: "Utility functions",
       items: [
         "data-parsing",
-        "import-export",
+        // "import-export",
       ],
     },
     "api",

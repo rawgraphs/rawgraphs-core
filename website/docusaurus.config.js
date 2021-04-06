@@ -1,7 +1,7 @@
 module.exports = {
   title: 'RAWGraphs Core',
-  tagline: 'Hello RAW Core',
-  url: 'https://your-docusaurus-test-site.com',
+  tagline: 'RAWGraphs Core library',
+  url: 'https://rawgraphs.github.io/rawgraphs-core',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
