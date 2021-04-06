@@ -2,7 +2,7 @@ module.exports = {
   title: 'RAWGraphs Core',
   tagline: 'RAWGraphs Core library',
   url: 'https://rawgraphs.github.io/rawgraphs-core',
-  baseUrl: '/',
+  baseUrl: '/rawgraphs-core/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.png',
