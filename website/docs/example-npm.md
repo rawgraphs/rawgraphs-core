@@ -64,8 +64,8 @@ import { bubblechart } from "@rawgraphs/rawgraphs-charts"
 const userData = [
   { size: 10, price: 2, cat: "a" },
   { size: 12, price: 1.2, cat: "a" },
-  { size: 1.3,pricey: 2, cat: "b" },
-  { size: 1.5,pricey: 2.2, cat: "c" },
+  { size: 1.3,price: 2, cat: "b" },
+  { size: 1.5,price: 2.2, cat: "c" },
   { size: 10, price: 4.2, cat: "b" },
   { size: 10, price: 6.2, cat: "c" },
   { size: 12, price: 2.2, cat: "b" },
