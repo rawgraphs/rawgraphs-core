@@ -2,7 +2,6 @@ import * as V1 from "./importExportV1"
 import * as V1_1 from "./importExportV1.1"
 import get from "lodash/get"
 import keyBy from "lodash/keyBy"
-import { Module } from "webpack"
 
 const DESERIALIZERS = keyBy([V1, V1_1], "VERSION")
 

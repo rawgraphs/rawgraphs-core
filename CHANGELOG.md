@@ -1,3 +1,7 @@
+## v1.0.0-beta.15
+#### 20 May 2021
+- removed wrong import from importExport
+- added new `overrideBaseOptions` function
 ## v1.0.0-beta.14
 #### 03 Mar 2021
 - numberparser: fixed regexp for group separator

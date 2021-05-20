@@ -15,7 +15,7 @@ import omitBy from "lodash/omitBy"
  * @type {Object}
  * @default
  */
-export const baseOptions = {
+export let baseOptions = {
   width: {
     type: "number",
     label: "Width (px)",
@@ -38,6 +38,18 @@ export const baseOptions = {
     default: "#FFFFFF",
     group: "artboard",
   },
+}
+
+/**
+ *
+ * @param {*} newOptions options that will be merged with baseOptions
+ */
+
+export function overrideBaseOptions(newOptions) {
+  baseOptions = {
+    ...baseOptions,
+    ...newOptions,
+  }
 }
 
 export function getDefaultOptionsValues(definition, mapping) {
@@ -233,9 +245,8 @@ function validateColorScale(
     )
     Object.keys(annotatedMapping).forEach((k) => {
       if (Array.isArray(annotatedMapping[k].dataType)) {
-        annotatedMapping[k].dataType = annotatedMapping[k].dataType.map(
-          simplifyDataType
-        )
+        annotatedMapping[k].dataType =
+          annotatedMapping[k].dataType.map(simplifyDataType)
       } else {
         annotatedMapping[k].dataType = simplifyDataType(
           annotatedMapping[k].dataType

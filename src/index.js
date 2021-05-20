@@ -16,6 +16,7 @@ export {
 } from "./expressionRegister"
 export {
   baseOptions,
+  overrideBaseOptions,
   getDefaultOptionsValues,
   getOptionsConfig,
   getEnabledOptions,
