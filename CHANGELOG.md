@@ -1,3 +1,7 @@
+## v1.0.0-beta.16
+#### 24 May 2021
+- fixed `simplifyDataType` implementation (handling undefined datatype)
+- logging validations errors in dev mode
 ## v1.0.0-beta.15
 #### 20 May 2021
 - removed wrong import from importExport
