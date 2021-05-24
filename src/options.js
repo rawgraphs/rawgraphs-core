@@ -221,7 +221,7 @@ function validateColor(def, value) {
 }
 
 function simplifyDataType(dataType) {
-  return dataType.type || dataType
+  return dataType ? dataType.type || dataType : dataType
 }
 
 function validateColorScale(
@@ -372,6 +372,7 @@ export function validateOptions(
               optionsValues
             )
           } catch (err) {
+            process.env.NODE_ENV === "development" && console.error(err)
             errors[name] = err.message
           }
         } else {
@@ -415,6 +416,7 @@ export function validateOptions(
                 vizData
               )
             } catch (err) {
+              process.env.NODE_ENV === "development" && console.error(err)
               errors[name + idx] = err.message
               return optionsValues[name][idx]
             }
