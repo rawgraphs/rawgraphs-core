@@ -29,6 +29,12 @@ export function getAggregatorNames() {
 }
 
 export function getAggregator(aggregatorExpression) {
+
+  if(Array.isArray(aggregatorExpression) && aggregatorExpression.length === 1) {
+    const aggregatorName = aggregatorExpression[0]
+    return getAggregator(aggregatorName)
+  }
+
   if (isFunction(aggregatorExpression)) {
     return aggregatorExpression
   }
