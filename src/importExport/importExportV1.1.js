@@ -1,23 +1,8 @@
 import get from "lodash/get"
 import has from "lodash/has"
+import { matrixToObjects, objectsToMatrix } from "./utils"
 
 export const VERSION = "1.1"
-
-function objectsToMatrix(listOfObjects, columns) {
-  return listOfObjects.map((obj) => {
-    return columns.map((col) => obj[col])
-  })
-}
-
-function matrixToObjects(matrix, columns) {
-  return matrix.map((record) => {
-    const obj = {}
-    for (let i = 0; i < columns.length; i++) {
-      obj[columns[i]] = record[i]
-    }
-    return obj
-  })
-}
 
 export function serializeProject({
   userInput,
