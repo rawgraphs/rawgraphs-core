@@ -60,7 +60,7 @@ export function getDefaultOptionsValues(definition, mapping) {
     }
     const mappingItem = get(mapping, field.repeatFor)
     const mappingValue = get(mappingItem, "value", [])
-    const repeatDefault = get(field, repeatDefault)
+    const repeatDefault = get(field, "repeatDefault")
     let getDefaultValue = (field, idx) => field.default
     if (Array.isArray(repeatDefault)) {
       getDefaultValue = (field, idx) =>

@@ -41,3 +41,5 @@ export {
   deserializeProject,
   registerSerializerDeserializer,
 } from "./importExport"
+
+export { t, isRAWLazyT, valueOfRAWLazyT } from './translation'
