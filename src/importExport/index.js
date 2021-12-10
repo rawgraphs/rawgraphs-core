@@ -1,21 +1,22 @@
 import * as V1 from "./importExportV1"
 import * as V1_1 from "./importExportV1.1"
+import * as V1_2 from "./importExportV1.2"
 import get from "lodash/get"
 import keyBy from "lodash/keyBy"
 
-const DESERIALIZERS = keyBy([V1, V1_1], "VERSION")
+const DESERIALIZERS = keyBy([V1, V1_1, V1_2], "VERSION")
 
 /**
  * Serializes a rawgraphs project to json format
- * @param {Object} project 
- * @param {string} [version="latest"] 
+ * @param {Object} project
+ * @param {string} [version="latest"]
  * @returns {string}
  */
 
 export function serializeProject(project, version = "latest") {
   const defaultSerializer =
     version === "latest"
-      ? DESERIALIZERS[V1_1.VERSION].serializeProject
+      ? DESERIALIZERS[V1_2.VERSION].serializeProject
       : () => {
           throw new Error("No serializer found for version " + version)
         }
@@ -30,9 +31,9 @@ export function serializeProject(project, version = "latest") {
 
 /**
  * Deserializes a project from JSON
- * @param {string} serializedProject 
- * @param {object} charts 
- * @returns 
+ * @param {string} serializedProject
+ * @param {object} charts
+ * @returns
  */
 export function deserializeProject(serializedProject, charts) {
   try {
