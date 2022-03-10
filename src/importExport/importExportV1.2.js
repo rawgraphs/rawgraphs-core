@@ -2,7 +2,7 @@ import get from "lodash/get"
 import has from "lodash/has"
 import { matrixToObjects, objectsToMatrix } from "./utils"
 
-export const VERSION = "1"
+export const VERSION = "1.2"
 
 export function serializeProject({
   userInput,
@@ -21,9 +21,10 @@ export function serializeProject({
   currentChart,
   mapping,
   visualOptions,
+  customChart,
 }) {
   const project = {
-    version: "1",
+    version: VERSION,
   }
 
   /* First stage: user input */
@@ -48,9 +49,12 @@ export function serializeProject({
   project.dataTypes = data.dataTypes
 
   /* Chart: mapping and visual options */
-  project.chart = currentChart.metadata.name
+  project.chart = currentChart.metadata.id
   project.mapping = mapping
   project.visualOptions = visualOptions
+
+  /* Custom chart */
+  project.customChart = customChart
 
   return project
 }
@@ -63,17 +67,24 @@ function getOrError(object, path) {
   return get(object, path)
 }
 
-export function deserializeProject(project, charts) {
-  if (project.version !== "1") {
+export function deserializeProject(project, defaultCharts) {
+  if (project.version !== VERSION) {
     throw new Error(
       "Invalid version number, please use a suitable deserializer"
     )
   }
 
-  const chartName = getOrError(project, "chart")
-  const chart = charts.find((c) => c.metadata.name === chartName)
+  const chartId = getOrError(project, "chart")
+  let chart = defaultCharts.find((c) => c.metadata.id === chartId)
   if (!chart) {
-    throw new Error("Unknown chart!")
+    if (!project.customChart) {
+      throw new Error("Unknown chart!")
+    }
+    // NOTE: OK, this is not very good...
+    // But the alternativie is to break to the deserializeProject signature
+    // and make it async ... for now we try to mantein the same signature
+    // of old importers
+    chart = { metadata: { id: chartId }, rawCustomChart: project.customChart }
   }
 
   return {
