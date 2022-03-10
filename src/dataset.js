@@ -6,9 +6,10 @@ import isNaN from "lodash/isNaN"
 import get from "lodash/get"
 import isFunction from "lodash/isFunction"
 import maxBy from "lodash/maxBy"
-import { RawGraphsError, getType, NumberParser } from "./utils"
+import { RawGraphsError, getType, NumberParser, Geometry } from "./utils"
 import { timeParse, timeFormatLocale } from "d3-time-format"
 import { dateFormats } from "./dateFormats"
+import { feature } from "@turf/helpers"
 
 const EMPTY_DATE_MARKER = "__||_||_||__"
 
@@ -63,6 +64,10 @@ function getFormatter(dataType, parsingOptions = {}) {
     }
   }
 
+  // if(getType(dataType) === Geometry) {
+  //   return (value) => new Geometry(value)
+  // }
+
   return undefined
 }
 
@@ -91,6 +96,21 @@ export function getValueType(value, options = {}) {
 
   if (isNumber(jsonValue)) {
     return "number"
+  }
+
+  if(isPlainObject(jsonValue) && jsonValue.type && jsonValue.coordinates) {
+    // try {
+    //   const f = feature({a:1})
+    // } catch(err) {
+    //   console.log("err")
+      
+    // }
+    return "geometry"
+  }
+  
+
+  if(isPlainObject(jsonValue)) {
+    return "object"
   }
 
   // #TODO: understand if we should handle boolean type

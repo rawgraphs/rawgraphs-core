@@ -22,6 +22,11 @@ export class ValidationError extends Error {
   }
 }
 
+export function Geometry(geom) {
+  return geom
+}
+
+
 export function getType(dataType) {
   if (isPlainObject(dataType)) {
     return getType(dataType.type)
@@ -37,6 +42,10 @@ export function getType(dataType) {
         return Boolean
       case "date":
         return Date
+      case "object":
+        return Object
+      case "geometry":
+        return Geometry
 
       default:
         return String
@@ -127,7 +136,9 @@ export class NumberParser {
       return string
     }
 
-    const trimmedString = string.trim ? string.trim() : string.toString().trim()
+    const trimmedString = string 
+        ? string.trim ? string.trim() : string.toString().trim()
+        : ""
     const parsed = trimmedString
       .replace(this._groupRegexp, function (match, captured) {
         return captured
