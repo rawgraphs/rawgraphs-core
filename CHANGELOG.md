@@ -1,3 +1,8 @@
+## v1.0.0-beta.17
+#### 18 Mar 2022
+- project serialization: new `customChart` property to handle custom charts loading
+
+
 ## v1.0.0-beta.16
 #### 24 May 2021
 - fixed `simplifyDataType` implementation (handling undefined datatype)
