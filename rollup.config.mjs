@@ -1,9 +1,10 @@
-import babel from 'rollup-plugin-babel'
-// import fs from 'fs'
-import pkg from './package.json'
+import { createRequire } from 'module'
+import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
+
+const pkg = createRequire(import.meta.url)('./package.json')
 
 
 const vendors = []
@@ -37,7 +38,9 @@ const nonUmdConfig =  [
     resolve(),
     commonjs(),
     json(),  
-    babel({ exclude: [
+    babel({
+      babelHelpers: 'bundled',
+      exclude: [
       'node_modules/**'
     ] }),
     
@@ -62,7 +65,9 @@ const umdConfig = {
     resolve(),
     commonjs(),
     json(),  
-    babel({ exclude: [
+    babel({
+      babelHelpers: 'bundled',
+      exclude: [
       'node_modules/**'
     ] }),
     
