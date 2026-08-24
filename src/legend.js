@@ -1,5 +1,6 @@
 import * as d3Legend from "d3-svg-legend"
 import { format } from "d3-format"
+import { selection, transition } from "d3"
 
 function scaleType(scale) {
   if (scale.interpolate) {
@@ -23,6 +24,23 @@ export function legend(
   margin = { top: 0, right: 5, bottom: 0, left: 5 }
 ) {
   const legendFn = (_selection) => {
+    // d3-svg-legend's rendering code calls .transition() on the selection
+    // it's given. That method only exists if d3-transition's prototype
+    // patch has run against the SAME Selection class _selection is an
+    // instance of - and confirmed by direct debugging, that's not
+    // guaranteed just by importing "d3-selection"/"d3-transition" at the
+    // same resolved version: Vite's dependency pre-bundling optimizes the
+    // "d3" meta-package (what every chart in rawgraphs-charts actually
+    // uses to build _selection) and the standalone "d3-selection"/
+    // "d3-transition" sub-packages as separate entries, each producing
+    // its own bundled copy of the Selection class despite both coming
+    // from the identical installed files on disk - so patching the
+    // sub-package's prototype patches a different, unrelated object.
+    // Importing from "d3" here instead - the same specifier charts uses -
+    // makes Vite resolve both to the one shared bundled copy.
+    if (!selection.prototype.transition) {
+      selection.prototype.transition = transition
+    }
     let d3LegendSize, d3legendColor
     const w = legendWidth - margin.left - margin.right
 
