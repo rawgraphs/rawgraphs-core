@@ -39,7 +39,7 @@ export function legend(
     // Importing from "d3" here instead - the same specifier charts uses -
     // makes Vite resolve both to the one shared bundled copy.
     if (!selection.prototype.transition) {
-      selection.prototype.transition = transition
+      throw new Error("D3 transition support is unavailable")
     }
     let d3LegendSize, d3legendColor
     const w = legendWidth - margin.left - margin.right
