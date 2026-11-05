@@ -119,7 +119,7 @@ These utilities are used in the "Data loading" section of the app.
 
 This function can be used to detect the data types of a dataset. The signature is the following
 
-### inferTypes(data, parsingOptions) ⇒ [<code>DataTypes</code>](#DataTypes)
+### inferTypes(data, parsingOptions) ⇒ [<code>DataTypes</code>](api.md#DataTypes)
 
 - The `data` parameter is the array of objects that must be parsed
 - The `parsingOptions` is an optional objects with the following properties:
