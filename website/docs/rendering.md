@@ -56,13 +56,13 @@ In rawgraphs-core, high level operations, such as chart rendering, are implement
 
 To get an instance of this class, we use the `chart` factory function from 'rawgraphs-core'. 
 
-### chart(visualModel, config) ⇒ [<code>Chart</code>](#Chart)
+### chart(visualModel, config) ⇒ [<code>Chart</code>](api.md#Chart)
 This is the entry point for creating a chart with raw. It will return an instance of the RAWChart class and takes two parameters:
 
 | Param | Type |
 | --- | --- |
-| chartImplementation | [<code>ChartImplementation</code>](#ChartImplementation) | 
-| config | [<code>RawConfig</code>](#RawConfig) | 
+| chartImplementation | [<code>ChartImplementation</code>](api.md#ChartImplementation) | 
+| config | [<code>RawConfig</code>](api.md#RawConfig) | 
 
 
 The first parameter, the `chartImplementation` is a chart object conforming the [chart interface](chart-interface.md).
@@ -72,9 +72,9 @@ The second parameter, the `config` object, has following properties:
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | data | <code>Array.&lt;Object&gt;</code> |  | the tabular data to be represented |
-| dataTypes | [<code>DataTypes</code>](#DataTypes) |  | object with data types annotations (column name => type name) |
-| mapping | [<code>Mapping</code>](#Mapping) |  | the current mapping of column names to dimensions of the current visual model |
-| [visualOptions] | [<code>VisualOptions</code>](#VisualOptions) | <code>{}</code> | visual options values |
+| dataTypes | [<code>DataTypes</code>](api.md#DataTypes) |  | object with data types annotations (column name => type name) |
+| mapping | [<code>Mapping</code>](api.md#Mapping) |  | the current mapping of column names to dimensions of the current visual model |
+| [visualOptions] | [<code>VisualOptions</code>](api.md#VisualOptions) | <code>{}</code> | visual options values |
 | [styles] | <code>Object</code> | <code>{}</code> | css in js styles definitions |
 
 

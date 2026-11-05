@@ -5,7 +5,7 @@ sidebar_label: API
 slug: /api
 ---
 
-<a name="Chart"></a>
+<a id="Chart"></a>
 
 ## Chart
 **Kind**: global class  
@@ -20,7 +20,7 @@ slug: /api
     * [.renderToDOM(node, (array|object))](#Chart+renderToDOM) ⇒ [<code>DOMChart</code>](#DOMChart)
     * [.renderToString(document, (array|object))](#Chart+renderToString) ⇒ <code>string</code>
 
-<a name="new_Chart_new"></a>
+<a id="new_Chart_new"></a>
 
 ### new Chart(chartImplementation, data, dataTypes, mapping, visualOptions, styles)
 Internal class used to represent a visual model with its actual configuration of data, dataTypes, mapping, visualOptions and styles.
@@ -35,7 +35,7 @@ Internal class used to represent a visual model with its actual configuration of
 | visualOptions | [<code>VisualOptions</code>](#VisualOptions) |  |
 | styles | <code>Object</code> |  |
 
-<a name="Chart+data"></a>
+<a id="Chart+data"></a>
 
 ### chart.data(nextData) ⇒ [<code>Chart</code>](#Chart)
 Sets or updates new data and returns a new Chart instance.
@@ -46,7 +46,7 @@ Sets or updates new data and returns a new Chart instance.
 | --- | --- |
 | nextData | <code>Array.&lt;Object&gt;</code> | 
 
-<a name="Chart+dataTypes"></a>
+<a id="Chart+dataTypes"></a>
 
 ### chart.dataTypes(nextDataTypes) ⇒ [<code>Chart</code>](#Chart)
 Sets or updates dataTypes and returns a new Chart instance.
@@ -57,7 +57,7 @@ Sets or updates dataTypes and returns a new Chart instance.
 | --- | --- |
 | nextDataTypes | [<code>DataTypes</code>](#DataTypes) | 
 
-<a name="Chart+mapping"></a>
+<a id="Chart+mapping"></a>
 
 ### chart.mapping(nextMapping) ⇒ [<code>Chart</code>](#Chart)
 Sets or updates mapping and returns a new Chart instance.
@@ -68,7 +68,7 @@ Sets or updates mapping and returns a new Chart instance.
 | --- | --- |
 | nextMapping | [<code>Mapping</code>](#Mapping) | 
 
-<a name="Chart+visualOptions"></a>
+<a id="Chart+visualOptions"></a>
 
 ### chart.visualOptions(nextVisualOptions) ⇒ [<code>Chart</code>](#Chart)
 Sets or updates visual options and returns a new Chart instance.
@@ -79,7 +79,7 @@ Sets or updates visual options and returns a new Chart instance.
 | --- | --- |
 | nextVisualOptions | [<code>VisualOptions</code>](#VisualOptions) | 
 
-<a name="Chart+styles"></a>
+<a id="Chart+styles"></a>
 
 ### chart.styles(Object) ⇒ [<code>Chart</code>](#Chart)
 Sets or updates styles and returns a new Chart instance.
@@ -90,7 +90,7 @@ Sets or updates styles and returns a new Chart instance.
 | --- | --- |
 | Object | <code>styles</code> | 
 
-<a name="Chart+renderToDOM"></a>
+<a id="Chart+renderToDOM"></a>
 
 ### chart.renderToDOM(node, (array|object)) ⇒ [<code>DOMChart</code>](#DOMChart)
 **Kind**: instance method of [<code>Chart</code>](#Chart)  
@@ -100,7 +100,7 @@ Sets or updates styles and returns a new Chart instance.
 | node | <code>Node</code> |  |
 | (array|object) | <code>dataReady</code> | mapped data if available |
 
-<a name="Chart+renderToString"></a>
+<a id="Chart+renderToString"></a>
 
 ### chart.renderToString(document, (array|object)) ⇒ <code>string</code>
 **Kind**: instance method of [<code>Chart</code>](#Chart)  
@@ -110,41 +110,41 @@ Sets or updates styles and returns a new Chart instance.
 | document | <code>document</code> | HTML document context (optional if window is available) |
 | (array|object) | <code>dataReady</code> | mapped data if available |
 
-<a name="DOMChart"></a>
+<a id="DOMChart"></a>
 
 ## DOMChart
 **Kind**: global class  
-<a name="new_DOMChart_new"></a>
+<a id="new_DOMChart_new"></a>
 
 ### new DOMChart()
 Internal class used to represent a Chart instance rendered to a DOM node.
 The class has no extra methods for now, but il could be used to provide an "update" functionality in the future.
 
-<a name="colorPresets"></a>
+<a id="colorPresets"></a>
 
 ## colorPresets
 Color presets objects
 
 **Kind**: global constant  
-<a name="scaleTypes"></a>
+<a id="scaleTypes"></a>
 
 ## scaleTypes
 Scale types (names)
 
 **Kind**: global constant  
-<a name="baseOptions"></a>
+<a id="baseOptions"></a>
 
 ## baseOptions : <code>Object</code>
 base options that are injected in all charts and extended by the visualOptions declared by the chart implementation
 
 **Kind**: global constant  
-<a name="validators"></a>
+<a id="validators"></a>
 
 ## validators
 default validators.
 
 **Kind**: global constant  
-<a name="getPresetScale"></a>
+<a id="getPresetScale"></a>
 
 ## getPresetScale(scaleType, domain, interpolator) ⇒ <code>function</code>
 **Kind**: global function  
@@ -156,7 +156,7 @@ default validators.
 | domain | <code>\*</code> | 
 | interpolator | <code>\*</code> | 
 
-<a name="getColorDomain"></a>
+<a id="getColorDomain"></a>
 
 ## getColorDomain(colorDataset, colorDataType, scaleType) ⇒ <code>Array</code>
 Extracts the color domain, given a color dataset, a color data type and a scale type
@@ -172,7 +172,7 @@ for ordinal scales the domain consists of all unique values found in the color d
 | colorDataType | <code>\*</code> | 
 | scaleType | <code>\*</code> | 
 
-<a name="getInitialScaleValues"></a>
+<a id="getInitialScaleValues"></a>
 
 ## getInitialScaleValues(domain, scaleType, interpolator) ⇒ <code>Array.&lt;Object&gt;</code>
 Compute the initial ranges and domains, given a domain, a scale type and an interpolator. Used to initialize the values that can be overridden by the user
@@ -185,7 +185,7 @@ Compute the initial ranges and domains, given a domain, a scale type and an inte
 | scaleType | <code>\*</code> | 
 | interpolator | <code>\*</code> | 
 
-<a name="getColorScale"></a>
+<a id="getColorScale"></a>
 
 ## getColorScale(colorDataset, colorDataType, scaleType, interpolator, userScaleValues) ⇒ <code>function</code>
 **Kind**: global function  
@@ -199,7 +199,7 @@ Compute the initial ranges and domains, given a domain, a scale type and an inte
 | interpolator | <code>string</code> | the name of the interpolator used (must be compatible with scaleType) |
 | userScaleValues | <code>Array.&lt;Object&gt;</code> | overrides of ranges/domains points provided by the user |
 
-<a name="getDefaultColorScale"></a>
+<a id="getDefaultColorScale"></a>
 
 ## getDefaultColorScale(defaultColor) ⇒
 **Kind**: global function  
@@ -209,7 +209,7 @@ Compute the initial ranges and domains, given a domain, a scale type and an inte
 | --- | --- |
 | defaultColor | <code>\*</code> | 
 
-<a name="getAvailableScaleTypes"></a>
+<a id="getAvailableScaleTypes"></a>
 
 ## getAvailableScaleTypes(colorDataType, colorDataset) ⇒ <code>Array.&lt;string&gt;</code>
 gets the array of names of available scale types, given the color data type and color dataset
@@ -221,7 +221,7 @@ gets the array of names of available scale types, given the color data type and 
 | colorDataType | <code>\*</code> | 
 | colorDataset | <code>\*</code> | 
 
-<a name="inferTypes"></a>
+<a id="inferTypes"></a>
 
 ## inferTypes(data, parsingOptions) ⇒ [<code>DataTypes</code>](#DataTypes)
 Types guessing
@@ -234,7 +234,7 @@ Types guessing
 | data | <code>array</code> | data to be parsed (list of objects) |
 | parsingOptions | <code>parsingOptions</code> |  |
 
-<a name="parseDataset"></a>
+<a id="parseDataset"></a>
 
 ## parseDataset(data, [types], [parsingOptions]) ⇒ [<code>ParserResult</code>](#ParserResult)
 Dataset parser
@@ -248,7 +248,7 @@ Dataset parser
 | [types] | [<code>DataTypes</code>](#DataTypes) | optional column types |
 | [parsingOptions] | [<code>ParsingOptions</code>](#ParsingOptions) | optional parsing options |
 
-<a name="validateMapperDefinition"></a>
+<a id="validateMapperDefinition"></a>
 
 ## validateMapperDefinition(dimensions)
 dimensions validator
@@ -259,7 +259,7 @@ dimensions validator
 | --- | --- |
 | dimensions | <code>array</code> | 
 
-<a name="validateMapping"></a>
+<a id="validateMapping"></a>
 
 ## validateMapping(mapper, mapping, types)
 mapping validator
@@ -272,7 +272,7 @@ mapping validator
 | mapping | <code>object</code> | configuration |
 | types | <code>object</code> | column datatypes |
 
-<a name="makeMapper"></a>
+<a id="makeMapper"></a>
 
 ## makeMapper(dimensions, mapping, types) ⇒ <code>function</code>
 mapper generator
@@ -286,7 +286,7 @@ mapper generator
 | mapping | <code>object</code> | mapping configuration |
 | types | <code>types</code> | column types |
 
-<a name="checkPredicates"></a>
+<a id="checkPredicates"></a>
 
 ## checkPredicates(conditionObject, values)
 Helper function for checking predicates, used in getEnabledOptions
@@ -298,7 +298,7 @@ Helper function for checking predicates, used in getEnabledOptions
 | conditionObject | <code>\*</code> | 
 | values | <code>\*</code> | 
 
-<a name="validateOptions"></a>
+<a id="validateOptions"></a>
 
 ## validateOptions(optionsConfig, optionsValues)
 options validation and deserialization
@@ -310,7 +310,7 @@ options validation and deserialization
 | optionsConfig | <code>object</code> | 
 | optionsValues | <code>object</code> | 
 
-<a name="chart"></a>
+<a id="chart"></a>
 
 ## chart(chartImplementation, [config]) ⇒ [<code>Chart</code>](#Chart)
 This is the entry point for creating a chart with raw. It will return an instance of the RAWChart class
@@ -322,7 +322,7 @@ This is the entry point for creating a chart with raw. It will return an instanc
 | chartImplementation | [<code>ChartImplementation</code>](#ChartImplementation) |  |
 | [config] | [<code>RawConfig</code>](#RawConfig) | Config object. |
 
-<a name="DataTypeObject"></a>
+<a id="DataTypeObject"></a>
 
 ## DataTypeObject : <code>object</code> \| <code>string</code>
 **Kind**: global typedef  
@@ -337,7 +337,7 @@ This is the entry point for creating a chart with raw. It will return an instanc
 ```js
 { type: 'date', dateFormat: 'DD-MM-YYYY }
 ```
-<a name="DataTypes"></a>
+<a id="DataTypes"></a>
 
 ## DataTypes : <code>Object.&lt;(&#x27;number&#x27;\|&#x27;string&#x27;\|&#x27;date&#x27;\|DataTypeObject)&gt;</code>
 **Kind**: global typedef  
@@ -345,7 +345,7 @@ This is the entry point for creating a chart with raw. It will return an instanc
 ```js
 { x: 'number', y: { type: 'date', dateFormat: 'DD-MM-YYYY } }
 ```
-<a name="AggregationdDefaultObject"></a>
+<a id="AggregationdDefaultObject"></a>
 
 ## AggregationdDefaultObject : <code>object</code>
 **Kind**: global typedef  
@@ -365,7 +365,7 @@ This is the entry point for creating a chart with raw. It will return an instanc
     date: 'csvDistinct',
 }
 ```
-<a name="Dimension"></a>
+<a id="Dimension"></a>
 
 ## Dimension : <code>object</code>
 **Kind**: global typedef  
@@ -394,7 +394,7 @@ This is the entry point for creating a chart with raw. It will return an instanc
     aggregationDefault: 'sum',
   }
 ```
-<a name="DimensionsDefinition"></a>
+<a id="DimensionsDefinition"></a>
 
 ## DimensionsDefinition : [<code>Array.&lt;Dimension&gt;</code>](#Dimension)
 An array of dimensions, used to describe dimensions of a chart
@@ -421,7 +421,7 @@ An array of dimensions, used to describe dimensions of a chart
   },
 ]
 ```
-<a name="MappedConfigValue"></a>
+<a id="MappedConfigValue"></a>
 
 ## MappedConfigValue : <code>object</code>
 **Kind**: global typedef  
@@ -431,7 +431,7 @@ An array of dimensions, used to describe dimensions of a chart
 | --- | --- | --- |
 | aggregation | <code>string</code> \| <code>Array.&lt;string&gt;</code> | aggregation(s) function name(s) |
 
-<a name="MappedDimension"></a>
+<a id="MappedDimension"></a>
 
 ## MappedDimension : <code>object</code>
 **Kind**: global typedef  
@@ -442,11 +442,11 @@ An array of dimensions, used to describe dimensions of a chart
 | value | <code>string</code> \| <code>Array.&lt;string&gt;</code> | the mapping value |
 | [config] | [<code>MappedConfigValue</code>](#MappedConfigValue) | the optional config |
 
-<a name="Mapping"></a>
+<a id="Mapping"></a>
 
 ## Mapping : [<code>Object.&lt;MappedDimension&gt;</code>](#MappedDimension)
 **Kind**: global typedef  
-<a name="VisualOptionDefinition"></a>
+<a id="VisualOptionDefinition"></a>
 
 ## VisualOptionDefinition : <code>object</code>
 **Kind**: global typedef  
@@ -481,7 +481,7 @@ An array of dimensions, used to describe dimensions of a chart
     group: 'artboard',
   }
 ```
-<a name="VisualOptionsDefinition"></a>
+<a id="VisualOptionsDefinition"></a>
 
 ## VisualOptionsDefinition : [<code>Object.&lt;VisualOptionDefinition&gt;</code>](#VisualOptionDefinition)
 **Kind**: global typedef  
@@ -537,7 +537,7 @@ An array of dimensions, used to describe dimensions of a chart
 
 }
 ```
-<a name="VisualOptions"></a>
+<a id="VisualOptions"></a>
 
 ## VisualOptions : <code>Object</code>
 **Kind**: global typedef  
@@ -545,7 +545,7 @@ An array of dimensions, used to describe dimensions of a chart
 ```js
 { with: 100, showLegend: true }
 ```
-<a name="MappingFunction"></a>
+<a id="MappingFunction"></a>
 
 ## MappingFunction : <code>function</code>
 **Kind**: global typedef  
@@ -557,7 +557,7 @@ An array of dimensions, used to describe dimensions of a chart
 | dataTypes | [<code>DataTypes</code>](#DataTypes) |  |
 | dimensions | [<code>DimensionsDefinition</code>](#DimensionsDefinition) | the chart dimensions |
 
-<a name="RenderFunction"></a>
+<a id="RenderFunction"></a>
 
 ## RenderFunction : <code>function</code>
 **Kind**: global typedef  
@@ -571,7 +571,7 @@ An array of dimensions, used to describe dimensions of a chart
 | originalData | <code>array</code> | the original tabular dataset |
 | Object | <code>styles</code> | css in js styles definitions, defined by the chart itself and possibly overridden when the chart instance is created. |
 
-<a name="ChartMetadata"></a>
+<a id="ChartMetadata"></a>
 
 ## ChartMetadata : <code>object</code>
 **Kind**: global typedef  
@@ -598,7 +598,7 @@ An array of dimensions, used to describe dimensions of a chart
     'It allows the comparison on multiple categories over a continuous dimension and the evolution of its sorting. By default, sorting is based on the stream size.',
 }
 ```
-<a name="ChartImplementation"></a>
+<a id="ChartImplementation"></a>
 
 ## ChartImplementation : <code>object</code>
 **Kind**: global typedef  
@@ -615,7 +615,7 @@ An array of dimensions, used to describe dimensions of a chart
 | visualOptions | [<code>VisualOptionsDefinition</code>](#VisualOptionsDefinition) |  | the visual options exposed by the model |
 | [styles] | <code>Object</code> | <code>{}</code> | css in js styles definitions |
 
-<a name="RawConfig"></a>
+<a id="RawConfig"></a>
 
 ## RawConfig : <code>object</code>
 **Kind**: global typedef  
@@ -629,7 +629,7 @@ An array of dimensions, used to describe dimensions of a chart
 | [visualOptions] | [<code>VisualOptions</code>](#VisualOptions) | <code>{}</code> | visual options values |
 | [styles] | <code>Object</code> | <code>{}</code> | css in js styles definitions |
 
-<a name="ParsingOptions"></a>
+<a id="ParsingOptions"></a>
 
 ## ParsingOptions : <code>object</code>
 **Kind**: global typedef  
@@ -644,7 +644,7 @@ An array of dimensions, used to describe dimensions of a chart
 | numerals | <code>Array.&lt;string&gt;</code> |  |
 | dateLocale | <code>string</code> |  |
 
-<a name="ParserResult"></a>
+<a id="ParserResult"></a>
 
 ## ParserResult : <code>object</code>
 **Kind**: global typedef  
