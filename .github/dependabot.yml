@@ -1,0 +1,36 @@
+version: 2
+updates:
+  # Library: only dev tooling ends up here (the published package ships just lib/).
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        applies-to: version-updates
+        dependency-type: "development"
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
+    ignore:
+      # major bumps are done by hand, with a proper look at the changelog
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Documentation site (Docusaurus, deployed on GitHub Pages).
+  - package-ecosystem: "npm"
+    directory: "/website"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    groups:
+      docs-site:
+        applies-to: version-updates
+        patterns: ["*"]
+      docs-site-security:
+        applies-to: security-updates
+        patterns: ["*"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
